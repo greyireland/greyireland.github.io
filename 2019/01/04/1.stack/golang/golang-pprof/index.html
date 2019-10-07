@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="tags,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="pprof 的使用【mark】什么是 Profiling?Profiling 这个词比较难翻译，一般译成画像。比如在案件侦破的时候会对嫌疑人做画像，从犯罪现场的种种证据，找到嫌疑人的各种特征，方便对嫌疑人进行排查；还有就是互联网公司会对用户信息做画像，通过了解用户各个属性（年龄、性别、消费能力等），方便为用户推荐内容或者广告。 在计算机性能调试领域里，profiling 就是对应用的画像，这里画像">
+<meta name="keywords" content="tags">
+<meta property="og:type" content="article">
+<meta property="og:title" content="golang-pprof">
+<meta property="og:url" content="http://yoursite.com/2019/01/04/1.stack/golang/golang-pprof/index.html">
+<meta property="og:site_name" content="greyireland">
+<meta property="og:description" content="pprof 的使用【mark】什么是 Profiling?Profiling 这个词比较难翻译，一般译成画像。比如在案件侦破的时候会对嫌疑人做画像，从犯罪现场的种种证据，找到嫌疑人的各种特征，方便对嫌疑人进行排查；还有就是互联网公司会对用户信息做画像，通过了解用户各个属性（年龄、性别、消费能力等），方便为用户推荐内容或者广告。 在计算机性能调试领域里，profiling 就是对应用的画像，这里画像">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-01-07T03:59:22.705Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="golang-pprof">
+<meta name="twitter:description" content="pprof 的使用【mark】什么是 Profiling?Profiling 这个词比较难翻译，一般译成画像。比如在案件侦破的时候会对嫌疑人做画像，从犯罪现场的种种证据，找到嫌疑人的各种特征，方便对嫌疑人进行排查；还有就是互联网公司会对用户信息做画像，通过了解用户各个属性（年龄、性别、消费能力等），方便为用户推荐内容或者广告。 在计算机性能调试领域里，profiling 就是对应用的画像，这里画像">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/01/04/1.stack/golang/golang-pprof/">
+
+
+
+
+
+  <title>golang-pprof | greyireland</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">greyireland</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/04/1.stack/golang/golang-pprof/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">golang-pprof</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-04T16:30:20+08:00">
+                2019-01-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/categories/" itemprop="url" rel="index">
+                    <span itemprop="name">categories</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="pprof-的使用【mark】"><a href="#pprof-的使用【mark】" class="headerlink" title="pprof 的使用【mark】"></a>pprof 的使用【mark】</h1><p>什么是 Profiling?<br>Profiling 这个词比较难翻译，一般译成画像。比如在案件侦破的时候会对嫌疑人做画像，从犯罪现场的种种证据，找到嫌疑人的各种特征，方便对嫌疑人进行排查；还有就是互联网公司会对用户信息做画像，通过了解用户各个属性（年龄、性别、消费能力等），方便为用户推荐内容或者广告。</p>
+<p>在计算机性能调试领域里，profiling 就是对应用的画像，这里画像就是应用使用 CPU 和内存的情况。也就是说应用使用了多少 CPU 资源？都是哪些部分在使用？每个函数使用的比例是多少？有哪些函数在等待 CPU 资源？知道了这些，我们就能对应用进行规划，也能快速定位性能瓶颈。</p>
+<p>golang 是一个对性能特别看重的语言，因此语言中自带了 profiling 的库，这篇文章就要讲解怎么在 golang 中做 profiling。</p>
+<p>在 go 语言中，主要关注的应用运行情况主要包括以下几种：</p>
+<p>CPU profile：报告程序的 CPU 使用情况，按照一定频率去采集应用程序在 CPU 和寄存器上面的数据<br>Memory Profile（Heap Profile）：报告程序的内存使用情况<br>Block Profiling：报告 goroutines 不在运行状态的情况，可以用来分析和查找死锁等性能瓶颈<br>Goroutine Profiling：报告 goroutines 的使用情况，有哪些 goroutine，它们的调用关系是怎样的<br>两种收集方式<br>做 Profiling 第一步就是怎么获取应用程序的运行情况数据。go 语言提供了 runtime/pprof 和 net/http/pprof 两个库，这部分我们讲讲它们的用法以及使用场景。</p>
+<h3 id="工具型应用"><a href="#工具型应用" class="headerlink" title="工具型应用"></a>工具型应用</h3><p>如果你的应用是一次性的，运行一段时间就结束。那么最好的办法，就是在应用退出的时候把 profiling 的报告保存到文件中，进行分析。对于这种情况，可以使用 runtime/pprof 库。</p>
+<p>pprof 封装了很好的接口供我们使用，比如要想进行 CPU Profiling，可以调用 pprof.StartCPUProfile() 方法，它会对当前应用程序进行 CPU profiling，并写入到提供的参数中（w io.Writer），要停止调用 StopCPUProfile() 即可。</p>
+<p>去除错误处理只需要三行内容，一般把部分内容写在 main.go 文件中，应用程序启动之后就开始执行：</p>
+<p>f, err := os.Create(*cpuprofile) … pprof.StartCPUProfile(f) defer pprof.StopCPUProfile()<br>应用执行结束后，就会生成一个文件，保存了我们的 CPU profiling 数据。</p>
+<p>想要获得内存的数据，直接使用 WriteHeapProfile 就行，不用 start 和 stop 这两个步骤了：</p>
+<p>f, err := os.Create(*memprofile) pprof.WriteHeapProfile(f) f.Close() </p>
+<h3 id="服务型应用"><a href="#服务型应用" class="headerlink" title="服务型应用"></a>服务型应用</h3><p>如果你的应用是一直运行的，比如 web 应用，那么可以使用 net/http/pprof 库，它能够在提供 HTTP 服务进行分析。</p>
+<p>如果使用了默认的 http.DefaultServeMux（通常是代码直接使用 http.ListenAndServe(“0.0.0.0:8000”, nil)），只需要添加一行：</p>
+<p>import _ “net/http/pprof”<br>如果你使用自定义的 Mux，则需要手动注册一些路由规则：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">r.HandleFunc(&quot;/debug/pprof/&quot;, pprof.Index)</span><br><span class="line">r.HandleFunc(&quot;/debug/pprof/cmdline&quot;, pprof.Cmdline)</span><br><span class="line">r.HandleFunc(&quot;/debug/pprof/profile&quot;, pprof.Profile)</span><br><span class="line">r.HandleFunc(&quot;/debug/pprof/symbol&quot;, pprof.Symbol)</span><br><span class="line">r.HandleFunc(&quot;/debug/pprof/trace&quot;, pprof.Trace)</span><br></pre></td></tr></table></figure>
+<p>不管哪种方式，你的 HTTP 服务都会多出 /debug/pprof endpoint，访问它会得到类似下面的内容：</p>
+<p>/debug/pprof/</p>
+<p>profiles:<br>0    block<br>62    goroutine<br>444    heap<br>30    threadcreate</p>
+<p>full goroutine stack dump<br>这个路径下还有几个子页面：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/debug/pprof/profile：访问这个链接会自动进行 CPU profiling，持续 30s，并生成一个文件供下载</span><br><span class="line">/debug/pprof/heap： Memory Profiling 的路径，访问这个链接会得到一个内存 Profiling 结果的文件</span><br><span class="line">/debug/pprof/block：block Profiling 的路径</span><br><span class="line">/debug/pprof/goroutines：运行的 goroutines 列表，以及调用关系</span><br></pre></td></tr></table></figure>
+<p>go tool pprof 命令：获取和分析 Profiling 数据<br>能通过对应的库获取想要的 Profiling 数据之后（不管是文件还是 http），下一步就是要对这些数据进行保存和分析，我们可以使用 go tool pprof 命令行工具。</p>
+<p>在后面我们会生成调用关系图和火焰图，需要安装 graphviz 软件包，在 ubuntu 系统可以使用下面的命令：</p>
+<p>$ sudo apt-get install -y graphviz<br>NOTE：获取的 Profiling 数据是动态的，要想获得有效的数据，请保证应用处于较大的负载（比如正在生成中运行的服务，或者通过其他工具模拟访问压力）。否则如果应用处于空闲状态，得到的结果可能没有任何意义。</p>
+<p>CPU Profiling<br>go tool pprof 最简单的使用方式为 <code>go tool pprof [binary] [source]</code>，binary 是应用的二进制文件，用来解析各种符号；source 表示 profile 数据的来源，可以是本地的文件，也可以是 http 地址。比如：</p>
+<p>➜  go tool pprof ./hyperkube <a href="http://172.16.3.232:10251/debug/pprof/profile" target="_blank" rel="noopener">http://172.16.3.232:10251/debug/pprof/profile</a><br>Fetching profile from <a href="http://172.16.3.232:10251/debug/pprof/profile" target="_blank" rel="noopener">http://172.16.3.232:10251/debug/pprof/profile</a><br>Please wait… (30s)<br>Saved profile in /home/cizixs/pprof/pprof.hyperkube.172.16.3.232:10251.samples.cpu.002.pb.gz Entering interactive mode (type “help” for commands) (pprof)<br>这个命令会进行 CPU profiling 分析，等待一段时间（默认是 30s，如果在 url 最后加上 ?seconds=60 参数可以调整采集数据的时间为 60s）之后，我们就进入了一个交互式命令行，可以对解析的结果进行查看和导出。可以通过 help 来查看支持的自命令有哪些。</p>
+<p>一个有用的命令是 topN，它列出最耗时间的地方：</p>
+<p>(pprof) top10</p>
+<p>每一行表示一个函数的信息。前两列表示函数在 CPU 上运行的时间以及百分比；第三列是当前所有函数累加使用 CPU 的比例；第四列和第五列代表这个函数以及子函数运行所占用的时间和比例（也被称为累加值 cumulative），应该大于等于前两列的值；最后一列就是函数的名字。如果应用程序有性能问题，上面这些信息应该能告诉我们时间都花费在哪些函数的执行上了。</p>
+<p>pprof 不仅能打印出最耗时的地方(top)，还能列出函数代码以及对应的取样数据(list)、汇编代码以及对应的取样数据(disasm)，而且能以各种样式进行输出，比如 svg、gv、callgrind、png、gif等等。</p>
+<p>其中一个非常便利的是 web 命令，在交互模式下输入 web，就能自动生成一个 svg 文件，并跳转到浏览器打开，生成了一个函数调用图：</p>
+<p>这个调用图包含了更多的信息，而且可视化的图像能让我们更清楚地理解整个应用程序的全貌。图中每个方框对应一个函数，方框越大代表执行的时间越久（包括它调用的子函数执行时间，但并不是正比的关系）；方框之间的箭头代表着调用关系，箭头上的数字代表被调用函数的执行时间。</p>
+<p>因为原图比较大，这里只截取了其中一部分，但是能明显看到 encoding/json.(*decodeState).object 是这里耗时比较多的地方，而且能看到它调用了哪些函数，分别函数多少。这些更详细的信息对于定位和调优性能是非常有帮助的！</p>
+<p>要想更细致分析，就要精确到代码级别了，看看每行代码的耗时，直接定位到出现性能问题的那行代码。pprof 也能做到，list 命令后面跟着一个正则表达式，就能查看匹配函数的代码以及每行代码的耗时：</p>
+<p>(pprof) list podFitsOnNode</p>
+<p>如果想要了解对应的汇编代码，可以使用 disadm <regex> 命令。这两个命令虽然强大，但是在命令行中查看代码并不是很方面，所以你可以使用 weblist 命令，用法和两者一样，但它会在浏览器打开一个页面，能够同时显示源代码和汇编代码。</regex></p>
+<p>NOTE：更详细的 pprof 使用方法可以参考 pprof –help 或者 pprof 文档。</p>
+<p>Memory Profiling<br>要想获得内存使用 Profiling 信息，只需要把数据源修改一下就行（对于 http 方式来说就是修改 url 的地址，从 /debug/pprof/profile 改成 /debug/pprof/heap）：</p>
+<p>➜  go tool pprof ./hyperkube <a href="http://172.16.3.232:10251/debug/pprof/heap" target="_blank" rel="noopener">http://172.16.3.232:10251/debug/pprof/heap</a><br>Fetching profile from <a href="http://172.16.3.232:10251/debug/pprof/heap" target="_blank" rel="noopener">http://172.16.3.232:10251/debug/pprof/heap</a><br>Saved profile in /home/cizixs/pprof/pprof.hyperkube.172.16.3.232:10251.inuse_objects.inuse_space.002.pb.gz Entering interactive mode (type “help” for commands) (pprof)<br>和 CPU Profiling 使用一样，使用 top N 可以打印出使用内存最多的函数列表：</p>
+<p>(pprof) top</p>
+<p>每一列的含义也是类似的，只不过从 CPU 使用时间变成了内存使用大小，就不多解释了。</p>
+<p>类似的，web 命令也能生成 svg 图片在浏览器中打开，从中可以看到函数调用关系，以及每个函数的内存使用多少。</p>
+<p>需要注意的是，默认情况下，统计的是内存使用大小，如果执行命令的时候加上 –inuse_objects 可以查看每个函数分配的对象数；–alloc-space 查看分配的内存空间大小。</p>
+<p>这里还要提两个比较有用的方法，如果应用比较复杂，生成的调用图特别大，看起来很乱，有两个办法可以优化：</p>
+<p>使用 web funcName 的方式，只打印和某个函数相关的内容<br>运行 go tool pprof 命令时加上 –nodefration=0.05 参数，表示如果调用的子函数使用的 CPU、memory 不超过 5%，就忽略它，不要显示在图片中<br>pprof 已经支持动态的 web 浏览方式：<a href="https://github.com/google/pprof/commit/f83a3d89c18c445178f794d525bf3013ef7b3330" target="_blank" rel="noopener">https://github.com/google/pprof/commit/f83a3d89c18c445178f794d525bf3013ef7b3330</a></p>
+<p>测试工具的集成<br>go test 命令有两个参数和 pprof 相关，它们分别指定生成的 CPU 和 Memory profiling 保存的文件：</p>
+<p>-cpuprofile：cpu profiling 数据要保存的文件地址<br>-memprofile：memory profiling 数据要报文的文件地址<br>比如下面执行测试的同时，也会执行 CPU profiling，并把结果保存在 cpu.prof 文件中：</p>
+<p>$ go test -bench . -cpuprofile=cpu.prof<br>执行结束之后，就会生成 main.test 和 cpu.prof 文件。要想使用 go tool pprof，需要指定的二进制文件就是 main.test。</p>
+<p>需要注意的是，Profiling 一般和性能测试一起使用，这个原因在前文也提到过，只有应用在负载高的情况下 Profiling 才有意义。</p>
+<p>go-torch 和火焰图<br>火焰图（Flame Graph）是 Bredan Gregg 创建的一种性能分析图表。上面的 profiling 结果也转换成火焰图，如果对火焰图比较了解可以手动来操作，不过这里我们要介绍一个工具：go-torch。这是 uber 开源的一个工具，可以直接读取 golang profiling 数据，并生成一个火焰图的 svg 文件。</p>
+<p>火焰图 svg 文件可以通过浏览器打开，它对于调用图的最优点是它是动态的：可以通过点击每个方块来 zoom in 分析它上面的内容。</p>
+<p>火焰图的调用顺序从下到上，每个方块代表一个函数，它上面一层表示这个函数会调用哪些函数，方块的大小代表了占用 CPU 使用的长短。火焰图的配色并没有特殊的意义，默认的红、黄配色是为了更像火焰而已。</p>
+<p>go-torch 工具的使用非常简单，没有任何参数的话，它会尝试从 <a href="http://localhost:8080/debug/pprof/profile" target="_blank" rel="noopener">http://localhost:8080/debug/pprof/profile</a> 获取 profiling 数据。它有三个常用的参数可以调整：</p>
+<p>-u –url：要访问的 URL，这里只是主机和端口部分<br>-s –suffix：pprof profile 的路径，默认为 /debug/pprof/profile<br>–seconds：要执行 profiling 的时间长度，默认为 30s<br>要生成火焰图，需要事先安装 FlameGraph工具，这个工具的安装很简单，只要把对应的可执行文件放到 $PATH 目录下就行。</p>
+<p>参考资料<br>The Go Blog: Profiling Go Programs<br>go command tutorial: go tool pprof<br>Profiling and optimizing Go web applications<br>Debugging performance issues in Go programs</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/tags/" rel="tag"># tags</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/25/1.stack/golang/govendor-quickstart/" rel="next" title="govendor-quickstart">
+                <i class="fa fa-chevron-left"></i> govendor-quickstart
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/02/21/1.stack/system_design/私信系统设计/" rel="prev" title="私信系统设计">
+                私信系统设计 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="greyireland">
+          <p class="site-author-name" itemprop="name">greyireland</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/greyireland" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Github
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#pprof-的使用【mark】"><span class="nav-number">1.</span> <span class="nav-text">pprof 的使用【mark】</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#工具型应用"><span class="nav-number">1.0.1.</span> <span class="nav-text">工具型应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务型应用"><span class="nav-number">1.0.2.</span> <span class="nav-text">服务型应用</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">greyireland</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
