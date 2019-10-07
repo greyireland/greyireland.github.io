@@ -280,7 +280,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/19/1.stack/golang/go-文件io/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/20/mysql/深入mysql一条查询SQL语句的执行流程/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="greyireland">
@@ -299,7 +299,1418 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/09/19/1.stack/golang/go-文件io/" itemprop="url">go-文件io</a></h1>
+                <a class="post-title-link" href="/2018/11/20/mysql/深入mysql一条查询SQL语句的执行流程/" itemprop="url">一条查询语句的执行流程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-20T20:06:15+08:00">
+                2018-11-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="一条查询语句的执行流程"><a href="#一条查询语句的执行流程" class="headerlink" title="一条查询语句的执行流程"></a>一条查询语句的执行流程</h1><p>我们经常说，看一个事儿千万不要直接陷入细节里，你应该先鸟瞰其全貌，这样能够帮助你从高维度理解问题。同样，对于 MySQL 的学习也是这样。平时我们使用数据库，看到的通常都是一个整体。比如，你有个最简单的表，表里只有一个 ID 字段，在执行下面这个查询语句时：<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from T where ID=10；</span><br></pre></td></tr></table></figure></p>
+<p>我们看到的只是输入一条语句，返回一个结果，却不知道这条语句在 MySQL 内部的执行过程。</p>
+<p>所以今天我想和你一起把 MySQL 拆解一下，看看里面都有哪些“零件”，希望借由这个拆解过程，让你对 MySQL 有更深入的理解。这样当我们碰到 MySQL 的一些异常或者问题时，就能够直戳本质，更为快速地定位并解决问题。</p>
+<p>下面我给出的是 MySQL 的基本架构示意图，从中你可以清楚地看到 SQL 语句在 MySQL 的各个功能模块中的执行过程。<br><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fxesclk4l6j21hc140wv4.jpg" alt="MySQL 的逻辑架构图"></p>
+<p>大体来说，MySQL 可以分为 Server 层和存储引擎层两部分。<br>Server 层包括连接器、查询缓存、分析器、优化器、执行器等，涵盖 MySQL 的大多数核心服务功能，以及所有的内置函数（如日期、时间、数学和加密函数等），所有跨存储引擎的功能都在这一层实现，比如存储过程、触发器、视图等。</p>
+<p>而存储引擎层负责数据的存储和提取。其架构模式是插件式的，支持 InnoDB、MyISAM、Memory 等多个存储引擎。现在最常用的存储引擎是 InnoDB，它从 MySQL 5.5.5 版本开始成为了默认存储引擎。</p>
+<p>也就是说，你执行 create table 建表的时候，如果不指定引擎类型，默认使用的就是 InnoDB。不过，你也可以通过指定存储引擎的类型来选择别的引擎，比如在 create table 语句中使用 engine=memory, 来指定使用内存引擎创建表。不同存储引擎的表数据存取方式不同，支持的功能也不同，在后面的文章中，我们会讨论到引擎的选择。</p>
+<p>从图中不难看出，不同的存储引擎共用一个Server 层，也就是从连接器到执行器的部分。你可以先对每个组件的名字有个印象，接下来我会结合开头提到的那条 SQL 语句，带你走一遍整个执行流程，依次看下每个组件的作用。</p>
+<h3 id="1-连接器"><a href="#1-连接器" class="headerlink" title="1. 连接器"></a>1. 连接器</h3><p>第一步，你会先连接到这个数据库上，这时候接待你的就是连接器。连接器负责跟客户端建立连接、获取权限、维持和管理连接。连接命令一般是这么写的：</p>
+<p><code>mysql -h$ip -P$port -u$user -p</code></p>
+<p>输完命令之后，你就需要在交互对话里面输入密码。虽然密码也可以直接跟在 -p 后面写在命令行中，但这样可能会导致你的密码泄露。如果你连的是生产服务器，强烈建议你不要这么做。</p>
+<p>连接命令中的 mysql 是客户端工具，用来跟服务端建立连接。在完成经典的 TCP 握手后，连接器就要开始认证你的身份，这个时候用的就是你输入的用户名和密码。</p>
+<ul>
+<li>如果用户名或密码不对，你就会收到一个”Access denied for user”的错误，然后客户端程序结束执行。</li>
+<li>如果用户名密码认证通过，连接器会到权限表里面查出你拥有的权限。之后，这个连接里面的权限判断逻辑，都将依赖于此时读到的权限。</li>
+</ul>
+<p>这就意味着，一个用户成功建立连接后，即使你用管理员账号对这个用户的权限做了修改，也不会影响已经存在连接的权限。修改完成后，只有再新建的连接才会使用新的权限设置。</p>
+<p>连接完成后，如果你没有后续的动作，这个连接就处于空闲状态，你可以在 show processlist 命令中看到它。文本中这个图是 show processlist 的结果，其中的 Command 列显示为“Sleep”的这一行，就表示现在系统里面有一个空闲连接。</p>
+<p>客户端如果太长时间没动静，连接器就会自动将它断开。这个时间是由参数 wait_timeout 控制的，默认值是 8 小时。</p>
+<p>如果在连接被断开之后，客户端再次发送请求的话，就会收到一个错误提醒： Lost connection to MySQL server during query。这时候如果你要继续，就需要重连，然后再执行请求了。</p>
+<p>数据库里面，长连接是指连接成功后，如果客户端持续有请求，则一直使用同一个连接。短连接则是指每次执行完很少的几次查询就断开连接，下次查询再重新建立一个。</p>
+<p>建立连接的过程通常是比较复杂的，所以我建议你在使用中要尽量减少建立连接的动作，也就是尽量使用长连接。</p>
+<p>但是全部使用长连接后，你可能会发现，有些时候 MySQL 占用内存涨得特别快，这是因为 MySQL 在执行过程中临时使用的内存是管理在连接对象里面的。这些资源会在连接断开的时候才释放。所以如果长连接累积下来，可能导致内存占用太大，被系统强行杀掉（OOM），从现象看就是 MySQL 异常重启了。</p>
+<p>怎么解决这个问题呢？你可以考虑以下两种方案。</p>
+<ol>
+<li>定期断开长连接。使用一段时间，或者程序里面判断执行过一个占用内存的大查询后，断开连接，之后要查询再重连。</li>
+<li>如果你用的是 MySQL 5.7 或更新版本，可以在每次执行一个比较大的操作后，通过执行 mysql_reset_connection 来重新初始化连接资源。这个过程不需要重连和重新做权限验证，但是会将连接恢复到刚刚创建完时的状态。</li>
+</ol>
+<h3 id="2-查询缓存"><a href="#2-查询缓存" class="headerlink" title="2. 查询缓存"></a>2. 查询缓存</h3><p>连接建立完成后，你就可以执行 select 语句了。执行逻辑就会来到第二步：查询缓存。<br>MySQL 拿到一个查询请求后，会先到查询缓存看看，之前是不是执行过这条语句。之前执行过的语句及其结果可能会以 key-value 对的形式，被直接缓存在内存中。key 是查询的语句，value 是查询的结果。如果你的查询能够直接在这个缓存中找到 key，那么这个 value 就会被直接返回给客户端。<br>如果语句不在查询缓存中，就会继续后面的执行阶段。执行完成后，执行结果会被存入查询缓存中。你可以看到，如果查询命中缓存，MySQL 不需要执行后面的复杂操作，就可以直接返回结果，这个效率会很高。</p>
+<p>但是大多数情况下我会建议你不要使用查询缓存，为什么呢？因为查询缓存往往弊大于利。</p>
+<p>查询缓存的失效非常频繁，只要有对一个表的更新，这个表上所有的查询缓存都会被清空。因此很可能你费劲地把结果存起来，还没使用呢，就被一个更新全清空了。对于更新压力大的数据库来说，查询缓存的命中率会非常低。除非你的业务就是有一张静态表，很长时间才会更新一次。比如，一个系统配置表，那这张表上的查询才适合使用查询缓存。</p>
+<p>好在 MySQL 也提供了这种“按需使用”的方式。你可以将参数 query_cache_type 设置成 DEMAND，这样对于默认的 SQL 语句都不使用查询缓存。而对于你确定要使用查询缓存的语句，可以用 SQL_CACHE 显式指定，像下面这个语句一样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select SQL_CACHE * from T where ID=10；</span><br></pre></td></tr></table></figure>
+<p>需要注意的是，MySQL 8.0 版本直接将查询缓存的整块功能删掉了，也就是说 8.0 开始彻底没有这个功能了。</p>
+<h3 id="3-分析器"><a href="#3-分析器" class="headerlink" title="3. 分析器"></a>3. 分析器</h3><p>如果没有命中查询缓存，就要开始真正执行语句了。首先，MySQL 需要知道你要做什么，因此需要对 SQL 语句做解析。<br>分析器先会做“词法分析”。你输入的是由多个字符串和空格组成的一条 SQL 语句，MySQL 需要识别出里面的字符串分别是什么，代表什么。</p>
+<p>MySQL 从你输入的”select”这个关键字识别出来，这是一个查询语句。它也要把字符串“T”识别成“表名 T”，把字符串“ID”识别成“列 ID”。</p>
+<p>做完了这些识别以后，就要做“语法分析”。根据词法分析的结果，语法分析器会根据语法规则，判断你输入的这个 SQL 语句是否满足 MySQL 语法。</p>
+<p>如果你的语句不对，就会收到“You have an error in your SQL syntax”的错误提醒，比如下面这个语句 select 少打了开头的字母“s”。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; elect * from t where ID=1;</span><br><span class="line"></span><br><span class="line">ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &apos;elect * from t where ID=1&apos; at line 1</span><br></pre></td></tr></table></figure>
+<p>一般语法错误会提示第一个出现错误的位置，所以你要关注的是紧接“use near”的内容。</p>
+<h3 id="4-优化器"><a href="#4-优化器" class="headerlink" title="4. 优化器"></a>4. 优化器</h3><p>经过了分析器，MySQL 就知道你要做什么了。在开始执行之前，还要先经过优化器的处理。<br>优化器是在表里面有多个索引的时候，决定使用哪个索引；或者在一个语句有多表关联（join）的时候，决定各个表的连接顺序。比如你执行下面这样的语句，这个语句是执行两个表的 join：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from t1 join t2 using(ID)  where t1.c=10 and t2.d=20;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>既可以先从表 t1 里面取出 c=10 的记录的 ID 值，再根据 ID 值关联到表 t2，再判断 t2 里面 d 的值是否等于 20。</li>
+<li>也可以先从表 t2 里面取出 d=20 的记录的 ID 值，再根据 ID 值关联到 t1，再判断 t1 里面 c 的值是否等于 10。<br>这两种执行方法的逻辑结果是一样的，但是执行的效率会有不同，而优化器的作用就是决定选择使用哪一个方案。<br>优化器阶段完成后，这个语句的执行方案就确定下来了，然后进入执行器阶段。如果你还有一些疑问，比如优化器是怎么选择索引的，有没有可能选择错等等，没关系，我会在后面的文章中单独展开说明优化器的内容。</li>
+</ul>
+<h3 id="5-执行器"><a href="#5-执行器" class="headerlink" title="5. 执行器"></a>5. 执行器</h3><p>MySQL 通过分析器知道了你要做什么，通过优化器知道了该怎么做，于是就进入了执行器阶段，开始执行语句。<br>开始执行的时候，要先判断一下你对这个表 T 有没有执行查询的权限，如果没有，就会返回没有权限的错误，如下所示。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from T where ID=10;</span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">ERROR 1142 (42000): SELECT command denied to user &apos;b&apos;@&apos;localhost&apos; for table &apos;T&apos;</span><br></pre></td></tr></table></figure>
+<p>如果有权限，就打开表继续执行。打开表的时候，执行器就会根据表的引擎定义，去使用这个引擎提供的接口。<br>比如我们这个例子中的表 T 中，ID 字段没有索引，那么执行器的执行流程是这样的：</p>
+<ol>
+<li>调用 InnoDB 引擎接口取这个表的第一行，判断 ID 值是不是 10，如果不是则跳过，如果是则将这行存在结果集中；</li>
+<li>调用引擎接口取“下一行”，重复相同的判断逻辑，直到取到这个表的最后一行。</li>
+<li>执行器将上述遍历过程中所有满足条件的行组成的记录集作为结果集返回给客户端。</li>
+</ol>
+<p>至此，这个语句就执行完成了。</p>
+<p>对于有索引的表，执行的逻辑也差不多。第一次调用的是“取满足条件的第一行”这个接口，之后循环取“满足条件的下一行”这个接口，这些接口都是引擎中已经定义好的。</p>
+<p>你会在数据库的慢查询日志中看到一个 rows_examined 的字段，表示这个语句执行过程中扫描了多少行。这个值就是在执行器每次调用引擎获取数据行的时候累加的。</p>
+<p>在有些场景下，执行器调用一次，在引擎内部则扫描了多行，因此引擎扫描行数跟 rows_examined 并不是完全相同的。我们后面会专门有一篇文章来讲存储引擎的内部机制，里面会有详细的说明。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>今天我给你介绍了 MySQL 的逻辑架构，希望你对一个 SQL 语句完整执行流程的各个阶段有了一个初步的印象。由于篇幅的限制，我只是用一个查询的例子将各个环节过了一遍。如果你还对每个环节的展开细节存有疑问，也不用担心，后续在实战章节中我还会再提到它们。</p>
+<p>我给你留一个问题吧，如果表 T 中没有字段 k，而你执行了这个语句 select * from T where k=1, 那肯定是会报“不存在这个列”的错误： “Unknown column ‘k’ in ‘where clause’”。你觉得这个错误是在我们上面提到的哪个阶段报出来的呢？</p>
+<blockquote>
+<p>答案：分析器</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/12/cs/loadbalance/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/10/12/cs/loadbalance/" itemprop="url">loadbalance</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-12T16:56:16+08:00">
+                2018-10-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/分类/" itemprop="url" rel="index">
+                    <span itemprop="name">分类</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h1><p>当一台服务器的承受能力达到上限时，那么就需要多台服务器来组成集群，提升应用整体的吞吐量，那么这个时候就涉及到如何合理分配客户端请求到集群中不同的机器，这个过程就叫做负载均衡，当然这也是负载均衡要解决的问题。</p>
+<h3 id="实现："><a href="#实现：" class="headerlink" title="实现："></a>实现：</h3><p>模拟Ip列表：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">1</span> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">IpMap</span></span></span><br><span class="line"><span class="class"> 2 </span>&#123;</span><br><span class="line"> <span class="number">3</span>     <span class="comment">// 待路由的Ip列表，Key代表Ip，Value代表该Ip的权重</span></span><br><span class="line"> <span class="number">4</span>     <span class="keyword">public</span> <span class="keyword">static</span> HashMap&lt;String, Integer&gt; serverWeightMap = </span><br><span class="line"> <span class="number">5</span>             <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line"> <span class="number">6</span>     </span><br><span class="line"> <span class="number">7</span>     <span class="keyword">static</span></span><br><span class="line"> <span class="number">8</span>     &#123;</span><br><span class="line"> <span class="number">9</span>         serverWeightMap.put(<span class="string">"192.168.1.100"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">10</span>         serverWeightMap.put(<span class="string">"192.168.1.101"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">11</span>         <span class="comment">// 权重为4</span></span><br><span class="line"><span class="number">12</span>         serverWeightMap.put(<span class="string">"192.168.1.102"</span>, <span class="number">4</span>);</span><br><span class="line"><span class="number">13</span>         serverWeightMap.put(<span class="string">"192.168.1.103"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">14</span>         serverWeightMap.put(<span class="string">"192.168.1.104"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">15</span>         <span class="comment">// 权重为3</span></span><br><span class="line"><span class="number">16</span>         serverWeightMap.put(<span class="string">"192.168.1.105"</span>, <span class="number">3</span>);</span><br><span class="line"><span class="number">17</span>         serverWeightMap.put(<span class="string">"192.168.1.106"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">18</span>         <span class="comment">// 权重为2</span></span><br><span class="line"><span class="number">19</span>         serverWeightMap.put(<span class="string">"192.168.1.107"</span>, <span class="number">2</span>);</span><br><span class="line"><span class="number">20</span>         serverWeightMap.put(<span class="string">"192.168.1.108"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">21</span>         serverWeightMap.put(<span class="string">"192.168.1.109"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">22</span>         serverWeightMap.put(<span class="string">"192.168.1.110"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">23</span>     &#125;</span><br><span class="line"><span class="number">24</span> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>轮询（Round Robin）法<br>轮询法即Round Robin法，其代码实现大致如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">1</span> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RoundRobin</span></span></span><br><span class="line"><span class="class"> 2 </span>&#123;</span><br><span class="line"> <span class="number">3</span>     <span class="keyword">private</span> <span class="keyword">static</span> Integer pos = <span class="number">0</span>;</span><br><span class="line"> <span class="number">4</span>     </span><br><span class="line"> <span class="number">5</span>     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getServer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> 6     </span>&#123;</span><br><span class="line"> <span class="number">7</span>         <span class="comment">// 重建一个Map，避免服务器的上下线导致的并发问题</span></span><br><span class="line"> <span class="number">8</span>         Map&lt;String, Integer&gt; serverMap = </span><br><span class="line"> <span class="number">9</span>                 <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line"><span class="number">10</span>         serverMap.putAll(IpMap.serverWeightMap);</span><br><span class="line"><span class="number">11</span>         </span><br><span class="line"><span class="number">12</span>         <span class="comment">// 取得Ip地址List</span></span><br><span class="line"><span class="number">13</span>         Set&lt;String&gt; keySet = serverMap.keySet();</span><br><span class="line"><span class="number">14</span>         ArrayList&lt;String&gt; keyList = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"><span class="number">15</span>         keyList.addAll(keySet);</span><br><span class="line"><span class="number">16</span>         </span><br><span class="line"><span class="number">17</span>         String server = <span class="keyword">null</span>;</span><br><span class="line"><span class="number">18</span>         <span class="keyword">synchronized</span> (pos)</span><br><span class="line"><span class="number">19</span>         &#123;</span><br><span class="line"><span class="number">20</span>             <span class="keyword">if</span> (pos &gt;= keySet.size())</span><br><span class="line"><span class="number">21</span>                 pos = <span class="number">0</span>;</span><br><span class="line"><span class="number">22</span>             server = keyList.get(pos);</span><br><span class="line"><span class="number">23</span>             pos ++;</span><br><span class="line"><span class="number">24</span>         &#125;</span><br><span class="line"><span class="number">25</span>         </span><br><span class="line"><span class="number">26</span>         <span class="keyword">return</span> server;</span><br><span class="line"><span class="number">27</span>     &#125;</span><br><span class="line"><span class="number">28</span> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>由于serverWeightMap中的地址列表是动态的，随时可能有机器上线、下线或者宕机，因此为了避免可能出现的并发问题，方法内部要新建局部变量serverMap，现将serverMap中的内容复制到线程本地，以避免被多个线程修改。这样可能会引入新的问题，复制以后serverWeightMap的修改无法反映给serverMap，也就是说这一轮选择服务器的过程中，新增服务器或者下线服务器，负载均衡算法将无法获知。新增无所谓，如果有服务器下线或者宕机，那么可能会访问到不存在的地址。因此，服务调用端需要有相应的容错处理，比如重新发起一次server选择并调用。<br>对于当前轮询的位置变量pos，为了保证服务器选择的顺序性，需要在操作时对其加锁，使得同一时刻只能有一个线程可以修改pos的值，否则当pos变量被并发修改，则无法保证服务器选择的顺序性，甚至有可能导致keyList数组越界。<br>轮询法的优点在于：试图做到请求转移的绝对均衡。<br>轮询法的缺点在于：为了做到请求转移的绝对均衡，必须付出相当大的代价，因为为了保证pos变量修改的互斥性，需要引入重量级的悲观锁synchronized，这将会导致该段轮询代码的并发吞吐量发生明显的下降。</p>
+<p>随机（Random）法<br>通过系统随机函数，根据后端服务器列表的大小值来随机选择其中一台进行访问。由概率统计理论可以得知，随着调用量的增大，其实际效果越来越接近于平均分配流量到每一台后端服务器，也就是轮询的效果。<br>随机法的代码实现大致如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">1</span> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Random</span></span></span><br><span class="line"><span class="class"> 2 </span>&#123;</span><br><span class="line"> <span class="number">3</span>     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getServer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> 4     </span>&#123;</span><br><span class="line"> <span class="number">5</span>         <span class="comment">// 重建一个Map，避免服务器的上下线导致的并发问题</span></span><br><span class="line"> <span class="number">6</span>         Map&lt;String, Integer&gt; serverMap = </span><br><span class="line"> <span class="number">7</span>                 <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line"> <span class="number">8</span>         serverMap.putAll(IpMap.serverWeightMap);</span><br><span class="line"> <span class="number">9</span>         </span><br><span class="line"><span class="number">10</span>         <span class="comment">// 取得Ip地址List</span></span><br><span class="line"><span class="number">11</span>         Set&lt;String&gt; keySet = serverMap.keySet();</span><br><span class="line"><span class="number">12</span>         ArrayList&lt;String&gt; keyList = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"><span class="number">13</span>         keyList.addAll(keySet);</span><br><span class="line"><span class="number">14</span>         </span><br><span class="line"><span class="number">15</span>         java.util.Random random = <span class="keyword">new</span> java.util.Random();</span><br><span class="line"><span class="number">16</span>         <span class="keyword">int</span> randomPos = random.nextInt(keyList.size());</span><br><span class="line"><span class="number">17</span>         </span><br><span class="line"><span class="number">18</span>         <span class="keyword">return</span> keyList.get(randomPos);</span><br><span class="line"><span class="number">19</span>     &#125;</span><br><span class="line"><span class="number">20</span> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>整体代码思路和轮询法一致，先重建serverMap，再获取到server列表。在选取server的时候，通过Random的nextInt方法取0~keyList.size()区间的一个随机值，从而从服务器列表中随机获取到一台服务器地址进行返回。基于概率统计的理论，吞吐量越大，随机算法的效果越接近于轮询算法的效果。</p>
+<p>源地址哈希（Hash）法<br>源地址哈希的思想是获取客户端访问的IP地址值，通过哈希函数计算得到一个数值，用该数值对服务器列表的大小进行取模运算，得到的结果便是要访问的服务器的序号。源地址哈希算法的代码实现大致如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">1</span> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Hash</span></span></span><br><span class="line"><span class="class"> 2 </span>&#123;</span><br><span class="line"> <span class="number">3</span>     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getServer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> 4     </span>&#123;</span><br><span class="line"> <span class="number">5</span>         <span class="comment">// 重建一个Map，避免服务器的上下线导致的并发问题</span></span><br><span class="line"> <span class="number">6</span>         Map&lt;String, Integer&gt; serverMap = </span><br><span class="line"> <span class="number">7</span>                 <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line"> <span class="number">8</span>         serverMap.putAll(IpMap.serverWeightMap);</span><br><span class="line"> <span class="number">9</span>         </span><br><span class="line"><span class="number">10</span>         <span class="comment">// 取得Ip地址List</span></span><br><span class="line"><span class="number">11</span>         Set&lt;String&gt; keySet = serverMap.keySet();</span><br><span class="line"><span class="number">12</span>         ArrayList&lt;String&gt; keyList = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"><span class="number">13</span>         keyList.addAll(keySet);</span><br><span class="line"><span class="number">14</span>         </span><br><span class="line"><span class="number">15</span>         <span class="comment">// 在Web应用中可通过HttpServlet的getRemoteIp方法获取</span></span><br><span class="line"><span class="number">16</span>         String remoteIp = <span class="string">"127.0.0.1"</span>;</span><br><span class="line"><span class="number">17</span>         <span class="keyword">int</span> hashCode = remoteIp.hashCode();</span><br><span class="line"><span class="number">18</span>         <span class="keyword">int</span> serverListSize = keyList.size();</span><br><span class="line"><span class="number">19</span>         <span class="keyword">int</span> serverPos = hashCode % serverListSize;</span><br><span class="line"><span class="number">20</span>         </span><br><span class="line"><span class="number">21</span>         <span class="keyword">return</span> keyList.get(serverPos);</span><br><span class="line"><span class="number">22</span>     &#125;</span><br><span class="line"><span class="number">23</span> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>前两部分和轮询法、随机法一样就不说了，差别在于路由选择部分。通过客户端的ip也就是remoteIp，取得它的Hash值，对服务器列表的大小取模，结果便是选用的服务器在服务器列表中的索引值。<br>源地址哈希法的优点在于：保证了相同客户端IP地址将会被哈希到同一台后端服务器，直到后端服务器列表变更。根据此特性可以在服务消费者与服务提供者之间建立有状态的session会话。<br>源地址哈希算法的缺点在于：除非集群中服务器的非常稳定，基本不会上下线，否则一旦有服务器上线、下线，那么通过源地址哈希算法路由到的服务器是服务器上线、下线前路由到的服务器的概率非常低，如果是session则取不到session，如果是缓存则可能引发”雪崩”。如果这么解释不适合明白，可以看我之前的一篇文章MemCache超详细解读，一致性Hash算法部分。</p>
+<p>加权轮询（Weight Round Robin）法<br>不同的服务器可能机器配置和当前系统的负载并不相同，因此它们的抗压能力也不尽相同，给配置高、负载低的机器配置更高的权重，让其处理更多的请求，而低配置、高负载的机器，则给其分配较低的权重，降低其系统负载。加权轮询法可以很好地处理这一问题，并将请求顺序按照权重分配到后端。加权轮询法的代码实现大致如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">1</span> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeightRoundRobin</span></span></span><br><span class="line"><span class="class"> 2 </span>&#123;</span><br><span class="line"> <span class="number">3</span>     <span class="keyword">private</span> <span class="keyword">static</span> Integer pos;</span><br><span class="line"> <span class="number">4</span>     </span><br><span class="line"> <span class="number">5</span>     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getServer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> 6     </span>&#123;</span><br><span class="line"> <span class="number">7</span>         <span class="comment">// 重建一个Map，避免服务器的上下线导致的并发问题</span></span><br><span class="line"> <span class="number">8</span>         Map&lt;String, Integer&gt; serverMap = </span><br><span class="line"> <span class="number">9</span>                 <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line"><span class="number">10</span>         serverMap.putAll(IpMap.serverWeightMap);</span><br><span class="line"><span class="number">11</span>         </span><br><span class="line"><span class="number">12</span>         <span class="comment">// 取得Ip地址List</span></span><br><span class="line"><span class="number">13</span>         Set&lt;String&gt; keySet = serverMap.keySet();</span><br><span class="line"><span class="number">14</span>         Iterator&lt;String&gt; iterator = keySet.iterator();</span><br><span class="line"><span class="number">15</span>         </span><br><span class="line"><span class="number">16</span>         List&lt;String&gt; serverList = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"><span class="number">17</span>         <span class="keyword">while</span> (iterator.hasNext())</span><br><span class="line"><span class="number">18</span>         &#123;</span><br><span class="line"><span class="number">19</span>             String server = iterator.next();</span><br><span class="line"><span class="number">20</span>             <span class="keyword">int</span> weight = serverMap.get(server);</span><br><span class="line"><span class="number">21</span>             <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; weight; i++)</span><br><span class="line"><span class="number">22</span>                 serverList.add(server);</span><br><span class="line"><span class="number">23</span>         &#125;</span><br><span class="line"><span class="number">24</span>         </span><br><span class="line"><span class="number">25</span>         String server = <span class="keyword">null</span>;</span><br><span class="line"><span class="number">26</span>         <span class="keyword">synchronized</span> (pos)</span><br><span class="line"><span class="number">27</span>         &#123;</span><br><span class="line"><span class="number">28</span>             <span class="keyword">if</span> (pos &gt; keySet.size())</span><br><span class="line"><span class="number">29</span>                 pos = <span class="number">0</span>;</span><br><span class="line"><span class="number">30</span>             server = serverList.get(pos);</span><br><span class="line"><span class="number">31</span>             pos ++;</span><br><span class="line"><span class="number">32</span>         &#125;</span><br><span class="line"><span class="number">33</span>         </span><br><span class="line"><span class="number">34</span>         <span class="keyword">return</span> server;</span><br><span class="line"><span class="number">35</span>     &#125;</span><br><span class="line"><span class="number">36</span> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>与轮询法类似，只是在获取服务器地址之前增加了一段权重计算的代码，根据权重的大小，将地址重复地增加到服务器地址列表中，权重越大，该服务器每轮所获得的请求数量越多。</p>
+<p>加权随机（Weight Random）法<br>与加权轮询法类似，加权随机法也是根据后端服务器不同的配置和负载情况来配置不同的权重。不同的是，它是按照权重来随机选择服务器的，而不是顺序。加权随机法的代码实现如下：<br> <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeightRandom</span></span></span><br><span class="line"><span class="class"> 2 </span>&#123;</span><br><span class="line"> <span class="number">3</span>     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getServer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> 4     </span>&#123;</span><br><span class="line"> <span class="number">5</span>         <span class="comment">// 重建一个Map，避免服务器的上下线导致的并发问题</span></span><br><span class="line"> <span class="number">6</span>         Map&lt;String, Integer&gt; serverMap = </span><br><span class="line"> <span class="number">7</span>                 <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line"> <span class="number">8</span>         serverMap.putAll(IpMap.serverWeightMap);</span><br><span class="line"> <span class="number">9</span>         </span><br><span class="line"><span class="number">10</span>         <span class="comment">// 取得Ip地址List</span></span><br><span class="line"><span class="number">11</span>         Set&lt;String&gt; keySet = serverMap.keySet();</span><br><span class="line"><span class="number">12</span>         Iterator&lt;String&gt; iterator = keySet.iterator();</span><br><span class="line"><span class="number">13</span>         </span><br><span class="line"><span class="number">14</span>         List&lt;String&gt; serverList = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"><span class="number">15</span>         <span class="keyword">while</span> (iterator.hasNext())</span><br><span class="line"><span class="number">16</span>         &#123;</span><br><span class="line"><span class="number">17</span>             String server = iterator.next();</span><br><span class="line"><span class="number">18</span>             <span class="keyword">int</span> weight = serverMap.get(server);</span><br><span class="line"><span class="number">19</span>             <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; weight; i++)</span><br><span class="line"><span class="number">20</span>                 serverList.add(server);</span><br><span class="line"><span class="number">21</span>         &#125;</span><br><span class="line"><span class="number">22</span>         </span><br><span class="line"><span class="number">23</span>         java.util.Random random = <span class="keyword">new</span> java.util.Random();</span><br><span class="line"><span class="number">24</span>         <span class="keyword">int</span> randomPos = random.nextInt(serverList.size());</span><br><span class="line"><span class="number">25</span>         </span><br><span class="line"><span class="number">26</span>         <span class="keyword">return</span> serverList.get(randomPos);</span><br><span class="line"><span class="number">27</span>     &#125;</span><br><span class="line"><span class="number">28</span> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>这段代码相当于是随机法和加权轮询法的结合，比较好理解，就不解释了。</p>
+<p>最小连接数（Least Connections）法<br>前面几种方法费尽心思来实现服务消费者请求次数分配的均衡，当然这么做是没错的，可以为后端的多台服务器平均分配工作量，最大程度地提高服务器的利用率，但是实际情况是否真的如此？实际情况中，请求次数的均衡真的能代表负载的均衡吗？这是一个值得思考的问题。<br>上面的问题，再换一个角度来说就是：以后端服务器的视角来观察系统的负载，而非请求发起方来观察。最小连接数法便属于此类。<br>最小连接数算法比较灵活和智能，由于后端服务器的配置不尽相同，对于请求的处理有快有慢，它正是根据后端服务器当前的连接情况，动态地选取其中当前积压连接数最少的一台服务器来处理当前请求，尽可能地提高后端服务器的利用效率，将负载合理地分流到每一台机器。由于最小连接数设计服务器连接数的汇总和感知，设计与实现较为繁琐，此处就不说它的实现了。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/26/golang/go-standard-library-intro/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/26/golang/go-standard-library-intro/" itemprop="url">go-standard-library-intro</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-26T20:00:02+08:00">
+                2018-09-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/go/" itemprop="url" rel="index">
+                    <span itemprop="name">go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="简图"><a href="#简图" class="headerlink" title="简图"></a>简图</h1><p><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fvn6xqiuk6j21b80undos.jpg" alt=""></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/20/distributed/mapreduce-intro/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/20/distributed/mapreduce-intro/" itemprop="url">mapreduce-intro</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-20T20:50:28+08:00">
+                2018-09-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/分布式/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1-什么是MapReduce？"><a href="#1-什么是MapReduce？" class="headerlink" title="1 什么是MapReduce？"></a>1 什么是MapReduce？</h1><p>　　Map本意可以理解为地图，映射（面向对象语言都有Map集合），这里我们可以理解为从现实世界获得或产生映射。Reduce本意是减少的意思，这里我们可以理解为归并前面Map产生的映射。</p>
+<h1 id="2-MapReduce的编程模型"><a href="#2-MapReduce的编程模型" class="headerlink" title="2 MapReduce的编程模型"></a>2 MapReduce的编程模型</h1><p>　　按照google的MapReduce论文所说的，MapReduce的编程模型的原理是：利用一个输入key/value对集合来产生一个输出的key/value对集合。MapReduce库的用户用两个函数表达这个计算：Map和Reduce。用户自定义的Map函数接受一个输入的key/value对值，然后产生一个中间key/value对值的集合。MapReduce库把所有具有相同中间key值的中间value值集合在一起后传递给Reduce函数。用户自定义的Reduce函数接受一个中间key的值和相关的一个value值的集合。Reduce函数合并这些value值，形成一个较小的value值的集合。</p>
+<h1 id="3-MapReduce实现"><a href="#3-MapReduce实现" class="headerlink" title="3 MapReduce实现"></a>3 MapReduce实现</h1><p>　　通过将Map调用的输入数据自动分割为M个数据片段的集合，Map调用被分布到多台机器上执行。输入的数据片段能够在不同的机器上并行处理。使用分区函数将Map调用产生的中间key值分成R个不同分区（例如，hash(key) mod R），Reduce调用也被分布到多台机器上执行。分区数量（R）和分区函数由用户来指定。</p>
+<p>　　MapReduce实现的大概过程如下：</p>
+<p>　　1.用户程序首先调用的MapReduce库将输入文件分成M个数据片度，每个数据片段的大小一般从16MB到64MB(可以通过可选的参数来控制每个数据片段的大小)。然后用户程序在集群中创建大量的程序副本。</p>
+<p>　　2.这些程序副本中的有一个特殊的程序master。副本中其它的程序都是worker程序，由master分配任务。有M个Map任务和R个Reduce任务将被分配，master将一个Map任务或Reduce任务分配给一个空闲的worker。 </p>
+<p>　　3.被分配了map任务的worker程序读取相关的输入数据片段，从输入的数据片段中解析出key/value对，然后把key/value对传递给用户自定义的Map函数，由Map函数生成并输出的中间key/value对，并缓存在内存中。 </p>
+<p>　　4.缓存中的key/value对通过分区函数分成R个区域，之后周期性的写入到本地磁盘上，会产生R个临时文件。缓存的key/value对在本地磁盘上的存储位置将被回传给master，由master负责把这些存储位置再传送给Reduce worker。 </p>
+<p>　　5.当Reduce worker程序接收到master程序发来的数据存储位置信息后，使用RPC从Map worker所在主机的磁盘上读取这些缓存数据。当Reduce worker读取了所有的中间数据（这个时候所有的Map任务都执行完了）后，通过对key进行排序后使得具有相同key值的数据聚合在一起。由于许多不同的key值会映射到相同的Reduce任务上，因此必须进行排序。如果中间数据太大无法在内存中完成排序，那么就要在外部进行排序。 </p>
+<p>　　6.Reduce worker程序遍历排序后的中间数据，对于每一个唯一的中间key值，Reduce worker程序将这个key值和它相关的中间value值的集合（这个集合是由Reduce worker产生的，它存放的是同一个key对应的value值）传递给用户自定义的Reduce函数。Reduce函数的输出被追加到所属分区的输出文件。 </p>
+<p>　　上面过程中的排序很容易理解，关键是分区，这一步最终决定该键值对未来会交给哪个reduce任务，如统计单词出现的次数可以用前面说的hash(key) mod R来分区，如果是对数据进行排序则应该根据key的分布进行分区。</p>
+<p>图1 MapReduce过程<br><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fvgargrvu2j20cs0k7dgf.jpg" alt=""></p>
+<h1 id="4-例子"><a href="#4-例子" class="headerlink" title="4 例子"></a>4 例子</h1><p>　　假设我们需要处理一批有关天气的数据，其格式如下： 按照ASCII码存储，每行一条记录，每一行字符从0开始计数，第15个到第18个字符为年，第25个到第29个字符为温度，其中第25位是符号+/-，现在需要统计出每年的最高温度。</p>
+<p>　　0067011990999991950051507+0000+<br>　　0043011990999991950051512+0022+<br>　　0043011990999991950051518-0011+<br>　　0043012650999991949032412+0111+<br>　　0043012650999991949032418+0078+<br>　　0067011990999991937051507+0001+<br>　　0043011990999991937051512-0002+<br>　　0043011990999991945051518+0001+<br>　　0043012650999991945032412+0002+<br>　　0043012650999991945032418+0078+ </p>
+<p>　　MapReduce主要包括两个步骤：Map和Reduce 每一步都有key/value对作为输入和输出： </p>
+<p>　　Map阶段的key/value对的格式是由输入的格式所决定的，如果是默认的TextInputFormat，则每行作为一个记录进程处理，其中key为此行的开头相对于文件的起始位置，value就是此行的字符文本，Map阶段的输出的key/value对的格式必须同Reduce阶段的输入key/value对的格式相对应</p>
+<p>　　对于上面的例子，在map过程，输入的key-value对如下：<br>　　(0 ,0067011990999991950051507+0000+)<br>　　(1 ,0043011990999991950051512+0022+)<br>　　(2 ,0043011990999991950051518-0011+)<br>　　(3 ,0043012650999991949032412+0111+)<br>　　(4 ,0043012650999991949032418+0078+)<br>　　(5 ,0067011990999991937051507+0001+)<br>　　(6 ,0043011990999991937051512-0002+)<br>　　(7 ,0043011990999991945051518+0001+)<br>　　(8 ,0043012650999991945032412+0002+)<br>　　(9 ,0043012650999991945032418+0078+) </p>
+<p>　　将上面的数据作为用户编写的map函数的输入，通过对每一行字符串的解析，得到年/温度的key/value对作为输出：<br>　　(1950, 0)<br>　　(1950, 22)<br>　　(1950, -11)<br>　　(1949, 111)<br>　　(1949, 78)<br>　　(1937, 1)<br>　　(1937, -2)<br>　　(1945, 1)<br>　　(1945, 2)<br>　　(1945, 78) </p>
+<p>　　在Reduce过程，将map过程中的输出，按照相同的key将value放到同一个列表中作为用户写的reduce函数的输入<br>　　(1950, [0, 22, –11])<br>　　(1949, [111, 78])<br>　　(1937, [1, -2])<br>　　(1945, [1, 2, 78]) </p>
+<p>　　在Reduce过程中，在列表中选择出最大的温度，将年/最大温度的key/value作为输出：<br>　　(1950, 22)<br>　　(1949, 111)<br>　　(1937, 1)<br>　　(1945, 78) </p>
+<p>　　其逻辑过程可用如下图表示：<br><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fvgarwkdo0j20hw03zjt4.jpg" alt=""></p>
+<p> 参考：</p>
+<p><a href="http://desert3.iteye.com/blog/865243" target="_blank" rel="noopener">http://desert3.iteye.com/blog/865243</a></p>
+<p><a href="http://www.cnblogs.com/duguguiyu/archive/2009/02/28/1400278.html" target="_blank" rel="noopener">http://www.cnblogs.com/duguguiyu/archive/2009/02/28/1400278.html</a></p>
+<p><a href="http://www.cnblogs.com/MitiskySean/p/3320451.html" target="_blank" rel="noopener">http://www.cnblogs.com/MitiskySean/p/3320451.html</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/19/tool/git-cheatcheet/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/19/tool/git-cheatcheet/" itemprop="url">git cheatcheet</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-19T16:12:32+08:00">
+                2018-09-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/tool/" itemprop="url" rel="index">
+                    <span itemprop="name">tool</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="简图"><a href="#简图" class="headerlink" title="简图"></a>简图</h1><p><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fwy5q46d3lj215k10nabc.jpg" alt=""></p>
+<h1 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">git add . //ga</span><br><span class="line">git status //gs</span><br><span class="line">git diff //gd</span><br><span class="line">git commit -m &quot;desc&quot; //gcm</span><br><span class="line">git push //gp</span><br><span class="line">git checkout -b feature/comment //gcb</span><br><span class="line">git pull origin master //gpom</span><br></pre></td></tr></table></figure>
+<h2 id="偶尔用到"><a href="#偶尔用到" class="headerlink" title="偶尔用到"></a>偶尔用到</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git push --set-upstream origin dev_2 </span><br><span class="line">git stash</span><br><span class="line">git log</span><br><span class="line">git cherry-pick xxx</span><br><span class="line">git init</span><br><span class="line">git clone</span><br></pre></td></tr></table></figure>
+<h3 id="很少用到"><a href="#很少用到" class="headerlink" title="很少用到"></a>很少用到</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name &quot;muName&quot;</span><br><span class="line">git config --global user.email &quot;myEmail&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="GET-NEW-THING"><a href="#GET-NEW-THING" class="headerlink" title="GET NEW THING"></a>GET NEW THING</h3><h4 id="比对-diff"><a href="#比对-diff" class="headerlink" title="比对 diff"></a>比对 diff</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># 显示暂存区和工作区的代码差异</span><br><span class="line">$ git diff</span><br><span class="line"></span><br><span class="line"># 显示暂存区和上一个commit的差异</span><br><span class="line">$ git diff --cached [file]</span><br><span class="line"></span><br><span class="line"># 显示工作区与当前分支最新commit之间的差异</span><br><span class="line">$ git diff HEAD</span><br><span class="line">git diff HEAD^ 比对当前内容和倒数第二次提交。</span><br><span class="line"></span><br><span class="line"># 显示两次提交之间的差异</span><br><span class="line">$ git diff [first-branch]...[second-branch]</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 从暂存区移除一个文件</span><br><span class="line">git rm file</span><br><span class="line"># 从暂存区移除所有文件</span><br><span class="line">git reset .</span><br></pre></td></tr></table></figure>
+<h4 id="rebase-变基【为了提交好看】"><a href="#rebase-变基【为了提交好看】" class="headerlink" title="rebase 变基【为了提交好看】"></a>rebase 变基【为了提交好看】</h4><h4 id="gitnore"><a href="#gitnore" class="headerlink" title="gitnore"></a>gitnore</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">filename  //递归 忽略当前目录下所有包含此文件名的文件</span><br><span class="line">dir/      //递归 忽略目录和子目录 </span><br><span class="line">!filename //递归 不忽略文件名</span><br></pre></td></tr></table></figure>
+<h3 id="存储"><a href="#存储" class="headerlink" title="存储"></a>存储</h3><p><img src="https://ws1.sinaimg.cn/large/e5320b2aly1g210qd00udj20l20h6do5.jpg" alt=""></p>
+<ul>
+<li>commit</li>
+<li>tree</li>
+<li>blob</li>
+</ul>
+<p>差异存储，后面的可以引用前面的blob和tree</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/19/golang/go-bytes-Buffer/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/19/golang/go-bytes-Buffer/" itemprop="url">go-bytes.Buffer</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-19T15:46:07+08:00">
+                2018-09-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/go/" itemprop="url" rel="index">
+                    <span itemprop="name">go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="bytes-Buffer"><a href="#bytes-Buffer" class="headerlink" title="bytes.Buffer"></a>bytes.Buffer</h1><h2 id="java-StringBuilder"><a href="#java-StringBuilder" class="headerlink" title="java StringBuilder"></a>java StringBuilder</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">StringBuilder sb = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">sb.append(<span class="string">"hello"</span>);</span><br><span class="line">sb.append(<span class="string">",world"</span>);</span><br><span class="line">System.out.println(sb.toString());</span><br></pre></td></tr></table></figure>
+<h2 id="go-bytes-Buffer"><a href="#go-bytes-Buffer" class="headerlink" title="go bytes.Buffer"></a>go bytes.Buffer</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> bb bytes.Buffer</span><br><span class="line">bb.WriteString(<span class="string">"["</span>)</span><br><span class="line">bb.WriteString(<span class="string">"]"</span>)</span><br><span class="line">fmt.Println(bb.String())</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/19/tool/vscode使用/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/19/tool/vscode使用/" itemprop="url">常用工具使用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-19T14:29:54+08:00">
+                2018-09-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/tool/" itemprop="url" rel="index">
+                    <span itemprop="name">tool</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h1><ol>
+<li>轻量</li>
+<li>可以直接打开文件夹&amp;文件</li>
+<li>可以安装各种插件</li>
+</ol>
+<h1 id="常用配置"><a href="#常用配置" class="headerlink" title="常用配置"></a>常用配置</h1><h3 id="主题"><a href="#主题" class="headerlink" title="主题"></a>主题</h3><p>atom one dark</p>
+<h3 id="文件图标"><a href="#文件图标" class="headerlink" title="文件图标"></a>文件图标</h3><p>vscode icons/nomo dark icon theme</p>
+<h3 id="键盘map"><a href="#键盘map" class="headerlink" title="键盘map"></a>键盘map</h3><p>intellij idea keybindings 插件</p>
+<h3 id="插件"><a href="#插件" class="headerlink" title="插件"></a>插件</h3><h4 id="原始快捷键"><a href="#原始快捷键" class="headerlink" title="原始快捷键"></a>原始快捷键</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">alt shift 下  向下复制一行</span><br><span class="line"></span><br><span class="line">cmd enter 强行下一行</span><br><span class="line"></span><br><span class="line">alt shift F 格式化代码</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">cmd F 查找/替换</span><br><span class="line"></span><br><span class="line">cmd + 放大</span><br><span class="line"></span><br><span class="line">F12 转到定义</span><br><span class="line"></span><br><span class="line">ctrl 斜点 打开控制台</span><br><span class="line"></span><br><span class="line">ctrl - 回退</span><br><span class="line"></span><br><span class="line">ctrl+shift+-前进</span><br><span class="line"></span><br><span class="line">alt+shift+选择 竖行选择</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/19/golang/go-踩坑点/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/19/golang/go-踩坑点/" itemprop="url">go-踩坑点</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-19T10:53:27+08:00">
+                2018-09-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/go/" itemprop="url" rel="index">
+                    <span itemprop="name">go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="go遇到的一些问题"><a href="#go遇到的一些问题" class="headerlink" title="go遇到的一些问题"></a>go遇到的一些问题</h1><h3 id="chan关闭之后，还可以读写吗？"><a href="#chan关闭之后，还可以读写吗？" class="headerlink" title="chan关闭之后，还可以读写吗？"></a>chan关闭之后，还可以读写吗？</h3><blockquote>
+<p>不能写，但可以读<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;fmt&quot;</span><br><span class="line">	&quot;sync&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	var ret = make(chan []int, 1000)</span><br><span class="line">	var wg = sync.WaitGroup&#123;&#125;</span><br><span class="line">	wg.Add(3)</span><br><span class="line">	go func() &#123;</span><br><span class="line">		defer wg.Done()</span><br><span class="line">		var result = make([]int, 0)</span><br><span class="line">		for i := 0; i &lt; 10; i++ &#123;</span><br><span class="line">			result = append(result, i)</span><br><span class="line">		&#125;</span><br><span class="line">		ret &lt;- result</span><br><span class="line">	&#125;()</span><br><span class="line">	go func() &#123;</span><br><span class="line">		defer wg.Done()</span><br><span class="line">		var result = make([]int, 0)</span><br><span class="line">		for i := 10; i &lt; 20; i++ &#123;</span><br><span class="line">			result = append(result, i)</span><br><span class="line">		&#125;</span><br><span class="line">		ret &lt;- result</span><br><span class="line">	&#125;()</span><br><span class="line">	go func() &#123;</span><br><span class="line">		defer wg.Done()</span><br><span class="line">		var result = make([]int, 0)</span><br><span class="line">		for i := 20; i &lt; 30; i++ &#123;</span><br><span class="line">			result = append(result, i)</span><br><span class="line">		&#125;</span><br><span class="line">		ret &lt;- result</span><br><span class="line">	&#125;()</span><br><span class="line">	wg.Wait()</span><br><span class="line">	//go func() &#123;</span><br><span class="line">	//	for &#123;</span><br><span class="line">	//		ret &lt;- []int&#123;1&#125;</span><br><span class="line">	//		time.Sleep(time.Second)</span><br><span class="line">	//	&#125;</span><br><span class="line">	//&#125;()</span><br><span class="line">	//close(ret)</span><br><span class="line">	for v := range ret &#123; //0 range if v==0 break ,or panic</span><br><span class="line">		for _, v := range v &#123;</span><br><span class="line">			fmt.Println(v)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h3 id="并发获取数据，常见问题"><a href="#并发获取数据，常见问题" class="headerlink" title="并发获取数据，常见问题"></a>并发获取数据，常见问题</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">for _,v:=range uids&#123;</span><br><span class="line">	go func()&#123;</span><br><span class="line">    	fmt.Println(v)//v的值是一样的！</span><br><span class="line">    &#125;()</span><br><span class="line">&#125;</span><br><span class="line">==》</span><br><span class="line">for _,v:=range uids&#123;</span><br><span class="line">	go func(v int)&#123;</span><br><span class="line">    	fmt.Println(v)//v的值正常</span><br><span class="line">    &#125;(v)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/19/golang/go-通道channel/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/19/golang/go-通道channel/" itemprop="url">go-通道channel</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-19T10:52:42+08:00">
+                2018-09-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/go/" itemprop="url" rel="index">
+                    <span itemprop="name">go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="通道"><a href="#通道" class="headerlink" title="通道"></a>通道</h1><p>两种配合方式：</p>
+<ul>
+<li>range</li>
+<li>select</li>
+</ul>
+<h3 id="range-方式"><a href="#range-方式" class="headerlink" title="range 方式"></a>range 方式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//关闭之后会跳出循环</span><br><span class="line">for v:=range c&#123;</span><br><span class="line">	//todo</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="select-方式"><a href="#select-方式" class="headerlink" title="select 方式"></a>select 方式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for &#123;</span><br><span class="line">	select &#123;</span><br><span class="line">    	case val,ok:=&lt;-c:</span><br><span class="line">        	if !ok&#123;break&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Close-ch-含义"><a href="#Close-ch-含义" class="headerlink" title="Close(ch)含义"></a>Close(ch)含义</h3><p>给通道写了一个结束标识值，接收到这个值表示通道已经关闭，有这个值就不能再写入了，还可以继续读取，读取到这个值的时候就表示已经读取完了，通道为空了。</p>
+<h3 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h3><ul>
+<li><p>从一个nil channel中接收数据会一直被block。</p>
+</li>
+<li><p>从一个被close的channel中接收数据不会被阻塞，而是立即返回，接收完已发送的数据后会返回元素类型的零值(zero value)。</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//如果OK 是false，表明接收的x是产生的零值，这个channel被关闭了或者为空。</span><br><span class="line">//从这个关闭的channel中不但可以读取出已发送的数据，还可以不断的读取零值(使用range或者判断是否关闭可以跳出)</span><br><span class="line">x, ok := &lt;-ch</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/19/golang/go-文件io/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/19/golang/go-文件io/" itemprop="url">go-文件io</a></h1>
         
 
         <div class="post-meta">
@@ -440,840 +1851,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/19/1.stack/golang/go协程调度/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/19/1.stack/golang/go协程调度/" itemprop="url">go协程调度</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-19T10:34:08+08:00">
-                2018-09-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/go/" itemprop="url" rel="index">
-                    <span itemprop="name">go</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="go协程调度"><a href="#go协程调度" class="headerlink" title="go协程调度"></a>go协程调度</h3><h3 id="核心图"><a href="#核心图" class="headerlink" title="核心图"></a>核心图</h3><p><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fvenffzk2mj20lu0izq74.jpg" alt=""></p>
-<p><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fvenfxq3kpj20io0ao0w1.jpg" alt=""></p>
-<p><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fv6vtv5mjxj20fa0b4myk.jpg" alt=""></p>
-<p><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fv6vuds7fjj20zk0mxdgx.jpg" alt=""></p>
-<h3 id="G-P-M-模型调度"><a href="#G-P-M-模型调度" class="headerlink" title="G-P-M 模型调度"></a>G-P-M 模型调度</h3><p>Go调度器工作时会维护两种用来保存G的任务队列：一种是一个Global任务队列，一种是每个P维护的Local任务队列。</p>
-<p>当通过go关键字创建一个新的goroutine的时候，它会优先被放入P的本地队列。为了运行goroutine，M需要持有（绑定）一个P，接着M会启动一个OS线程，循环从P的本地队列里取出一个goroutine并执行。当然还有上文提及的 work-stealing调度算法：当M执行完了当前P的Local队列里的所有G后，P也不会就这么在那躺尸啥都不干，它会先尝试从Global队列寻找G来执行，如果Global队列为空，它会随机挑选另外一个P，从它的队列里中拿走一半的G到自己的队列中执行。</p>
-<p>如果一切正常，调度器会以上述的那种方式顺畅地运行，但这个世界没这么美好，总有意外发生，以下分析goroutine在两种例外情况下的行为。</p>
-<p>Go runtime会在下面的goroutine被阻塞的情况下运行另外一个goroutine：</p>
-<ul>
-<li>blocking syscall (for example opening a file)</li>
-<li>network input</li>
-<li>channel operations</li>
-<li>primitives in the sync package<br>这四种场景又可归类为两种类型：</li>
-</ul>
-<h3 id="用户态阻塞-唤醒"><a href="#用户态阻塞-唤醒" class="headerlink" title="用户态阻塞/唤醒"></a>用户态阻塞/唤醒</h3><p>当goroutine因为channel操作或者network I/O而阻塞时（实际上golang已经用netpoller实现了goroutine网络I/O阻塞不会导致M被阻塞，仅阻塞G，这里仅仅是举个栗子），对应的G会被放置到某个wait队列(如channel的waitq)，该G的状态由_Gruning变为_Gwaitting，而M会跳过该G尝试获取并执行下一个G，如果此时没有runnable的G供M运行，那么M将解绑P，并进入sleep状态；当阻塞的G被另一端的G2唤醒时（比如channel的可读/写通知），G被标记为runnable，尝试加入G2所在P的runnext，然后再是P的Local队列和Global队列。</p>
-<h3 id="系统调用阻塞"><a href="#系统调用阻塞" class="headerlink" title="系统调用阻塞"></a>系统调用阻塞</h3><p>当G被阻塞在某个系统调用上时，此时G会阻塞在_Gsyscall状态，M也处于 block on syscall 状态，此时的M可被抢占调度（可以抢占其他M）：执行该G的M会与P解绑，而P则尝试与其它idle的M绑定，继续执行其它G。如果没有其它idle的M，但P的Local队列中仍然有G需要执行，则创建一个新的M；当系统调用完成后，G会重新尝试获取一个idle的P进入它的Local队列恢复执行，如果没有idle的P，G会被标记为runnable加入到Global队列。（全局队列用武之地）</p>
-<p>以上就是从宏观的角度对Goroutine和它的调度器进行的一些概要性的介绍，当然，Go的调度中更复杂的抢占式调度、阻塞调度的更多细节，大家可以自行去找相关资料深入理解，本文只讲到Go调度器的基本调度过程，为后面自己实现一个Goroutine Pool提供理论基础，这里便不再继续深入上述说的那几个调度了，事实上如果要完全讲清楚Go调度器，一篇文章的篇幅也实在是捉襟见肘，所以想了解更多细节的同学可以去看看Go调度器 G-P-M 模型的设计者 Dmitry Vyukov 写的该模型的设计文档《Go Preemptive Scheduler Design》以及直接去看源码，G-P-M模型的定义放在src/runtime/runtime2.go里面，而调度过程则放在了src/runtime/proc.go里。</p>
-<h3 id="问题？"><a href="#问题？" class="headerlink" title="问题？"></a>问题？</h3><h4 id="0-go协程阻塞时如何进行调度？"><a href="#0-go协程阻塞时如何进行调度？" class="headerlink" title="0.go协程阻塞时如何进行调度？"></a>0.go协程阻塞时如何进行调度？</h4><blockquote>
-<p>在程序中任何对系统 API 的调用，都会被 runtime 层拦截来方便调度。<br>Goroutine 在 system call 和 channel call 时都可能发生阻塞，但这两种阻塞发生后，处理方式又不一样的。<br>1.当程序发生 system call，M 会发生阻塞，同时唤起（或创建）一个新的 M 继续执行其他的 G。当MO返回时，它必须尝试取得一个context P来运行goroutine，一般情况下，它会从其他的OS线程那里steal偷一个context过来，如果没有偷到的话，它就把goroutine放在一个global runqueue里，然后自己就去睡大觉了（放入线程缓存里）。Contexts们也会周期性的检查global runqueue，否则global runqueue上的goroutine永远无法执行。<br>2.当程序发起一个 channel call，程序可能会阻塞，但不会阻塞 M，G 的状态会设置为 waiting，M 继续执行其他的 G。当 G 的调用完成，会有一个可用的 M 继续执行它。</p>
-</blockquote>
-<h4 id="1-go为什么要实现自己的协程调度，而不用系统调度？"><a href="#1-go为什么要实现自己的协程调度，而不用系统调度？" class="headerlink" title="1.go为什么要实现自己的协程调度，而不用系统调度？"></a>1.go为什么要实现自己的协程调度，而不用系统调度？</h4><blockquote>
-<p>1.线程较多时，开销较大。<br>2.OS 的调度，程序不可控。而 Go GC 需要停止所有的线程，使内存达到一致状态。</p>
-</blockquote>
-<h4 id="2-GM为啥不行？P有什么作用？"><a href="#2-GM为啥不行？P有什么作用？" class="headerlink" title="2.GM为啥不行？P有什么作用？"></a>2.GM为啥不行？P有什么作用？</h4><blockquote>
-<p>1.每个 P 都有一个队列，用来存正在执行的 G。避免 Global Sched Lock。<br>2.每个 M 运行都需要一个 MCache 结构。M Pool 中通常有较多 M，但执行的只有几个，为每个池子中的每个 M 分配一个 MCache 则会形成不必要的浪费，通过把 cache 从 M 移到 P，每个运行的 M 都有关联的 P，这样只有运行的 M 才有自己的 MCache。</p>
-</blockquote>
-<h4 id="3-Goroutine-vs-OS-thread-有什么区别？"><a href="#3-Goroutine-vs-OS-thread-有什么区别？" class="headerlink" title="3.Goroutine vs OS thread 有什么区别？"></a>3.Goroutine vs OS thread 有什么区别？</h4><blockquote>
-<p>其实 goroutine 用到的就是线程池的技术，当 goroutine 需要执行时，会从 thread pool 中选出一个可用的 M 或者新建一个 M。而 thread pool 中如何选取线程，扩建线程，回收线程，Go Scheduler 进行了封装，对程序透明，只管调用就行，从而简化了 thread pool 的使用。</p>
-</blockquote>
-<h4 id="4-sysmon功能是什么？"><a href="#4-sysmon功能是什么？" class="headerlink" title="4.sysmon功能是什么？"></a>4.sysmon功能是什么？</h4><blockquote>
-<p>释放闲置超过5分钟的span物理内存；<br>如果超过2分钟没有垃圾回收，强制执行；<br>将长时间未处理的netpoll结果添加到任务队列；<br>向长时间运行的G任务发出抢占调度；<br>收回因syscall长时间阻塞的P；</p>
-</blockquote>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/21/1.stack/linux/linux/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/21/1.stack/linux/linux/" itemprop="url">linux 服务器常用命令整理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-21T21:24:15+08:00">
-                2018-07-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux/" itemprop="url" rel="index">
-                    <span itemprop="name">linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="linux-服务器常用命令整理"><a href="#linux-服务器常用命令整理" class="headerlink" title="linux 服务器常用命令整理"></a>linux 服务器常用命令整理</h1><h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><ul>
-<li><strong>网络分析 - tcpdump \ telnet \ (netstat \ ss \ lsof) \ nload</strong></li>
-<li><strong>网络传输 - scp \ rsync \ (rz \ sz) \ nc</strong></li>
-<li><strong>抓包工具 - charles</strong></li>
-<li><strong>内存检查 - free \ meminfo</strong></li>
-<li><strong>系统监控 - vmstat \ iostat \ top \ ps \ sar \ dstat</strong></li>
-<li><strong>系统调用追踪 - strace \ gcore</strong></li>
-<li><strong>文件相关 - find \ awk \ sed \ grep \ tail \ df \ du \ locate</strong></li>
-<li><strong>开发效率 - tmux</strong></li>
-</ul>
-<h3 id="常见命令"><a href="#常见命令" class="headerlink" title="常见命令"></a>常见命令</h3><h4 id="tcpdump"><a href="#tcpdump" class="headerlink" title="tcpdump"></a>tcpdump</h4><ol>
-<li>tcp:用来过滤数据报的类型</li>
-<li>-i eth1 : 只抓经过接口eth1的包</li>
-<li>-t : 不显示时间戳</li>
-<li>-s 0 : 抓取数据包时默认抓取长度为68字节, 加上-S 0 后可以抓到完整的数据包</li>
-<li>-c 100 : 只抓取100个数据包</li>
-<li>dst port !22: 不抓取目标端口是22数据包</li>
-<li>src net 10.99.184.0/24 : 数据包的源网络地址为10.99.184.0/24</li>
-<li>-A：显示数据包内容 </li>
-</ol>
-<p>示例：</p>
-<p><code>tcpdump -i any -v port 8888</code></p>
-<p><code>tcpdump -i any -A port 8888</code></p>
-<p>sudo tcpdump port 17280 -i lo0  -X</p>
-<p><img src="https://ws2.sinaimg.cn/large/006tNc79ly1fp6dysyqizj30lb08mt9e.jpg" alt=""></p>
-<p><img src="https://ws3.sinaimg.cn/large/006tNc79ly1fp6dzuovqqj30w6093jtc.jpg" alt=""></p>
-<h4 id="netstat"><a href="#netstat" class="headerlink" title="netstat"></a>netstat</h4><p>查看所有连接</p>
-<p><code>netstat -autnp</code></p>
-<p>查看监听的tcp服务</p>
-<p><code>netstat -altnp</code>  </p>
-<p>看tcp端口</p>
-<p><code>netstat -ltnp</code></p>
-<p><img src="https://ws2.sinaimg.cn/large/006tNc79ly1fp6e3o8h15j30ck090glz.jpg" alt=""></p>
-<h4 id="ss"><a href="#ss" class="headerlink" title="ss"></a>ss</h4><ul>
-<li><code>ss -pl</code>   查看每个进程及其监听的端口</li>
-<li><code>ss -t -a</code>  查看所有的tcp连接</li>
-<li><code>ss -u -a</code>  查看所有的udp连接</li>
-</ul>
-<h4 id="lsof"><a href="#lsof" class="headerlink" title="lsof"></a>lsof</h4><ul>
-<li><code>lsof -i :8888</code>  查看端口8888进程信息</li>
-<li><code>lsof -p 7915</code> 查看进程7915打开的fd信息</li>
-</ul>
-<h4 id="scp"><a href="#scp" class="headerlink" title="scp"></a>scp</h4><ul>
-<li><code>scp -r src remote:/tmp</code>  本地拷贝到远端</li>
-<li><code>scp -r remote:/tmp/src .</code>  远端拷贝到本地</li>
-<li><code>scp -3  remote:/tmp/a.tar   remote2:/tmp/</code>  以本地为跳板机，将remote机器上文件拷贝到remote2</li>
-</ul>
-<h4 id="rsync"><a href="#rsync" class="headerlink" title="rsync"></a>rsync</h4><ul>
-<li><code>rsync -av /home/mail/ 192.168.11.12:/home/mail/</code></li>
-<li><code>rsync -av 192.168.11.11:/home/mail/ /home/mail/</code></li>
-</ul>
-<h4 id="nc"><a href="#nc" class="headerlink" title="nc"></a>nc</h4><ul>
-<li><code>nc -l 8888</code>   本地启动8888端口</li>
-<li><code>nc -l 8888 &gt; a.tgz</code>   接收文件</li>
-<li><code>nc ali-a-bpc-userdevelop01.bj:8888   &lt; a.tgz</code> 发送文件到远端</li>
-</ul>
-<h4 id="vmstat"><a href="#vmstat" class="headerlink" title="vmstat"></a>vmstat</h4><ul>
-<li><code>vmstat 1 10</code>对内存监控，重点关注swpd、free、si、so。一般系统不繁忙的状态下，swpd、so的值不会持续很高，经常为0。如果swpd过高，那么就是系统内存经常不够用。</li>
-<li>对CPU监控，我们可以查看r（运行进程数）、us、sy、id（CPU空闲），如果r的数字大于系统CPU个数，则面临CPU不够用的危险，通过id分析，如果过小，则可以判断是CPU不足。</li>
-</ul>
-<p><img src="https://ws1.sinaimg.cn/large/006tNc79ly1fp6e824wffj30sg09vta7.jpg" alt=""></p>
-<h4 id="iostat"><a href="#iostat" class="headerlink" title="iostat"></a>iostat</h4><ul>
-<li><code>iostat -x</code> 一般情况下，%util应该越小越好，10%以下正常，30%IO比较繁忙。50%以上一般是有问题的</li>
-</ul>
-<p><img src="https://ws2.sinaimg.cn/large/006tNc79ly1fp6e8iekncj30sg05qgm6.jpg" alt=""></p>
-<h4 id="top"><a href="#top" class="headerlink" title="top"></a>top</h4><ul>
-<li>1  按CPU核数查看</li>
-<li>P</li>
-<li>M</li>
-<li>c 查看完整进程命令</li>
-<li>top -Hp pid  查看线程数</li>
-</ul>
-<h4 id="ps"><a href="#ps" class="headerlink" title="ps"></a>ps</h4><ul>
-<li><code>ps -eo “pid,cmd,lstart”  | grep pid</code>   查看进程启动时间</li>
-<li><code>ps -ef f</code>  查看最近进程（常用）</li>
-</ul>
-<h4 id="find"><a href="#find" class="headerlink" title="find"></a>find</h4><ul>
-<li><code>find . -type f -mtime +3</code>   修改时间大于3天的文件</li>
-<li><code>find . -type f -mtime +3 | xargs rm -rf</code>  查找并删除</li>
-</ul>
-<h4 id="du"><a href="#du" class="headerlink" title="du"></a>du</h4><ul>
-<li><code>du -sk * | sort -n | cut -f2 | xargs -d &#39;\n&#39; du -sh</code> 按文件大小排序显示</li>
-<li><code>du -hs</code> 常用</li>
-</ul>
-<h4 id="awk"><a href="#awk" class="headerlink" title="awk"></a>awk</h4><p><code>grep &#39;update_profile.*Android&#39; access-20180131.log |awk -F &#39;POST&#39; &#39;{print $2}&#39;|awk -F &#39;&amp;&#39; &#39;{print $26}&#39;|awk -F &#39; &#39; &#39;{print $1}&#39;|awk -F &#39;=&#39; &#39;{print $2}&#39;|sort -n|uniq -c|sort -nr|head -100</code></p>
-<p>-F 以空格分割</p>
-<h3 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"># xargs 使用</span><br><span class="line">//查询redis members里面的值</span><br><span class="line">redis-cli smembers myset|awk &apos;&#123;print $1&#125;&apos;|xargs -I &#123;&#125; redis-cli get &#123;&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="查看进程监听的端口"><a href="#查看进程监听的端口" class="headerlink" title="查看进程监听的端口"></a>查看进程监听的端口</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">查看程序对应进程号：ps –ef|grep 进程名</span><br><span class="line"></span><br><span class="line">REDHAT :查看进程号所占用的端口号：netstat –nltp|grep 进程号</span><br><span class="line"></span><br><span class="line">ubuntu:查看进程占用端口号：netstat -anp|grep pid</span><br><span class="line"></span><br><span class="line">Linux下查看端口号所使用的进程号：</span><br><span class="line"></span><br><span class="line">使用lsof命令： lsof –i:端口号</span><br><span class="line"></span><br><span class="line">vim 块注释</span><br><span class="line">ctrl+v</span><br><span class="line">选择</span><br><span class="line">大写I</span><br><span class="line">输入注释符号</span><br><span class="line">ESC 等一秒</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/21/2.book/booklist/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/21/2.book/booklist/" itemprop="url">0x 定一个目标</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-21T21:04:44+08:00">
-                2018-07-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/idea/" itemprop="url" rel="index">
-                    <span itemprop="name">idea</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="book列表"><a href="#book列表" class="headerlink" title="book列表"></a>book列表</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-todo</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/21/3.idea/定一个目标/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/21/3.idea/定一个目标/" itemprop="url">0x 定一个目标</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-21T21:04:44+08:00">
-                2018-07-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/idea/" itemprop="url" rel="index">
-                    <span itemprop="name">idea</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="计划"><a href="#计划" class="headerlink" title="计划"></a>计划</h1><p>好好写博客，把思想沉淀下来</p>
-<h2 id="短期计划"><a href="#短期计划" class="headerlink" title="短期计划"></a>短期计划</h2><ul>
-<li>每日一Page</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/19/4.method/method/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/07/19/4.method/method/" itemprop="url">method</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-19T16:12:06+08:00">
-                2018-07-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/todo/" itemprop="url" rel="index">
-                    <span itemprop="name">todo</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1317,7 +1899,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-count">53</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1328,7 +1910,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-count">30</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -1339,7 +1921,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-count">52</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

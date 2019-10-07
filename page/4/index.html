@@ -280,7 +280,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/12/1.stack/cs/loadbalance/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/22/docker_k8s/k8s入门/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="greyireland">
@@ -299,7 +299,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/10/12/1.stack/cs/loadbalance/" itemprop="url">loadbalance</a></h1>
+                <a class="post-title-link" href="/2019/02/22/docker_k8s/k8s入门/" itemprop="url">k8s入门</a></h1>
         
 
         <div class="post-meta">
@@ -311,8 +311,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-12T16:56:16+08:00">
-                2018-10-12
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-22T10:22:20+08:00">
+                2019-02-22
               </time>
             
 
@@ -334,8 +334,8 @@
               
               
                 <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/分类/" itemprop="url" rel="index">
-                    <span itemprop="name">分类</span>
+                  <a href="/categories/docker/" itemprop="url" rel="index">
+                    <span itemprop="name">docker</span>
                   </a>
                 </span>
 
@@ -373,19 +373,29 @@
       
         
           
-            <h1 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h1><p>当一台服务器的承受能力达到上限时，那么就需要多台服务器来组成集群，提升应用整体的吞吐量，那么这个时候就涉及到如何合理分配客户端请求到集群中不同的机器，这个过程就叫做负载均衡，当然这也是负载均衡要解决的问题。</p>
-<h3 id="实现："><a href="#实现：" class="headerlink" title="实现："></a>实现：</h3><p>模拟Ip列表：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">1</span> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">IpMap</span></span></span><br><span class="line"><span class="class"> 2 </span>&#123;</span><br><span class="line"> <span class="number">3</span>     <span class="comment">// 待路由的Ip列表，Key代表Ip，Value代表该Ip的权重</span></span><br><span class="line"> <span class="number">4</span>     <span class="keyword">public</span> <span class="keyword">static</span> HashMap&lt;String, Integer&gt; serverWeightMap = </span><br><span class="line"> <span class="number">5</span>             <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line"> <span class="number">6</span>     </span><br><span class="line"> <span class="number">7</span>     <span class="keyword">static</span></span><br><span class="line"> <span class="number">8</span>     &#123;</span><br><span class="line"> <span class="number">9</span>         serverWeightMap.put(<span class="string">"192.168.1.100"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">10</span>         serverWeightMap.put(<span class="string">"192.168.1.101"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">11</span>         <span class="comment">// 权重为4</span></span><br><span class="line"><span class="number">12</span>         serverWeightMap.put(<span class="string">"192.168.1.102"</span>, <span class="number">4</span>);</span><br><span class="line"><span class="number">13</span>         serverWeightMap.put(<span class="string">"192.168.1.103"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">14</span>         serverWeightMap.put(<span class="string">"192.168.1.104"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">15</span>         <span class="comment">// 权重为3</span></span><br><span class="line"><span class="number">16</span>         serverWeightMap.put(<span class="string">"192.168.1.105"</span>, <span class="number">3</span>);</span><br><span class="line"><span class="number">17</span>         serverWeightMap.put(<span class="string">"192.168.1.106"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">18</span>         <span class="comment">// 权重为2</span></span><br><span class="line"><span class="number">19</span>         serverWeightMap.put(<span class="string">"192.168.1.107"</span>, <span class="number">2</span>);</span><br><span class="line"><span class="number">20</span>         serverWeightMap.put(<span class="string">"192.168.1.108"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">21</span>         serverWeightMap.put(<span class="string">"192.168.1.109"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">22</span>         serverWeightMap.put(<span class="string">"192.168.1.110"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">23</span>     &#125;</span><br><span class="line"><span class="number">24</span> &#125;</span><br></pre></td></tr></table></figure></p>
-<p>轮询（Round Robin）法<br>轮询法即Round Robin法，其代码实现大致如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">1</span> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RoundRobin</span></span></span><br><span class="line"><span class="class"> 2 </span>&#123;</span><br><span class="line"> <span class="number">3</span>     <span class="keyword">private</span> <span class="keyword">static</span> Integer pos = <span class="number">0</span>;</span><br><span class="line"> <span class="number">4</span>     </span><br><span class="line"> <span class="number">5</span>     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getServer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> 6     </span>&#123;</span><br><span class="line"> <span class="number">7</span>         <span class="comment">// 重建一个Map，避免服务器的上下线导致的并发问题</span></span><br><span class="line"> <span class="number">8</span>         Map&lt;String, Integer&gt; serverMap = </span><br><span class="line"> <span class="number">9</span>                 <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line"><span class="number">10</span>         serverMap.putAll(IpMap.serverWeightMap);</span><br><span class="line"><span class="number">11</span>         </span><br><span class="line"><span class="number">12</span>         <span class="comment">// 取得Ip地址List</span></span><br><span class="line"><span class="number">13</span>         Set&lt;String&gt; keySet = serverMap.keySet();</span><br><span class="line"><span class="number">14</span>         ArrayList&lt;String&gt; keyList = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"><span class="number">15</span>         keyList.addAll(keySet);</span><br><span class="line"><span class="number">16</span>         </span><br><span class="line"><span class="number">17</span>         String server = <span class="keyword">null</span>;</span><br><span class="line"><span class="number">18</span>         <span class="keyword">synchronized</span> (pos)</span><br><span class="line"><span class="number">19</span>         &#123;</span><br><span class="line"><span class="number">20</span>             <span class="keyword">if</span> (pos &gt;= keySet.size())</span><br><span class="line"><span class="number">21</span>                 pos = <span class="number">0</span>;</span><br><span class="line"><span class="number">22</span>             server = keyList.get(pos);</span><br><span class="line"><span class="number">23</span>             pos ++;</span><br><span class="line"><span class="number">24</span>         &#125;</span><br><span class="line"><span class="number">25</span>         </span><br><span class="line"><span class="number">26</span>         <span class="keyword">return</span> server;</span><br><span class="line"><span class="number">27</span>     &#125;</span><br><span class="line"><span class="number">28</span> &#125;</span><br></pre></td></tr></table></figure></p>
-<p>由于serverWeightMap中的地址列表是动态的，随时可能有机器上线、下线或者宕机，因此为了避免可能出现的并发问题，方法内部要新建局部变量serverMap，现将serverMap中的内容复制到线程本地，以避免被多个线程修改。这样可能会引入新的问题，复制以后serverWeightMap的修改无法反映给serverMap，也就是说这一轮选择服务器的过程中，新增服务器或者下线服务器，负载均衡算法将无法获知。新增无所谓，如果有服务器下线或者宕机，那么可能会访问到不存在的地址。因此，服务调用端需要有相应的容错处理，比如重新发起一次server选择并调用。<br>对于当前轮询的位置变量pos，为了保证服务器选择的顺序性，需要在操作时对其加锁，使得同一时刻只能有一个线程可以修改pos的值，否则当pos变量被并发修改，则无法保证服务器选择的顺序性，甚至有可能导致keyList数组越界。<br>轮询法的优点在于：试图做到请求转移的绝对均衡。<br>轮询法的缺点在于：为了做到请求转移的绝对均衡，必须付出相当大的代价，因为为了保证pos变量修改的互斥性，需要引入重量级的悲观锁synchronized，这将会导致该段轮询代码的并发吞吐量发生明显的下降。</p>
-<p>随机（Random）法<br>通过系统随机函数，根据后端服务器列表的大小值来随机选择其中一台进行访问。由概率统计理论可以得知，随着调用量的增大，其实际效果越来越接近于平均分配流量到每一台后端服务器，也就是轮询的效果。<br>随机法的代码实现大致如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">1</span> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Random</span></span></span><br><span class="line"><span class="class"> 2 </span>&#123;</span><br><span class="line"> <span class="number">3</span>     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getServer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> 4     </span>&#123;</span><br><span class="line"> <span class="number">5</span>         <span class="comment">// 重建一个Map，避免服务器的上下线导致的并发问题</span></span><br><span class="line"> <span class="number">6</span>         Map&lt;String, Integer&gt; serverMap = </span><br><span class="line"> <span class="number">7</span>                 <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line"> <span class="number">8</span>         serverMap.putAll(IpMap.serverWeightMap);</span><br><span class="line"> <span class="number">9</span>         </span><br><span class="line"><span class="number">10</span>         <span class="comment">// 取得Ip地址List</span></span><br><span class="line"><span class="number">11</span>         Set&lt;String&gt; keySet = serverMap.keySet();</span><br><span class="line"><span class="number">12</span>         ArrayList&lt;String&gt; keyList = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"><span class="number">13</span>         keyList.addAll(keySet);</span><br><span class="line"><span class="number">14</span>         </span><br><span class="line"><span class="number">15</span>         java.util.Random random = <span class="keyword">new</span> java.util.Random();</span><br><span class="line"><span class="number">16</span>         <span class="keyword">int</span> randomPos = random.nextInt(keyList.size());</span><br><span class="line"><span class="number">17</span>         </span><br><span class="line"><span class="number">18</span>         <span class="keyword">return</span> keyList.get(randomPos);</span><br><span class="line"><span class="number">19</span>     &#125;</span><br><span class="line"><span class="number">20</span> &#125;</span><br></pre></td></tr></table></figure></p>
-<p>整体代码思路和轮询法一致，先重建serverMap，再获取到server列表。在选取server的时候，通过Random的nextInt方法取0~keyList.size()区间的一个随机值，从而从服务器列表中随机获取到一台服务器地址进行返回。基于概率统计的理论，吞吐量越大，随机算法的效果越接近于轮询算法的效果。</p>
-<p>源地址哈希（Hash）法<br>源地址哈希的思想是获取客户端访问的IP地址值，通过哈希函数计算得到一个数值，用该数值对服务器列表的大小进行取模运算，得到的结果便是要访问的服务器的序号。源地址哈希算法的代码实现大致如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">1</span> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Hash</span></span></span><br><span class="line"><span class="class"> 2 </span>&#123;</span><br><span class="line"> <span class="number">3</span>     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getServer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> 4     </span>&#123;</span><br><span class="line"> <span class="number">5</span>         <span class="comment">// 重建一个Map，避免服务器的上下线导致的并发问题</span></span><br><span class="line"> <span class="number">6</span>         Map&lt;String, Integer&gt; serverMap = </span><br><span class="line"> <span class="number">7</span>                 <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line"> <span class="number">8</span>         serverMap.putAll(IpMap.serverWeightMap);</span><br><span class="line"> <span class="number">9</span>         </span><br><span class="line"><span class="number">10</span>         <span class="comment">// 取得Ip地址List</span></span><br><span class="line"><span class="number">11</span>         Set&lt;String&gt; keySet = serverMap.keySet();</span><br><span class="line"><span class="number">12</span>         ArrayList&lt;String&gt; keyList = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"><span class="number">13</span>         keyList.addAll(keySet);</span><br><span class="line"><span class="number">14</span>         </span><br><span class="line"><span class="number">15</span>         <span class="comment">// 在Web应用中可通过HttpServlet的getRemoteIp方法获取</span></span><br><span class="line"><span class="number">16</span>         String remoteIp = <span class="string">"127.0.0.1"</span>;</span><br><span class="line"><span class="number">17</span>         <span class="keyword">int</span> hashCode = remoteIp.hashCode();</span><br><span class="line"><span class="number">18</span>         <span class="keyword">int</span> serverListSize = keyList.size();</span><br><span class="line"><span class="number">19</span>         <span class="keyword">int</span> serverPos = hashCode % serverListSize;</span><br><span class="line"><span class="number">20</span>         </span><br><span class="line"><span class="number">21</span>         <span class="keyword">return</span> keyList.get(serverPos);</span><br><span class="line"><span class="number">22</span>     &#125;</span><br><span class="line"><span class="number">23</span> &#125;</span><br></pre></td></tr></table></figure></p>
-<p>前两部分和轮询法、随机法一样就不说了，差别在于路由选择部分。通过客户端的ip也就是remoteIp，取得它的Hash值，对服务器列表的大小取模，结果便是选用的服务器在服务器列表中的索引值。<br>源地址哈希法的优点在于：保证了相同客户端IP地址将会被哈希到同一台后端服务器，直到后端服务器列表变更。根据此特性可以在服务消费者与服务提供者之间建立有状态的session会话。<br>源地址哈希算法的缺点在于：除非集群中服务器的非常稳定，基本不会上下线，否则一旦有服务器上线、下线，那么通过源地址哈希算法路由到的服务器是服务器上线、下线前路由到的服务器的概率非常低，如果是session则取不到session，如果是缓存则可能引发”雪崩”。如果这么解释不适合明白，可以看我之前的一篇文章MemCache超详细解读，一致性Hash算法部分。</p>
-<p>加权轮询（Weight Round Robin）法<br>不同的服务器可能机器配置和当前系统的负载并不相同，因此它们的抗压能力也不尽相同，给配置高、负载低的机器配置更高的权重，让其处理更多的请求，而低配置、高负载的机器，则给其分配较低的权重，降低其系统负载。加权轮询法可以很好地处理这一问题，并将请求顺序按照权重分配到后端。加权轮询法的代码实现大致如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">1</span> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeightRoundRobin</span></span></span><br><span class="line"><span class="class"> 2 </span>&#123;</span><br><span class="line"> <span class="number">3</span>     <span class="keyword">private</span> <span class="keyword">static</span> Integer pos;</span><br><span class="line"> <span class="number">4</span>     </span><br><span class="line"> <span class="number">5</span>     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getServer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> 6     </span>&#123;</span><br><span class="line"> <span class="number">7</span>         <span class="comment">// 重建一个Map，避免服务器的上下线导致的并发问题</span></span><br><span class="line"> <span class="number">8</span>         Map&lt;String, Integer&gt; serverMap = </span><br><span class="line"> <span class="number">9</span>                 <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line"><span class="number">10</span>         serverMap.putAll(IpMap.serverWeightMap);</span><br><span class="line"><span class="number">11</span>         </span><br><span class="line"><span class="number">12</span>         <span class="comment">// 取得Ip地址List</span></span><br><span class="line"><span class="number">13</span>         Set&lt;String&gt; keySet = serverMap.keySet();</span><br><span class="line"><span class="number">14</span>         Iterator&lt;String&gt; iterator = keySet.iterator();</span><br><span class="line"><span class="number">15</span>         </span><br><span class="line"><span class="number">16</span>         List&lt;String&gt; serverList = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"><span class="number">17</span>         <span class="keyword">while</span> (iterator.hasNext())</span><br><span class="line"><span class="number">18</span>         &#123;</span><br><span class="line"><span class="number">19</span>             String server = iterator.next();</span><br><span class="line"><span class="number">20</span>             <span class="keyword">int</span> weight = serverMap.get(server);</span><br><span class="line"><span class="number">21</span>             <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; weight; i++)</span><br><span class="line"><span class="number">22</span>                 serverList.add(server);</span><br><span class="line"><span class="number">23</span>         &#125;</span><br><span class="line"><span class="number">24</span>         </span><br><span class="line"><span class="number">25</span>         String server = <span class="keyword">null</span>;</span><br><span class="line"><span class="number">26</span>         <span class="keyword">synchronized</span> (pos)</span><br><span class="line"><span class="number">27</span>         &#123;</span><br><span class="line"><span class="number">28</span>             <span class="keyword">if</span> (pos &gt; keySet.size())</span><br><span class="line"><span class="number">29</span>                 pos = <span class="number">0</span>;</span><br><span class="line"><span class="number">30</span>             server = serverList.get(pos);</span><br><span class="line"><span class="number">31</span>             pos ++;</span><br><span class="line"><span class="number">32</span>         &#125;</span><br><span class="line"><span class="number">33</span>         </span><br><span class="line"><span class="number">34</span>         <span class="keyword">return</span> server;</span><br><span class="line"><span class="number">35</span>     &#125;</span><br><span class="line"><span class="number">36</span> &#125;</span><br></pre></td></tr></table></figure></p>
-<p>与轮询法类似，只是在获取服务器地址之前增加了一段权重计算的代码，根据权重的大小，将地址重复地增加到服务器地址列表中，权重越大，该服务器每轮所获得的请求数量越多。</p>
-<p>加权随机（Weight Random）法<br>与加权轮询法类似，加权随机法也是根据后端服务器不同的配置和负载情况来配置不同的权重。不同的是，它是按照权重来随机选择服务器的，而不是顺序。加权随机法的代码实现如下：<br> <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeightRandom</span></span></span><br><span class="line"><span class="class"> 2 </span>&#123;</span><br><span class="line"> <span class="number">3</span>     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getServer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> 4     </span>&#123;</span><br><span class="line"> <span class="number">5</span>         <span class="comment">// 重建一个Map，避免服务器的上下线导致的并发问题</span></span><br><span class="line"> <span class="number">6</span>         Map&lt;String, Integer&gt; serverMap = </span><br><span class="line"> <span class="number">7</span>                 <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line"> <span class="number">8</span>         serverMap.putAll(IpMap.serverWeightMap);</span><br><span class="line"> <span class="number">9</span>         </span><br><span class="line"><span class="number">10</span>         <span class="comment">// 取得Ip地址List</span></span><br><span class="line"><span class="number">11</span>         Set&lt;String&gt; keySet = serverMap.keySet();</span><br><span class="line"><span class="number">12</span>         Iterator&lt;String&gt; iterator = keySet.iterator();</span><br><span class="line"><span class="number">13</span>         </span><br><span class="line"><span class="number">14</span>         List&lt;String&gt; serverList = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"><span class="number">15</span>         <span class="keyword">while</span> (iterator.hasNext())</span><br><span class="line"><span class="number">16</span>         &#123;</span><br><span class="line"><span class="number">17</span>             String server = iterator.next();</span><br><span class="line"><span class="number">18</span>             <span class="keyword">int</span> weight = serverMap.get(server);</span><br><span class="line"><span class="number">19</span>             <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; weight; i++)</span><br><span class="line"><span class="number">20</span>                 serverList.add(server);</span><br><span class="line"><span class="number">21</span>         &#125;</span><br><span class="line"><span class="number">22</span>         </span><br><span class="line"><span class="number">23</span>         java.util.Random random = <span class="keyword">new</span> java.util.Random();</span><br><span class="line"><span class="number">24</span>         <span class="keyword">int</span> randomPos = random.nextInt(serverList.size());</span><br><span class="line"><span class="number">25</span>         </span><br><span class="line"><span class="number">26</span>         <span class="keyword">return</span> serverList.get(randomPos);</span><br><span class="line"><span class="number">27</span>     &#125;</span><br><span class="line"><span class="number">28</span> &#125;</span><br></pre></td></tr></table></figure></p>
-<p>这段代码相当于是随机法和加权轮询法的结合，比较好理解，就不解释了。</p>
-<p>最小连接数（Least Connections）法<br>前面几种方法费尽心思来实现服务消费者请求次数分配的均衡，当然这么做是没错的，可以为后端的多台服务器平均分配工作量，最大程度地提高服务器的利用率，但是实际情况是否真的如此？实际情况中，请求次数的均衡真的能代表负载的均衡吗？这是一个值得思考的问题。<br>上面的问题，再换一个角度来说就是：以后端服务器的视角来观察系统的负载，而非请求发起方来观察。最小连接数法便属于此类。<br>最小连接数算法比较灵活和智能，由于后端服务器的配置不尽相同，对于请求的处理有快有慢，它正是根据后端服务器当前的连接情况，动态地选取其中当前积压连接数最少的一台服务器来处理当前请求，尽可能地提高后端服务器的利用效率，将负载合理地分流到每一台机器。由于最小连接数设计服务器连接数的汇总和感知，设计与实现较为繁琐，此处就不说它的实现了。</p>
+            <h1 id="docker-虚拟化实现"><a href="#docker-虚拟化实现" class="headerlink" title="docker 虚拟化实现"></a>docker 虚拟化实现</h1><p>隔离是怎么实现的？</p>
+<ul>
+<li>namespace 进程隔离，名称映射【障眼法】</li>
+<li>Cgroups 限制进程使用资源，限制一个进程组能够使用的资源上限，包括 CPU、内存、磁盘、网络带宽等。此外还可以对进程进行优先级设置、审计、进程挂起和恢复。<br>cgroup示例：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"># 配置相关文件</span><br><span class="line">$ mount -t cgroup </span><br><span class="line">cpuset on /sys/fs/cgroup/cpuset type cgroup (rw,nosuid,nodev,noexec,relatime,cpuset)</span><br><span class="line">cpu on /sys/fs/cgroup/cpu type cgroup (rw,nosuid,nodev,noexec,relatime,cpu)</span><br><span class="line">cpuacct on /sys/fs/cgroup/cpuacct type cgroup (rw,nosuid,nodev,noexec,relatime,cpuacct)</span><br><span class="line">blkio on /sys/fs/cgroup/blkio type cgroup (rw,nosuid,nodev,noexec,relatime,blkio)</span><br><span class="line">memory on /sys/fs/cgroup/memory type cgroup (rw,nosuid,nodev,noexec,relatime,memory)</span><br><span class="line"></span><br><span class="line">1. 创建一个cgroup配置</span><br><span class="line">root@ubuntu:/sys/fs/cgroup/cpu$ mkdir container</span><br><span class="line">root@ubuntu:/sys/fs/cgroup/cpu$ ls container/</span><br><span class="line">cgroup.clone_children cpu.cfs_period_us cpu.rt_period_us  cpu.shares notify_on_release</span><br><span class="line">cgroup.procs      cpu.cfs_quota_us  cpu.rt_runtime_us cpu.stat  tasks</span><br><span class="line"></span><br><span class="line">2. 执行脚本，进程号226，top 查看CPU占用100%</span><br><span class="line">$ while : ; do : ; done &amp;</span><br><span class="line">[1] 226</span><br><span class="line">因为默认配置，quota为-1没有限制，period默认为100ms(100000us)：</span><br><span class="line">$ cat /sys/fs/cgroup/cpu/container/cpu.cfs_quota_us </span><br><span class="line">-1</span><br><span class="line">$ cat /sys/fs/cgroup/cpu/container/cpu.cfs_period_us </span><br><span class="line">100000</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">3. 向container组的cfs_quota写入20000us</span><br><span class="line">$ echo 20000 &gt; /sys/fs/cgroup/cpu/container/cpu.cfs_quota_us</span><br><span class="line">意味着这个进程只是用20%CPU</span><br><span class="line"></span><br><span class="line">4. 然后写入被限制的进程PID，使用top查看CPU占用20%了</span><br><span class="line">$ echo 226 &gt; /sys/fs/cgroup/cpu/container/tasks </span><br><span class="line"></span><br><span class="line"># docker运行容器时可以指定参数</span><br><span class="line">$ docker run -it --cpu-period=100000 --cpu-quota=20000 ubuntu /bin/bash</span><br><span class="line">$ cat /sys/fs/cgroup/cpu/docker/5d5c9f67d/cpu.cfs_period_us </span><br><span class="line">100000</span><br><span class="line">$ cat /sys/fs/cgroup/cpu/docker/5d5c9f67d/cpu.cfs_quota_us </span><br><span class="line">20000</span><br><span class="line">说明这个容器只能占用20%的CPU</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="mount-namespace"><a href="#mount-namespace" class="headerlink" title="mount namespace"></a>mount namespace</h3><p>挂载新的路径作为容器的根路径 rootfs<br>核心流程：<br>1.弃用linux namespace 2.指定cgroups参数 3.切换进程的根目录</p>
+<h1 id="QA"><a href="#QA" class="headerlink" title="QA"></a>QA</h1><ol>
+<li><p>docker 和KVM虚拟机区别？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- docker本身不占用资源，KVM本身占用200M内存</span><br><span class="line">- KVM虚拟化拦截，性能有损耗，docker直接使用宿主机的进程，性能更好</span><br><span class="line">- docker隔离不是很彻底，linux内核中很多对象和资源是不能被namespace化，如时间 宿主机改了容器也会改</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>容器是一个单进程吗？</p>
+</li>
+</ol>
+<blockquote>
+<p>是，一个容器本质就是一个进程，用户的应用进程实际上就是容器里PID为1的进程，也是后续创建的进程的父进程。所以没办法在一个容器运行两个不同的应用。</p>
+</blockquote>
+<ol start="3">
+<li>解决容器类top查看到宿主机信息问题？</li>
+</ol>
+<blockquote>
+<p>top是从/proc下面获取数据的，所以把宿主机的 /var/lib/lxcfs/proc/<em> 文件挂载到容器的/proc/</em> 就可以通过lxcfs读取到对应容器的内存，CPU等限制</p>
+</blockquote>
 
           
         
@@ -434,7 +444,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/09/5.plan/road-map/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/21/docker_k8s/docker命令/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="greyireland">
@@ -453,7 +463,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/10/09/5.plan/road-map/" itemprop="url">road map</a></h1>
+                <a class="post-title-link" href="/2019/02/21/docker_k8s/docker命令/" itemprop="url">docker命令</a></h1>
         
 
         <div class="post-meta">
@@ -465,8 +475,435 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-09T17:06:58+08:00">
-                2018-10-09
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-21T20:40:22+08:00">
+                2019-02-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/categories/" itemprop="url" rel="index">
+                    <span itemprop="name">categories</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Docker使用："><a href="#Docker使用：" class="headerlink" title="Docker使用："></a>Docker使用：</h1><h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><h3 id="容器生命周期管理"><a href="#容器生命周期管理" class="headerlink" title="容器生命周期管理"></a>容器生命周期管理</h3><ul>
+<li><a href="http://www.runoob.com/docker/docker-run-command.html" target="_blank" rel="noopener">run</a></li>
+<li><a href="http://www.runoob.com/docker/docker-start-stop-restart-command.html" target="_blank" rel="noopener">start/stop/restart</a></li>
+<li><a href="http://www.runoob.com/docker/docker-kill-command.html" target="_blank" rel="noopener">kill</a> 向容器发送信号</li>
+<li><a href="http://www.runoob.com/docker/docker-rm-command.html" target="_blank" rel="noopener">rm</a> 常见combo是：stop x;rm x ;build x;run x</li>
+<li><a href="http://www.runoob.com/docker/docker-pause-unpause-command.html" target="_blank" rel="noopener">pause/unpause</a></li>
+<li><a href="http://www.runoob.com/docker/docker-create-command.html" target="_blank" rel="noopener">create</a></li>
+<li><a href="http://www.runoob.com/docker/docker-exec-command.html" target="_blank" rel="noopener">exec</a> 在运行的容器中执行命令</li>
+</ul>
+<h3 id="容器操作"><a href="#容器操作" class="headerlink" title="容器操作"></a>容器操作</h3><ul>
+<li><a href="http://www.runoob.com/docker/docker-ps-command.html" target="_blank" rel="noopener">ps</a> 显示容器</li>
+<li><a href="http://www.runoob.com/docker/docker-inspect-command.html" target="_blank" rel="noopener">inspect</a> 获取容器/镜像的元数据。返回json格式的数据</li>
+<li><a href="http://www.runoob.com/docker/docker-top-command.html" target="_blank" rel="noopener">top</a> 查看容器中的进程信息</li>
+<li><a href="http://www.runoob.com/docker/docker-attach-command.html" target="_blank" rel="noopener">attach</a> <strong>:</strong>连接到正在运行中的容器。</li>
+<li><a href="http://www.runoob.com/docker/docker-events-command.html" target="_blank" rel="noopener">events</a> docker相关的事件</li>
+<li><a href="http://www.runoob.com/docker/docker-logs-command.html" target="_blank" rel="noopener">logs</a> 应该是打印到stdout上的日志吧！！！</li>
+<li><a href="http://www.runoob.com/docker/docker-wait-command.html" target="_blank" rel="noopener">wait</a></li>
+<li><a href="http://www.runoob.com/docker/docker-export-command.html" target="_blank" rel="noopener">export</a></li>
+<li><a href="http://www.runoob.com/docker/docker-port-command.html" target="_blank" rel="noopener">port</a> 显示容器的端口映射</li>
+</ul>
+<h3 id="容器rootfs命令"><a href="#容器rootfs命令" class="headerlink" title="容器rootfs命令"></a>容器rootfs命令</h3><ul>
+<li><a href="http://www.runoob.com/docker/docker-commit-command.html" target="_blank" rel="noopener">commit</a> 类似git commit 一样修改之后保存新版本docker commit -m “commit test” uuu fuiboom/myubuntu:v1 给运行的容器创建一个新的保存镜像（一般常用Dockerfile和build来构建镜像）</li>
+<li><a href="http://www.runoob.com/docker/docker-cp-command.html" target="_blank" rel="noopener">cp</a> 容器与主机的数据拷贝</li>
+<li><a href="http://www.runoob.com/docker/docker-diff-command.html" target="_blank" rel="noopener">diff</a> 显示容器文件结构的改变（显示自己改了什么东西）</li>
+</ul>
+<h3 id="镜像仓库"><a href="#镜像仓库" class="headerlink" title="镜像仓库"></a>镜像仓库</h3><ul>
+<li><a href="http://www.runoob.com/docker/docker-login-command.html" target="_blank" rel="noopener">login</a></li>
+<li><a href="http://www.runoob.com/docker/docker-pull-command.html" target="_blank" rel="noopener">pull</a> 拉取别人已经配置好的环境（非常好用的命令）</li>
+<li><a href="http://www.runoob.com/docker/docker-push-command.html" target="_blank" rel="noopener">push</a> push自己的镜像，（需要登录）</li>
+<li><a href="http://www.runoob.com/docker/docker-search-command.html" target="_blank" rel="noopener">search</a></li>
+</ul>
+<h3 id="本地镜像管理"><a href="#本地镜像管理" class="headerlink" title="本地镜像管理"></a>本地镜像管理</h3><ul>
+<li><a href="http://www.runoob.com/docker/docker-images-command.html" target="_blank" rel="noopener">images</a> </li>
+<li><a href="http://www.runoob.com/docker/docker-rmi-command.html" target="_blank" rel="noopener">rmi</a> 移除本地image(不然占用本地磁盘空间)</li>
+<li><a href="http://www.runoob.com/docker/docker-tag-command.html" target="_blank" rel="noopener">tag</a> 创建一个镜像的引用docker tag SOURCE_IMAGE[:TAG] TARGET_IMAGE[:TAG] </li>
+</ul>
+<blockquote>
+<p>docker tag mysql_client_test fuiboom/mysql_client_test 把官方的改造重新命名一下就可以push</p>
+<p>docker push fuiboom/mysql_client_test</p>
+</blockquote>
+<ul>
+<li><a href="http://www.runoob.com/docker/docker-build-command.html" target="_blank" rel="noopener">build</a> 根据Dockerfile创建一个镜像</li>
+<li><a href="http://www.runoob.com/docker/docker-history-command.html" target="_blank" rel="noopener">history</a> 显示构建容器的历史数据</li>
+<li><a href="http://www.runoob.com/docker/docker-save-command.html" target="_blank" rel="noopener">save</a> save和load搭配</li>
+<li><a href="http://www.runoob.com/docker/docker-import-command.html" target="_blank" rel="noopener">import</a> export和import搭配</li>
+</ul>
+<h3 id="info-version"><a href="#info-version" class="headerlink" title="info|version"></a>info|version</h3><ul>
+<li><a href="http://www.runoob.com/docker/docker-info-command.html" target="_blank" rel="noopener">info</a></li>
+<li><a href="http://www.runoob.com/docker/docker-version-command.html" target="_blank" rel="noopener">version</a></li>
+</ul>
+<h3 id="docker-run-创建一个新的容器并运行一个命令"><a href="#docker-run-创建一个新的容器并运行一个命令" class="headerlink" title="docker run 创建一个新的容器并运行一个命令"></a>docker run 创建一个新的容器并运行一个命令</h3><h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run [OPTIONS] IMAGE [COMMAND] [ARG...]</span><br></pre></td></tr></table></figure>
+<p>OPTIONS说明：</p>
+<ul>
+<li><strong>-a stdin:</strong> 指定标准输入输出内容类型，可选 STDIN/STDOUT/STDERR 三项；</li>
+<li><strong>-d:</strong> 后台运行容器，并返回容器ID；</li>
+<li><strong>-i:</strong> 以交互模式运行容器，通常与 -t 同时使用；</li>
+<li><strong>-t:</strong> 为容器重新分配一个伪输入终端，通常与 -i 同时使用；</li>
+<li><strong>–name=”nginx-lb”:</strong> 为容器指定一个名称；</li>
+<li><strong>–dns 8.8.8.8:</strong> 指定容器使用的DNS服务器，默认和宿主一致；</li>
+<li><strong>–dns-search example.com:</strong> 指定容器DNS搜索域名，默认和宿主一致；</li>
+<li><strong>-h “mars”:</strong> 指定容器的hostname；</li>
+<li><strong>-e username=”ritchie”:</strong> 设置环境变量；</li>
+<li><strong>–env-file=[]:</strong> 从指定文件读入环境变量；</li>
+<li><strong>–cpuset=”0-2” or –cpuset=”0,1,2”:</strong> 绑定容器到指定CPU运行；</li>
+<li><strong>-m :</strong>设置容器使用内存最大值；</li>
+<li><strong>–net=”bridge”:</strong> 指定容器的网络连接类型，支持 bridge/host/none/container: 四种类型；</li>
+<li><strong>–link=[]:</strong> 添加链接到另一个容器；</li>
+<li><strong>–expose=[]:</strong> 开放一个端口或一组端口；</li>
+<li>-P 大P使用expose的端口映射到主机的随机端口（感觉不好，还是自己指定比较好）</li>
+</ul>
+<h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><p>使用docker镜像nginx:latest以后台模式启动一个容器,并将容器命名为mynginx。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name mynginx -d nginx:latest</span><br></pre></td></tr></table></figure>
+<p>使用镜像nginx:latest以后台模式启动一个容器,并将容器的80端口映射到主机随机端口。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -P -d nginx:latest</span><br></pre></td></tr></table></figure>
+<p>使用镜像nginx:latest以后台模式启动一个容器,将容器的80端口映射到主机的80端口,主机的目录/data映射到容器的/data。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -p 80:80 -v /data:/data -d nginx:latest</span><br></pre></td></tr></table></figure>
+<p>使用镜像nginx:latest以交互模式启动一个容器,在容器内执行/bin/bash命令。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">runoob@runoob:~$ docker run -it nginx:latest /bin/bash</span><br><span class="line">root@b8573233d675:/#</span><br></pre></td></tr></table></figure>
+<h3 id="docker-exec-：在运行的容器中执行命令"><a href="#docker-exec-：在运行的容器中执行命令" class="headerlink" title="docker exec ：在运行的容器中执行命令"></a>docker exec ：在运行的容器中执行命令</h3><h3 id="语法-1"><a href="#语法-1" class="headerlink" title="语法"></a>语法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec [OPTIONS] CONTAINER COMMAND [ARG...]</span><br></pre></td></tr></table></figure>
+<p>OPTIONS说明：</p>
+<ul>
+<li><strong>-d :</strong>分离模式: 在后台运行</li>
+<li><strong>-i :</strong>即使没有附加也保持STDIN 打开</li>
+<li><strong>-t :</strong>分配一个伪终端</li>
+</ul>
+<h3 id="实例-1"><a href="#实例-1" class="headerlink" title="实例"></a>实例</h3><p>在容器mynginx中以交互模式执行容器内/root/runoob.sh脚本 （用容器中的程序执行某段脚本）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">runoob@runoob:~$ docker exec -it mynginx /bin/sh /root/runoob.sh</span><br><span class="line">http://www.runoob.com/</span><br></pre></td></tr></table></figure>
+<p>在容器mynginx中开启一个交互模式的终端（启动容器的一个可交互bash窗口）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">runoob@runoob:~$ docker exec -i -t  mynginx /bin/bash</span><br><span class="line">root@b1a0703e41e7:/#</span><br></pre></td></tr></table></figure>
+<p>启动、停止所有容器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker start $(docker ps -a -q)</span><br></pre></td></tr></table></figure>
+<h4 id="TODO问题？？？"><a href="#TODO问题？？？" class="headerlink" title="TODO问题？？？"></a>TODO问题？？？</h4><ol>
+<li>怎么设置容器的cpu，内存，磁盘，网络大小限制？</li>
+<li>设置容器镜像</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -sSL https://get.daocloud.io/daotools/set_mirror.sh | sh -s http://a2a3a2e1.m.daocloud.io</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo cp -n /lib/systemd/system/docker.service /etc/systemd/system/docker.service</span><br><span class="line">sudo sed -i &quot;s|ExecStart=/usr/bin/docker daemon|ExecStart=/usr/bin/docker daemon --registry-mirror=http://a2a3a2e1.m.daocloud.io|g&quot; /etc/systemd/system/docker.service</span><br><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo service docker restart</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo sed -i &quot;s|ExecStart=/usr/bin/dockerd|ExecStart=/usr/bin/dockerd –registry-mirror=https://pee6w651.mirror.aliyuncs.com|g&quot; /etc/systemd/system/docker.service</span><br></pre></td></tr></table></figure>
+<p>常用镜像：</p>
+<h4 id="redis"><a href="#redis" class="headerlink" title="redis"></a>redis</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//-d 后台运行</span><br><span class="line">docker run --name some-redis -d redis</span><br><span class="line"></span><br><span class="line">//--link A:B 连接过去(自动设置host) --rm 终端退出时自动清除容器内容(跟-d不同时用)</span><br><span class="line">docker run -it --link some-redis:redis --rm redis redis-cli -h redis -p 6379</span><br><span class="line"></span><br><span class="line">//自定义conf配置文件</span><br><span class="line">docker run -v /myredis/conf/redis.conf:/usr/local/etc/redis/redis.conf --name myredis redis redis-server /usr/local/etc/redis/redis.conf</span><br></pre></td></tr></table></figure>
+<h4 id="mysql"><a href="#mysql" class="headerlink" title="mysql"></a>mysql</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">//创建mysql容器 -e 设置环境变量</span><br><span class="line">docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag</span><br><span class="line"></span><br><span class="line">//客户端连接</span><br><span class="line">docker run -it --link some-mysql:mysql --rm mysql sh -c &apos;exec mysql -h&quot;$MYSQL_PORT_3306_TCP_ADDR&quot; -P&quot;$MYSQL_PORT_3306_TCP_PORT&quot; -uroot -p&quot;$MYSQL_ENV_MYSQL_ROOT_PASSWORD&quot;&apos;</span><br><span class="line"></span><br><span class="line">//mysql的客户端</span><br><span class="line">docker run -it --rm mysql mysql -hsome.mysql.host -usome-mysql-user -p</span><br><span class="line"></span><br><span class="line">//mysql使用配置文件/my/custom/config-file.cnf ==&gt; /etc/mysql/conf.d/config-file.cnf</span><br><span class="line">docker run --name some-mysql -v /my/custom:/etc/mysql/conf.d -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag</span><br><span class="line"></span><br><span class="line">//指定外部存储目录</span><br><span class="line">docker run --name some-mysql -v /my/own/datadir:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag</span><br><span class="line"></span><br><span class="line">//dump数据到宿主机</span><br><span class="line">docker exec some-mysql sh -c &apos;exec mysqldump --all-databases -uroot -p&quot;$MYSQL_ROOT_PASSWORD&quot;&apos; &gt; /some/path/on/your/host/all-databases.sql</span><br></pre></td></tr></table></figure>
+<h4 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//静态页面</span><br><span class="line">docker run --name some-nginx -v /some/content:/usr/share/nginx/html:ro -d nginx</span><br><span class="line"></span><br><span class="line">//配置文件</span><br><span class="line">docker run --name my-custom-nginx-container -v /host/path/nginx.conf:/etc/nginx/nginx.conf:ro -d nginx</span><br><span class="line"></span><br><span class="line">//debug模式运行</span><br><span class="line">docker run --name my-nginx -v /host/path/nginx.conf:/etc/nginx/nginx.conf:ro -d nginx nginx-debug -g &apos;daemon off;&apos;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">docker run --name my_zookeeper -p 2181:2181 -d zookeeper:latest</span><br><span class="line">docker run -it --rm --link my_zookeeper:zookeeper zookeeper zkCli.sh -server zookeeper</span><br><span class="line">https://segmentfault.com/a/1190000006907443</span><br><span class="line"></span><br><span class="line">10.111.100.235:2181,10.111.100.236:2181,10.111.100.237:2181,10.111.100.238:2181/user.base.global_id_gen/</span><br></pre></td></tr></table></figure>
+<h1 id="编写dockerfile文件"><a href="#编写dockerfile文件" class="headerlink" title="编写dockerfile文件"></a>编写dockerfile文件</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#dockerfile文件</span><br><span class="line"></span><br><span class="line">FROM debian:jessie</span><br><span class="line"></span><br><span class="line">RUN buildDeps=&apos;gcc libc6-dev make&apos; \</span><br><span class="line">    &amp;&amp; apt-get update \</span><br><span class="line">    &amp;&amp; apt-get install -y $buildDeps \</span><br><span class="line">    &amp;&amp; wget -O redis.tar.gz &quot;http://download.redis.io/releases/redis-3.2.5.tar.gz&quot; \</span><br><span class="line">    &amp;&amp; mkdir -p /usr/src/redis \</span><br><span class="line">    &amp;&amp; tar -xzf redis.tar.gz -C /usr/src/redis --strip-components=1 \</span><br><span class="line">    &amp;&amp; make -C /usr/src/redis \</span><br><span class="line">    &amp;&amp; make -C /usr/src/redis install \</span><br><span class="line">    &amp;&amp; rm -rf /var/lib/apt/lists/* \</span><br><span class="line">    &amp;&amp; rm redis.tar.gz \</span><br><span class="line">    &amp;&amp; rm -r /usr/src/redis \</span><br><span class="line">    &amp;&amp; apt-get purge -y --auto-remove $buildDeps</span><br></pre></td></tr></table></figure>
+<p>2.在 <code>Dockerfile</code> 文件所在目录执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker build -t nginx:v3 .</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build [选项] &lt;上下文路径/URL/-&gt;</span><br></pre></td></tr></table></figure>
+<p>如果在 <code>Dockerfile</code> 中这么写：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">COPY ./package.json /app/</span><br></pre></td></tr></table></figure>
+<p>这并不是要复制执行 <code>docker build</code> 命令所在的目录下的 <code>package.json</code>，也不是复制 <code>Dockerfile</code> 所在目录下的 <code>package.json</code>，而是复制 <strong>上下文（context）</strong> 目录下的 <code>package.json</code>。</p>
+<p>一般来说，应该会将 <code>Dockerfile</code> 置于一个空目录下，或者项目根目录下。</p>
+<h4 id="COPY命令"><a href="#COPY命令" class="headerlink" title="COPY命令"></a>COPY命令</h4><blockquote>
+<p>源路径必须使用相对当前目录的路径    </p>
+</blockquote>
+<p>从上下文路径复制文件到 镜像中某个目录</p>
+<p><code>COPY &lt;源路径&gt;... &lt;目标路径&gt;</code></p>
+<p><code>&lt;目标路径&gt;</code> 可以是容器内的绝对路径，也可以是相对于工作目录的相对路径（工作目录可以用 <code>WORKDIR</code>指令来指定）。目标路径不需要事先创建，如果目录不存在会在复制文件前先行创建缺失目录。</p>
+<h4 id="CMD命令"><a href="#CMD命令" class="headerlink" title="CMD命令"></a>CMD命令</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CMD [ &quot;sh&quot;, &quot;-c&quot;, &quot;echo $HOME&quot; ]</span><br></pre></td></tr></table></figure>
+<h4 id="ENV命名"><a href="#ENV命名" class="headerlink" title="ENV命名"></a>ENV命名</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ENV NODE_VERSION 7.2.0</span><br><span class="line">RUN curl -SLO &quot;https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz&quot; </span><br><span class="line">#后面可以使用到</span><br></pre></td></tr></table></figure>
+<p>下列指令可以支持环境变量展开（可以用这个环境变量）： <code>ADD</code>、<code>COPY</code>、<code>ENV</code>、<code>EXPOSE</code>、<code>LABEL</code>、<code>USER</code>、<code>WORKDIR</code>、<code>VOLUME</code>、<code>STOPSIGNAL</code>、<code>ONBUILD</code>。</p>
+<h4 id="EXPOSE"><a href="#EXPOSE" class="headerlink" title="EXPOSE"></a>EXPOSE</h4><p>要将 <code>EXPOSE</code> 和在运行时使用 <code>-p &lt;宿主端口&gt;:&lt;容器端口&gt;</code> 区分开来。<code>-p</code>，是映射宿主端口和容器端口，换句话说，就是将容器的对应端口服务公开给外界访问，而 <code>EXPOSE</code> 仅仅是声明容器打算使用什么端口而已，并不会自动在宿主进行端口映射。</p>
+<h4 id="WORKDIR"><a href="#WORKDIR" class="headerlink" title="WORKDIR"></a>WORKDIR</h4><blockquote>
+<p>下面ENTRYPOINT命令会在这个目录下面执行命令</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WORKDIR &lt;工作目录路径&gt; #以后可以在某层有一个 相对路径</span><br></pre></td></tr></table></figure>
+<h4 id="entrypoint-入口"><a href="#entrypoint-入口" class="headerlink" title="entrypoint 入口"></a>entrypoint 入口</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ENTRYPOINT [&quot;/usr/sbin/nginx&quot;,&quot;-g&quot;,&quot;daemon off&quot;]</span><br></pre></td></tr></table></figure>
+<p>3.运行docker容器中的项目：</p>
+<p>// -t 新的伪终端tty </p>
+<p>-i 交互输入保持打开 </p>
+<p>-d后台运行，在使用 <code>-d</code> 参数时，容器启动后会进入后台</p>
+<p>-p指定外内端口映射，<strong>-P:</strong>将容器内部使用的网络端口映射到我们使用的主机上。有expose就用expose的，没有就随机一个</p>
+<p>-v指定容器外目录与容器内目录映射</p>
+<p>-w /usr/src/myapp :指定容器的/usr/src/myapp目录为工作目录</p>
+<p>-e username=”ritchie”:设置环境变量；</p>
+<p>–env-file=[]: 从指定文件读入环境变量；</p>
+<p>–expose=[]:开放一个端口或一组端口；</p>
+<p>–name=”nginx-lb”: 为容器指定一个名称；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker run -t -i ubuntu:14.04 /bin/bash</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker run -d -p 127.0.0.1:5000:5000 training/webapp python app.py</span><br></pre></td></tr></table></figure>
+<p>终止：docker stop</p>
+<h3 id="常见命令"><a href="#常见命令" class="headerlink" title="常见命令"></a>常见命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker ps -a //所有</span><br><span class="line">docker ps -l //最近</span><br><span class="line">docker ps -n 5//最近5个</span><br><span class="line">docker ps //运行中</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker inspect xx</span><br><span class="line">docker inspect -f &apos;&#123;&#123;.NetworkSettings.IPAddress&#125;&#125;&apos; mymysql</span><br><span class="line">docker top xx</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker images</span><br><span class="line">docker images ubutun_*</span><br><span class="line">docker tag ubuntu:15.10 runoob/ubuntu:v3</span><br><span class="line">docker build -t runoob/ubuntu:v1 . </span><br><span class="line">docker save -o my_ubuntu_v3.tar runoob/ubuntu:v3</span><br><span class="line">docker import  my_ubuntu_v3.tar runoob/ubuntu:v4</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">alias cp=&apos;cp -i&apos;</span><br><span class="line">alias dex=&apos;docker exec -i -t&apos;</span><br><span class="line">alias di=&apos;docker images&apos;</span><br><span class="line">alias dip=&apos;docker inspect --format &apos;\&apos;&apos;&#123;&#123; .NetworkSettings.IPAddress &#125;&#125;&apos;\&apos;&apos;&apos;</span><br><span class="line">alias dkd=&apos;docker run -d -P&apos;</span><br><span class="line">alias dki=&apos;docker run -i -t -P&apos;</span><br><span class="line">alias dl=&apos;docker ps -l -q&apos;</span><br><span class="line">alias dpa=&apos;docker ps -a&apos;</span><br><span class="line">alias dps=&apos;docker ps&apos;</span><br><span class="line">alias drmf=&apos;docker stop $(docker ps -a -q) &amp;&amp; docker rm $(docker ps -a -q)&apos;</span><br><span class="line">alias egrep=&apos;egrep --color=auto&apos;</span><br><span class="line">alias fgrep=&apos;fgrep --color=auto&apos;</span><br><span class="line">alias grep=&apos;grep --color=auto&apos;</span><br><span class="line">alias l.=&apos;ls -d .* --color=auto&apos;</span><br><span class="line">alias ll=&apos;ls -l --color=auto&apos;</span><br><span class="line">alias ls=&apos;ls --color=auto&apos;</span><br><span class="line">alias mv=&apos;mv -i&apos;</span><br><span class="line">alias rm=&apos;rm -i&apos;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/21/cs/代码规范/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/02/21/cs/代码规范/" itemprop="url">代码规范</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-21T18:30:18+08:00">
+                2019-02-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/code-style/" itemprop="url" rel="index">
+                    <span itemprop="name">code_style</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="代码进阶之道"><a href="#代码进阶之道" class="headerlink" title="代码进阶之道"></a>代码进阶之道</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">1. 代码简介 VS 代码易读</span><br><span class="line">if (variable != null) &#123;</span><br><span class="line">   return variable.getSomething();</span><br><span class="line">&#125;</span><br><span class="line">return null;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">return x &gt;= 90 ? &quot;A&quot; : x &gt;= 80 ? &quot;B&quot; : x &gt;= 70 ? &quot;C&quot; : x &gt;= 60 ? &quot;D&quot; : &quot;E&quot;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">坚持使用最直观的编码方式，而不是追求代码简短，真的可以避免很多不必要的错误。golang不支持条件运算符</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">2. 好代码 VS 坏代码</span><br><span class="line">好代码：</span><br><span class="line">- 容易理解(if和条件运算符?)</span><br><span class="line">- 没有安全问题(*指针 并发map)</span><br><span class="line">- 有充分的注释(关键地方有注释)</span><br><span class="line">- 命名规范(驼峰和下划线)</span><br><span class="line">- 有充分的测试(先测试再上线)</span><br><span class="line"></span><br><span class="line">坏代码：</span><br><span class="line">- 难以阅读（函数太长太大）</span><br><span class="line">- 浪费计算机资源</span><br><span class="line">- 代码风格混乱</span><br><span class="line">- 没有测试</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">3. 优秀程序员</span><br><span class="line"># 硬指标</span><br><span class="line">- 优秀的编程技能</span><br><span class="line">- 解决问题能力</span><br><span class="line">- 认知和发现问题的能力</span><br><span class="line"># 软指标</span><br><span class="line">- 为高效推进目标进程，作出合适的权衡和妥协</span><br><span class="line">- 团队协调能力</span><br><span class="line">- 时间管理能力</span><br><span class="line"> </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">4. 怎么写注释</span><br><span class="line">- Code Tells You How, Comments Tell You Why.</span><br><span class="line">- 参考golang源码</span><br><span class="line">  - 核心方法注释【英文不好可以用中文】</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">5. 异常处理</span><br><span class="line">底层IO的错误，抛给上层处理，上层来处理各种错误</span><br><span class="line">- socketIO 【redis/mysql/kafka】</span><br><span class="line">- file</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">6. 文档</span><br><span class="line">- 简介</span><br><span class="line">- 快速上手</span><br><span class="line">- 开发指南</span><br><span class="line">- 高级用法</span><br><span class="line">- 二次开发</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">7. 高效工具</span><br><span class="line">思维导图</span><br><span class="line">时序图</span><br><span class="line">问题清单</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/21/z-summary/设计模式理解/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/02/21/z-summary/设计模式理解/" itemprop="url">设计模式理解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-21T18:24:44+08:00">
+                2019-02-21
               </time>
             
 
@@ -527,7 +964,8 @@
       
         
           
-            <p><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fw23187ukmj20uj0daacw.jpg" alt=""><br><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fw25gnhm6oj21102xa4qp.jpg" alt=""><br><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fw22zlkk69j20zo2s0nmr.jpg" alt=""><br><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fw25fywf2jj20up1pk7e5.jpg" alt=""></p>
+            <h1 id="设计模式理解"><a href="#设计模式理解" class="headerlink" title="设计模式理解"></a>设计模式理解</h1><p>设计模式就是一个解决问题的模板</p>
+<p>有了这个模板可以更快的解决问题</p>
 
           
         
@@ -576,7 +1014,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/26/1.stack/golang/go-standard-library-intro/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/21/z-summary/模板方法/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="greyireland">
@@ -595,7 +1033,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/09/26/1.stack/golang/go-standard-library-intro/" itemprop="url">go-standard-library-intro</a></h1>
+                <a class="post-title-link" href="/2019/02/21/z-summary/模板方法/" itemprop="url">模板方法</a></h1>
         
 
         <div class="post-meta">
@@ -607,8 +1045,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-26T20:00:02+08:00">
-                2018-09-26
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-21T18:21:58+08:00">
+                2019-02-21
               </time>
             
 
@@ -630,8 +1068,8 @@
               
               
                 <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/go/" itemprop="url" rel="index">
-                    <span itemprop="name">go</span>
+                  <a href="/categories/method/" itemprop="url" rel="index">
+                    <span itemprop="name">method</span>
                   </a>
                 </span>
 
@@ -669,7 +1107,9 @@
       
         
           
-            <h1 id="简图"><a href="#简图" class="headerlink" title="简图"></a>简图</h1><p><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fvn6xqiuk6j21b80undos.jpg" alt=""></p>
+            <h1 id="解决办法的归纳"><a href="#解决办法的归纳" class="headerlink" title="解决办法的归纳"></a>解决办法的归纳</h1><p>就是</p>
+<p>找到一套模板</p>
+<p>使用并更新这个模板</p>
 
           
         
@@ -718,7 +1158,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/20/1.stack/distributed/mapreduce-intro/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/21/system_design/私信系统设计/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="greyireland">
@@ -737,7 +1177,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/09/20/1.stack/distributed/mapreduce-intro/" itemprop="url">mapreduce-intro</a></h1>
+                <a class="post-title-link" href="/2019/02/21/system_design/私信系统设计/" itemprop="url">私信系统设计</a></h1>
         
 
         <div class="post-meta">
@@ -749,8 +1189,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-20T20:50:28+08:00">
-                2018-09-20
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-21T11:15:41+08:00">
+                2019-02-21
               </time>
             
 
@@ -772,8 +1212,8 @@
               
               
                 <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/分布式/" itemprop="url" rel="index">
-                    <span itemprop="name">分布式</span>
+                  <a href="/categories/system-design/" itemprop="url" rel="index">
+                    <span itemprop="name">system design</span>
                   </a>
                 </span>
 
@@ -811,621 +1251,24 @@
       
         
           
-            <h1 id="1-什么是MapReduce？"><a href="#1-什么是MapReduce？" class="headerlink" title="1 什么是MapReduce？"></a>1 什么是MapReduce？</h1><p>　　Map本意可以理解为地图，映射（面向对象语言都有Map集合），这里我们可以理解为从现实世界获得或产生映射。Reduce本意是减少的意思，这里我们可以理解为归并前面Map产生的映射。</p>
-<h1 id="2-MapReduce的编程模型"><a href="#2-MapReduce的编程模型" class="headerlink" title="2 MapReduce的编程模型"></a>2 MapReduce的编程模型</h1><p>　　按照google的MapReduce论文所说的，MapReduce的编程模型的原理是：利用一个输入key/value对集合来产生一个输出的key/value对集合。MapReduce库的用户用两个函数表达这个计算：Map和Reduce。用户自定义的Map函数接受一个输入的key/value对值，然后产生一个中间key/value对值的集合。MapReduce库把所有具有相同中间key值的中间value值集合在一起后传递给Reduce函数。用户自定义的Reduce函数接受一个中间key的值和相关的一个value值的集合。Reduce函数合并这些value值，形成一个较小的value值的集合。</p>
-<h1 id="3-MapReduce实现"><a href="#3-MapReduce实现" class="headerlink" title="3 MapReduce实现"></a>3 MapReduce实现</h1><p>　　通过将Map调用的输入数据自动分割为M个数据片段的集合，Map调用被分布到多台机器上执行。输入的数据片段能够在不同的机器上并行处理。使用分区函数将Map调用产生的中间key值分成R个不同分区（例如，hash(key) mod R），Reduce调用也被分布到多台机器上执行。分区数量（R）和分区函数由用户来指定。</p>
-<p>　　MapReduce实现的大概过程如下：</p>
-<p>　　1.用户程序首先调用的MapReduce库将输入文件分成M个数据片度，每个数据片段的大小一般从16MB到64MB(可以通过可选的参数来控制每个数据片段的大小)。然后用户程序在集群中创建大量的程序副本。</p>
-<p>　　2.这些程序副本中的有一个特殊的程序master。副本中其它的程序都是worker程序，由master分配任务。有M个Map任务和R个Reduce任务将被分配，master将一个Map任务或Reduce任务分配给一个空闲的worker。 </p>
-<p>　　3.被分配了map任务的worker程序读取相关的输入数据片段，从输入的数据片段中解析出key/value对，然后把key/value对传递给用户自定义的Map函数，由Map函数生成并输出的中间key/value对，并缓存在内存中。 </p>
-<p>　　4.缓存中的key/value对通过分区函数分成R个区域，之后周期性的写入到本地磁盘上，会产生R个临时文件。缓存的key/value对在本地磁盘上的存储位置将被回传给master，由master负责把这些存储位置再传送给Reduce worker。 </p>
-<p>　　5.当Reduce worker程序接收到master程序发来的数据存储位置信息后，使用RPC从Map worker所在主机的磁盘上读取这些缓存数据。当Reduce worker读取了所有的中间数据（这个时候所有的Map任务都执行完了）后，通过对key进行排序后使得具有相同key值的数据聚合在一起。由于许多不同的key值会映射到相同的Reduce任务上，因此必须进行排序。如果中间数据太大无法在内存中完成排序，那么就要在外部进行排序。 </p>
-<p>　　6.Reduce worker程序遍历排序后的中间数据，对于每一个唯一的中间key值，Reduce worker程序将这个key值和它相关的中间value值的集合（这个集合是由Reduce worker产生的，它存放的是同一个key对应的value值）传递给用户自定义的Reduce函数。Reduce函数的输出被追加到所属分区的输出文件。 </p>
-<p>　　上面过程中的排序很容易理解，关键是分区，这一步最终决定该键值对未来会交给哪个reduce任务，如统计单词出现的次数可以用前面说的hash(key) mod R来分区，如果是对数据进行排序则应该根据key的分布进行分区。</p>
-<p>图1 MapReduce过程<br><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fvgargrvu2j20cs0k7dgf.jpg" alt=""></p>
-<h1 id="4-例子"><a href="#4-例子" class="headerlink" title="4 例子"></a>4 例子</h1><p>　　假设我们需要处理一批有关天气的数据，其格式如下： 按照ASCII码存储，每行一条记录，每一行字符从0开始计数，第15个到第18个字符为年，第25个到第29个字符为温度，其中第25位是符号+/-，现在需要统计出每年的最高温度。</p>
-<p>　　0067011990999991950051507+0000+<br>　　0043011990999991950051512+0022+<br>　　0043011990999991950051518-0011+<br>　　0043012650999991949032412+0111+<br>　　0043012650999991949032418+0078+<br>　　0067011990999991937051507+0001+<br>　　0043011990999991937051512-0002+<br>　　0043011990999991945051518+0001+<br>　　0043012650999991945032412+0002+<br>　　0043012650999991945032418+0078+ </p>
-<p>　　MapReduce主要包括两个步骤：Map和Reduce 每一步都有key/value对作为输入和输出： </p>
-<p>　　Map阶段的key/value对的格式是由输入的格式所决定的，如果是默认的TextInputFormat，则每行作为一个记录进程处理，其中key为此行的开头相对于文件的起始位置，value就是此行的字符文本，Map阶段的输出的key/value对的格式必须同Reduce阶段的输入key/value对的格式相对应</p>
-<p>　　对于上面的例子，在map过程，输入的key-value对如下：<br>　　(0 ,0067011990999991950051507+0000+)<br>　　(1 ,0043011990999991950051512+0022+)<br>　　(2 ,0043011990999991950051518-0011+)<br>　　(3 ,0043012650999991949032412+0111+)<br>　　(4 ,0043012650999991949032418+0078+)<br>　　(5 ,0067011990999991937051507+0001+)<br>　　(6 ,0043011990999991937051512-0002+)<br>　　(7 ,0043011990999991945051518+0001+)<br>　　(8 ,0043012650999991945032412+0002+)<br>　　(9 ,0043012650999991945032418+0078+) </p>
-<p>　　将上面的数据作为用户编写的map函数的输入，通过对每一行字符串的解析，得到年/温度的key/value对作为输出：<br>　　(1950, 0)<br>　　(1950, 22)<br>　　(1950, -11)<br>　　(1949, 111)<br>　　(1949, 78)<br>　　(1937, 1)<br>　　(1937, -2)<br>　　(1945, 1)<br>　　(1945, 2)<br>　　(1945, 78) </p>
-<p>　　在Reduce过程，将map过程中的输出，按照相同的key将value放到同一个列表中作为用户写的reduce函数的输入<br>　　(1950, [0, 22, –11])<br>　　(1949, [111, 78])<br>　　(1937, [1, -2])<br>　　(1945, [1, 2, 78]) </p>
-<p>　　在Reduce过程中，在列表中选择出最大的温度，将年/最大温度的key/value作为输出：<br>　　(1950, 22)<br>　　(1949, 111)<br>　　(1937, 1)<br>　　(1945, 78) </p>
-<p>　　其逻辑过程可用如下图表示：<br><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fvgarwkdo0j20hw03zjt4.jpg" alt=""></p>
-<p> 参考：</p>
-<p><a href="http://desert3.iteye.com/blog/865243" target="_blank" rel="noopener">http://desert3.iteye.com/blog/865243</a></p>
-<p><a href="http://www.cnblogs.com/duguguiyu/archive/2009/02/28/1400278.html" target="_blank" rel="noopener">http://www.cnblogs.com/duguguiyu/archive/2009/02/28/1400278.html</a></p>
-<p><a href="http://www.cnblogs.com/MitiskySean/p/3320451.html" target="_blank" rel="noopener">http://www.cnblogs.com/MitiskySean/p/3320451.html</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/19/5.plan/todo/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/19/5.plan/todo/" itemprop="url">todo</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-19T18:46:24+08:00">
-                2018-09-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/todo/" itemprop="url" rel="index">
-                    <span itemprop="name">todo</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="源码阅读计划"><a href="#源码阅读计划" class="headerlink" title="源码阅读计划"></a>源码阅读计划</h1><ul>
-<li>codis</li>
-<li>tidb</li>
-<li>consul</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/19/1.stack/tool/git-cheatcheet/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/19/1.stack/tool/git-cheatcheet/" itemprop="url">git cheatcheet</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-19T16:12:32+08:00">
-                2018-09-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/tool/" itemprop="url" rel="index">
-                    <span itemprop="name">tool</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="简图"><a href="#简图" class="headerlink" title="简图"></a>简图</h1><p><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fwy5q46d3lj215k10nabc.jpg" alt=""></p>
-<h1 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">git add . //ga</span><br><span class="line">git status //gs</span><br><span class="line">git diff //gd</span><br><span class="line">git commit -m &quot;desc&quot; //gcm</span><br><span class="line">git push //gp</span><br><span class="line">git checkout -b feature/comment //gcb</span><br><span class="line">git pull origin master //gpom</span><br></pre></td></tr></table></figure>
-<h2 id="偶尔用到"><a href="#偶尔用到" class="headerlink" title="偶尔用到"></a>偶尔用到</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git push --set-upstream origin dev_2 </span><br><span class="line">git stash</span><br><span class="line">git log</span><br><span class="line">git cherry-pick xxx</span><br><span class="line">git init</span><br><span class="line">git clone</span><br></pre></td></tr></table></figure>
-<h3 id="很少用到"><a href="#很少用到" class="headerlink" title="很少用到"></a>很少用到</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name &quot;muName&quot;</span><br><span class="line">git config --global user.email &quot;myEmail&quot;</span><br></pre></td></tr></table></figure>
-<h3 id="GET-NEW-THING"><a href="#GET-NEW-THING" class="headerlink" title="GET NEW THING"></a>GET NEW THING</h3><h4 id="比对-diff"><a href="#比对-diff" class="headerlink" title="比对 diff"></a>比对 diff</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># 显示暂存区和工作区的代码差异</span><br><span class="line">$ git diff</span><br><span class="line"></span><br><span class="line"># 显示暂存区和上一个commit的差异</span><br><span class="line">$ git diff --cached [file]</span><br><span class="line"></span><br><span class="line"># 显示工作区与当前分支最新commit之间的差异</span><br><span class="line">$ git diff HEAD</span><br><span class="line">git diff HEAD^ 比对当前内容和倒数第二次提交。</span><br><span class="line"></span><br><span class="line"># 显示两次提交之间的差异</span><br><span class="line">$ git diff [first-branch]...[second-branch]</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 从暂存区移除一个文件</span><br><span class="line">git rm file</span><br><span class="line"># 从暂存区移除所有文件</span><br><span class="line">git reset .</span><br></pre></td></tr></table></figure>
-<h4 id="rebase-变基【为了提交好看】"><a href="#rebase-变基【为了提交好看】" class="headerlink" title="rebase 变基【为了提交好看】"></a>rebase 变基【为了提交好看】</h4><h4 id="gitnore"><a href="#gitnore" class="headerlink" title="gitnore"></a>gitnore</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">filename  //递归 忽略当前目录下所有包含此文件名的文件</span><br><span class="line">dir/      //递归 忽略目录和子目录 </span><br><span class="line">!filename //递归 不忽略文件名</span><br></pre></td></tr></table></figure>
-<h3 id="存储"><a href="#存储" class="headerlink" title="存储"></a>存储</h3><p><img src="https://ws1.sinaimg.cn/large/e5320b2aly1g210qd00udj20l20h6do5.jpg" alt=""></p>
+            <h1 id="私信系统设计"><a href="#私信系统设计" class="headerlink" title="私信系统设计"></a>私信系统设计</h1><h2 id="整体设计"><a href="#整体设计" class="headerlink" title="整体设计"></a>整体设计</h2><p>分两种类型的表</p>
 <ul>
-<li>commit</li>
-<li>tree</li>
-<li>blob</li>
+<li>联系人表</li>
+<li>私信消息表</li>
 </ul>
-<p>差异存储，后面的可以引用前面的blob和tree</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/19/1.stack/golang/go-bytes-Buffer/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/19/1.stack/golang/go-bytes-Buffer/" itemprop="url">go-bytes.Buffer</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-19T15:46:07+08:00">
-                2018-09-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/go/" itemprop="url" rel="index">
-                    <span itemprop="name">go</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="bytes-Buffer"><a href="#bytes-Buffer" class="headerlink" title="bytes.Buffer"></a>bytes.Buffer</h1><h2 id="java-StringBuilder"><a href="#java-StringBuilder" class="headerlink" title="java StringBuilder"></a>java StringBuilder</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">StringBuilder sb = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">sb.append(<span class="string">"hello"</span>);</span><br><span class="line">sb.append(<span class="string">",world"</span>);</span><br><span class="line">System.out.println(sb.toString());</span><br></pre></td></tr></table></figure>
-<h2 id="go-bytes-Buffer"><a href="#go-bytes-Buffer" class="headerlink" title="go bytes.Buffer"></a>go bytes.Buffer</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> bb bytes.Buffer</span><br><span class="line">bb.WriteString(<span class="string">"["</span>)</span><br><span class="line">bb.WriteString(<span class="string">"]"</span>)</span><br><span class="line">fmt.Println(bb.String())</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/19/1.stack/tool/常用工具使用/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/19/1.stack/tool/常用工具使用/" itemprop="url">常用工具使用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-19T14:29:54+08:00">
-                2018-09-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/tool/" itemprop="url" rel="index">
-                    <span itemprop="name">tool</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ol>
-<li>轻量</li>
-<li>可以直接打开文件夹&amp;文件</li>
-<li>可以安装各种插件</li>
+<p>通过长连接或者push消息推送实现实时聊天</p>
+<h3 id="表结构设计-分库分表"><a href="#表结构设计-分库分表" class="headerlink" title="表结构设计[分库分表]"></a>表结构设计[分库分表]</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`contact_%v`</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`contact_%v`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">bigint</span>(<span class="number">20</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT <span class="keyword">COMMENT</span> <span class="string">'自增id,主键'</span>,</span><br><span class="line">  <span class="string">`owner_id`</span> <span class="built_in">bigint</span>(<span class="number">20</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'私信发送者'</span>,</span><br><span class="line">  <span class="string">`peer_id`</span> <span class="built_in">bigint</span>(<span class="number">20</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'私信接收者'</span>,</span><br><span class="line">  <span class="string">`peer_type`</span> tinyint(<span class="number">4</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'联系人类型：0普通/100系统/101群'</span>,</span><br><span class="line">  <span class="string">`peer_ack`</span> tinyint(<span class="number">4</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'peer是否给owner发过消息：0未发过/1发过'</span>,</span><br><span class="line">  <span class="string">`status`</span> tinyint(<span class="number">4</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'0'</span> <span class="keyword">COMMENT</span> <span class="string">'联系人状态：0正常/1代表被删除; 默认值为0'</span>,</span><br><span class="line">  <span class="string">`last_msg_id`</span> <span class="built_in">bigint</span>(<span class="number">20</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'0'</span> <span class="keyword">COMMENT</span> <span class="string">'最新一次发送的私信id,默认值为0'</span>,</span><br><span class="line">  <span class="string">`last_del_msg_id`</span> <span class="built_in">bigint</span>(<span class="number">20</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'0'</span> <span class="keyword">COMMENT</span> <span class="string">'最后一次删除联系人时的私信id,默认值为0'</span>,</span><br><span class="line">  <span class="string">`version_id`</span> <span class="built_in">bigint</span>(<span class="number">20</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'版本号'</span>,</span><br><span class="line">  <span class="string">`sort_key`</span> <span class="built_in">bigint</span>(<span class="number">20</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'排序字段'</span>,</span><br><span class="line">  <span class="string">`labels`</span> <span class="built_in">varchar</span>(<span class="number">512</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'标签,json串'</span>,</span><br><span class="line">  <span class="string">`created_at`</span> <span class="built_in">timestamp</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`updated_at`</span> <span class="built_in">timestamp</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span> <span class="keyword">ON</span> <span class="keyword">UPDATE</span> <span class="keyword">CURRENT_TIMESTAMP</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),</span><br><span class="line">  <span class="keyword">UNIQUE</span> <span class="keyword">KEY</span> <span class="string">`idx_owner_id_peer_id`</span> (<span class="string">`owner_id`</span>,<span class="string">`peer_id`</span>),</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`idx_owner_id_version_id`</span> (<span class="string">`owner_id`</span>,<span class="string">`version_id`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8mb4;</span><br><span class="line"></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`message_%v`</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`message_%v`</span> (</span><br><span class="line">  <span class="string">`msg_id`</span> <span class="built_in">bigint</span>(<span class="number">20</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'私信id'</span>,</span><br><span class="line">  <span class="string">`session_id`</span> <span class="built_in">varchar</span>(<span class="number">128</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'会话id,生成规则：uid小的在前大的在后用冒号连接；群消息和系统消息时为0:群号'</span>,</span><br><span class="line">  <span class="string">`send_id`</span> <span class="built_in">bigint</span>(<span class="number">20</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'私信发送者id'</span>,</span><br><span class="line">  <span class="string">`status`</span> tinyint(<span class="number">4</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'0'</span> <span class="keyword">COMMENT</span> <span class="string">'私信状态：0正常/1代表被审核删除/2代表撤销; 默认值为0'</span>,</span><br><span class="line">  <span class="string">`has_read`</span> tinyint(<span class="number">4</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'0'</span> <span class="keyword">COMMENT</span> <span class="string">'私信接收者消息已读/未读状态：0未读/1已读; 默认值为0'</span>,</span><br><span class="line">  <span class="string">`seq_id`</span> <span class="built_in">bigint</span>(<span class="number">20</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'客户端本地私信序列id'</span>,</span><br><span class="line">  <span class="string">`version_id`</span> <span class="built_in">bigint</span>(<span class="number">20</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'版本号'</span>,</span><br><span class="line">  <span class="string">`sort_key`</span> <span class="built_in">bigint</span>(<span class="number">20</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'排序字段'</span>,</span><br><span class="line">  <span class="string">`msg_type`</span> tinyint(<span class="number">4</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'私信类型'</span>,</span><br><span class="line">  <span class="string">`content`</span> <span class="built_in">varchar</span>(<span class="number">2048</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'私信内容'</span>,</span><br><span class="line">  <span class="string">`invisible_list`</span> <span class="built_in">varchar</span>(<span class="number">2048</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'此msg对哪些用户不可见'</span>,</span><br><span class="line">  <span class="string">`created_at`</span> <span class="built_in">timestamp</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`updated_at`</span> <span class="built_in">timestamp</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span> <span class="keyword">ON</span> <span class="keyword">UPDATE</span> <span class="keyword">CURRENT_TIMESTAMP</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`msg_id`</span>),</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`idx_session_id_msg_id`</span> (<span class="string">`session_id`</span>, <span class="string">`version_id`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8mb4;</span><br></pre></td></tr></table></figure>
+<h3 id="缓存设计"><a href="#缓存设计" class="headerlink" title="缓存设计"></a>缓存设计</h3><h3 id="详细设计"><a href="#详细设计" class="headerlink" title="详细设计"></a>详细设计</h3><ol>
+<li>发送，写联系人表，写消息表</li>
+<li>拉取联系人，拉取消息</li>
+<li>删除私信【自己不可见】 撤销私信【全部不可见】</li>
+<li>置顶会话 排序为设为最大</li>
+<li>清空未读<br>6. 发系统私信</li>
 </ol>
-<h3 id="快键键"><a href="#快键键" class="headerlink" title="快键键"></a>快键键</h3><h4 id="常用"><a href="#常用" class="headerlink" title="常用"></a>常用</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">alt shift 下  向下复制一行</span><br><span class="line"></span><br><span class="line">cmd enter 强行下一行</span><br><span class="line"></span><br><span class="line">alt shift F 格式化代码</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">cmd F 查找/替换</span><br><span class="line"></span><br><span class="line">cmd + 放大</span><br><span class="line"></span><br><span class="line">F12 转到定义</span><br><span class="line"></span><br><span class="line">ctrl 斜点 打开控制台</span><br><span class="line"></span><br><span class="line">ctrl - 回退</span><br><span class="line"></span><br><span class="line">ctrl+shift+-前进</span><br><span class="line"></span><br><span class="line">alt+shift+选择 竖行选择</span><br></pre></td></tr></table></figure>
+<h3 id="QA？"><a href="#QA？" class="headerlink" title="QA？"></a>QA？</h3><ol>
+<li>系统消息怎么处理？</li>
+</ol>
+
           
         
       
@@ -1473,7 +1316,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/19/1.stack/golang/go-踩坑点/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/04/golang/golang-pprof/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="greyireland">
@@ -1492,7 +1335,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/09/19/1.stack/golang/go-踩坑点/" itemprop="url">go-踩坑点</a></h1>
+                <a class="post-title-link" href="/2019/01/04/golang/golang-pprof/" itemprop="url">golang-pprof</a></h1>
         
 
         <div class="post-meta">
@@ -1504,8 +1347,203 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-19T10:53:27+08:00">
-                2018-09-19
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-04T16:30:20+08:00">
+                2019-01-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/categories/" itemprop="url" rel="index">
+                    <span itemprop="name">categories</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="pprof-的使用【mark】"><a href="#pprof-的使用【mark】" class="headerlink" title="pprof 的使用【mark】"></a>pprof 的使用【mark】</h1><p>什么是 Profiling?<br>Profiling 这个词比较难翻译，一般译成画像。比如在案件侦破的时候会对嫌疑人做画像，从犯罪现场的种种证据，找到嫌疑人的各种特征，方便对嫌疑人进行排查；还有就是互联网公司会对用户信息做画像，通过了解用户各个属性（年龄、性别、消费能力等），方便为用户推荐内容或者广告。</p>
+<p>在计算机性能调试领域里，profiling 就是对应用的画像，这里画像就是应用使用 CPU 和内存的情况。也就是说应用使用了多少 CPU 资源？都是哪些部分在使用？每个函数使用的比例是多少？有哪些函数在等待 CPU 资源？知道了这些，我们就能对应用进行规划，也能快速定位性能瓶颈。</p>
+<p>golang 是一个对性能特别看重的语言，因此语言中自带了 profiling 的库，这篇文章就要讲解怎么在 golang 中做 profiling。</p>
+<p>在 go 语言中，主要关注的应用运行情况主要包括以下几种：</p>
+<p>CPU profile：报告程序的 CPU 使用情况，按照一定频率去采集应用程序在 CPU 和寄存器上面的数据<br>Memory Profile（Heap Profile）：报告程序的内存使用情况<br>Block Profiling：报告 goroutines 不在运行状态的情况，可以用来分析和查找死锁等性能瓶颈<br>Goroutine Profiling：报告 goroutines 的使用情况，有哪些 goroutine，它们的调用关系是怎样的<br>两种收集方式<br>做 Profiling 第一步就是怎么获取应用程序的运行情况数据。go 语言提供了 runtime/pprof 和 net/http/pprof 两个库，这部分我们讲讲它们的用法以及使用场景。</p>
+<h3 id="工具型应用"><a href="#工具型应用" class="headerlink" title="工具型应用"></a>工具型应用</h3><p>如果你的应用是一次性的，运行一段时间就结束。那么最好的办法，就是在应用退出的时候把 profiling 的报告保存到文件中，进行分析。对于这种情况，可以使用 runtime/pprof 库。</p>
+<p>pprof 封装了很好的接口供我们使用，比如要想进行 CPU Profiling，可以调用 pprof.StartCPUProfile() 方法，它会对当前应用程序进行 CPU profiling，并写入到提供的参数中（w io.Writer），要停止调用 StopCPUProfile() 即可。</p>
+<p>去除错误处理只需要三行内容，一般把部分内容写在 main.go 文件中，应用程序启动之后就开始执行：</p>
+<p>f, err := os.Create(*cpuprofile) … pprof.StartCPUProfile(f) defer pprof.StopCPUProfile()<br>应用执行结束后，就会生成一个文件，保存了我们的 CPU profiling 数据。</p>
+<p>想要获得内存的数据，直接使用 WriteHeapProfile 就行，不用 start 和 stop 这两个步骤了：</p>
+<p>f, err := os.Create(*memprofile) pprof.WriteHeapProfile(f) f.Close() </p>
+<h3 id="服务型应用"><a href="#服务型应用" class="headerlink" title="服务型应用"></a>服务型应用</h3><p>如果你的应用是一直运行的，比如 web 应用，那么可以使用 net/http/pprof 库，它能够在提供 HTTP 服务进行分析。</p>
+<p>如果使用了默认的 http.DefaultServeMux（通常是代码直接使用 http.ListenAndServe(“0.0.0.0:8000”, nil)），只需要添加一行：</p>
+<p>import _ “net/http/pprof”<br>如果你使用自定义的 Mux，则需要手动注册一些路由规则：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">r.HandleFunc(&quot;/debug/pprof/&quot;, pprof.Index)</span><br><span class="line">r.HandleFunc(&quot;/debug/pprof/cmdline&quot;, pprof.Cmdline)</span><br><span class="line">r.HandleFunc(&quot;/debug/pprof/profile&quot;, pprof.Profile)</span><br><span class="line">r.HandleFunc(&quot;/debug/pprof/symbol&quot;, pprof.Symbol)</span><br><span class="line">r.HandleFunc(&quot;/debug/pprof/trace&quot;, pprof.Trace)</span><br></pre></td></tr></table></figure>
+<p>不管哪种方式，你的 HTTP 服务都会多出 /debug/pprof endpoint，访问它会得到类似下面的内容：</p>
+<p>/debug/pprof/</p>
+<p>profiles:<br>0    block<br>62    goroutine<br>444    heap<br>30    threadcreate</p>
+<p>full goroutine stack dump<br>这个路径下还有几个子页面：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/debug/pprof/profile：访问这个链接会自动进行 CPU profiling，持续 30s，并生成一个文件供下载</span><br><span class="line">/debug/pprof/heap： Memory Profiling 的路径，访问这个链接会得到一个内存 Profiling 结果的文件</span><br><span class="line">/debug/pprof/block：block Profiling 的路径</span><br><span class="line">/debug/pprof/goroutines：运行的 goroutines 列表，以及调用关系</span><br></pre></td></tr></table></figure>
+<p>go tool pprof 命令：获取和分析 Profiling 数据<br>能通过对应的库获取想要的 Profiling 数据之后（不管是文件还是 http），下一步就是要对这些数据进行保存和分析，我们可以使用 go tool pprof 命令行工具。</p>
+<p>在后面我们会生成调用关系图和火焰图，需要安装 graphviz 软件包，在 ubuntu 系统可以使用下面的命令：</p>
+<p>$ sudo apt-get install -y graphviz<br>NOTE：获取的 Profiling 数据是动态的，要想获得有效的数据，请保证应用处于较大的负载（比如正在生成中运行的服务，或者通过其他工具模拟访问压力）。否则如果应用处于空闲状态，得到的结果可能没有任何意义。</p>
+<p>CPU Profiling<br>go tool pprof 最简单的使用方式为 <code>go tool pprof [binary] [source]</code>，binary 是应用的二进制文件，用来解析各种符号；source 表示 profile 数据的来源，可以是本地的文件，也可以是 http 地址。比如：</p>
+<p>➜  go tool pprof ./hyperkube <a href="http://172.16.3.232:10251/debug/pprof/profile" target="_blank" rel="noopener">http://172.16.3.232:10251/debug/pprof/profile</a><br>Fetching profile from <a href="http://172.16.3.232:10251/debug/pprof/profile" target="_blank" rel="noopener">http://172.16.3.232:10251/debug/pprof/profile</a><br>Please wait… (30s)<br>Saved profile in /home/cizixs/pprof/pprof.hyperkube.172.16.3.232:10251.samples.cpu.002.pb.gz Entering interactive mode (type “help” for commands) (pprof)<br>这个命令会进行 CPU profiling 分析，等待一段时间（默认是 30s，如果在 url 最后加上 ?seconds=60 参数可以调整采集数据的时间为 60s）之后，我们就进入了一个交互式命令行，可以对解析的结果进行查看和导出。可以通过 help 来查看支持的自命令有哪些。</p>
+<p>一个有用的命令是 topN，它列出最耗时间的地方：</p>
+<p>(pprof) top10</p>
+<p>每一行表示一个函数的信息。前两列表示函数在 CPU 上运行的时间以及百分比；第三列是当前所有函数累加使用 CPU 的比例；第四列和第五列代表这个函数以及子函数运行所占用的时间和比例（也被称为累加值 cumulative），应该大于等于前两列的值；最后一列就是函数的名字。如果应用程序有性能问题，上面这些信息应该能告诉我们时间都花费在哪些函数的执行上了。</p>
+<p>pprof 不仅能打印出最耗时的地方(top)，还能列出函数代码以及对应的取样数据(list)、汇编代码以及对应的取样数据(disasm)，而且能以各种样式进行输出，比如 svg、gv、callgrind、png、gif等等。</p>
+<p>其中一个非常便利的是 web 命令，在交互模式下输入 web，就能自动生成一个 svg 文件，并跳转到浏览器打开，生成了一个函数调用图：</p>
+<p>这个调用图包含了更多的信息，而且可视化的图像能让我们更清楚地理解整个应用程序的全貌。图中每个方框对应一个函数，方框越大代表执行的时间越久（包括它调用的子函数执行时间，但并不是正比的关系）；方框之间的箭头代表着调用关系，箭头上的数字代表被调用函数的执行时间。</p>
+<p>因为原图比较大，这里只截取了其中一部分，但是能明显看到 encoding/json.(*decodeState).object 是这里耗时比较多的地方，而且能看到它调用了哪些函数，分别函数多少。这些更详细的信息对于定位和调优性能是非常有帮助的！</p>
+<p>要想更细致分析，就要精确到代码级别了，看看每行代码的耗时，直接定位到出现性能问题的那行代码。pprof 也能做到，list 命令后面跟着一个正则表达式，就能查看匹配函数的代码以及每行代码的耗时：</p>
+<p>(pprof) list podFitsOnNode</p>
+<p>如果想要了解对应的汇编代码，可以使用 disadm <regex> 命令。这两个命令虽然强大，但是在命令行中查看代码并不是很方面，所以你可以使用 weblist 命令，用法和两者一样，但它会在浏览器打开一个页面，能够同时显示源代码和汇编代码。</regex></p>
+<p>NOTE：更详细的 pprof 使用方法可以参考 pprof –help 或者 pprof 文档。</p>
+<p>Memory Profiling<br>要想获得内存使用 Profiling 信息，只需要把数据源修改一下就行（对于 http 方式来说就是修改 url 的地址，从 /debug/pprof/profile 改成 /debug/pprof/heap）：</p>
+<p>➜  go tool pprof ./hyperkube <a href="http://172.16.3.232:10251/debug/pprof/heap" target="_blank" rel="noopener">http://172.16.3.232:10251/debug/pprof/heap</a><br>Fetching profile from <a href="http://172.16.3.232:10251/debug/pprof/heap" target="_blank" rel="noopener">http://172.16.3.232:10251/debug/pprof/heap</a><br>Saved profile in /home/cizixs/pprof/pprof.hyperkube.172.16.3.232:10251.inuse_objects.inuse_space.002.pb.gz Entering interactive mode (type “help” for commands) (pprof)<br>和 CPU Profiling 使用一样，使用 top N 可以打印出使用内存最多的函数列表：</p>
+<p>(pprof) top</p>
+<p>每一列的含义也是类似的，只不过从 CPU 使用时间变成了内存使用大小，就不多解释了。</p>
+<p>类似的，web 命令也能生成 svg 图片在浏览器中打开，从中可以看到函数调用关系，以及每个函数的内存使用多少。</p>
+<p>需要注意的是，默认情况下，统计的是内存使用大小，如果执行命令的时候加上 –inuse_objects 可以查看每个函数分配的对象数；–alloc-space 查看分配的内存空间大小。</p>
+<p>这里还要提两个比较有用的方法，如果应用比较复杂，生成的调用图特别大，看起来很乱，有两个办法可以优化：</p>
+<p>使用 web funcName 的方式，只打印和某个函数相关的内容<br>运行 go tool pprof 命令时加上 –nodefration=0.05 参数，表示如果调用的子函数使用的 CPU、memory 不超过 5%，就忽略它，不要显示在图片中<br>pprof 已经支持动态的 web 浏览方式：<a href="https://github.com/google/pprof/commit/f83a3d89c18c445178f794d525bf3013ef7b3330" target="_blank" rel="noopener">https://github.com/google/pprof/commit/f83a3d89c18c445178f794d525bf3013ef7b3330</a></p>
+<p>测试工具的集成<br>go test 命令有两个参数和 pprof 相关，它们分别指定生成的 CPU 和 Memory profiling 保存的文件：</p>
+<p>-cpuprofile：cpu profiling 数据要保存的文件地址<br>-memprofile：memory profiling 数据要报文的文件地址<br>比如下面执行测试的同时，也会执行 CPU profiling，并把结果保存在 cpu.prof 文件中：</p>
+<p>$ go test -bench . -cpuprofile=cpu.prof<br>执行结束之后，就会生成 main.test 和 cpu.prof 文件。要想使用 go tool pprof，需要指定的二进制文件就是 main.test。</p>
+<p>需要注意的是，Profiling 一般和性能测试一起使用，这个原因在前文也提到过，只有应用在负载高的情况下 Profiling 才有意义。</p>
+<p>go-torch 和火焰图<br>火焰图（Flame Graph）是 Bredan Gregg 创建的一种性能分析图表。上面的 profiling 结果也转换成火焰图，如果对火焰图比较了解可以手动来操作，不过这里我们要介绍一个工具：go-torch。这是 uber 开源的一个工具，可以直接读取 golang profiling 数据，并生成一个火焰图的 svg 文件。</p>
+<p>火焰图 svg 文件可以通过浏览器打开，它对于调用图的最优点是它是动态的：可以通过点击每个方块来 zoom in 分析它上面的内容。</p>
+<p>火焰图的调用顺序从下到上，每个方块代表一个函数，它上面一层表示这个函数会调用哪些函数，方块的大小代表了占用 CPU 使用的长短。火焰图的配色并没有特殊的意义，默认的红、黄配色是为了更像火焰而已。</p>
+<p>go-torch 工具的使用非常简单，没有任何参数的话，它会尝试从 <a href="http://localhost:8080/debug/pprof/profile" target="_blank" rel="noopener">http://localhost:8080/debug/pprof/profile</a> 获取 profiling 数据。它有三个常用的参数可以调整：</p>
+<p>-u –url：要访问的 URL，这里只是主机和端口部分<br>-s –suffix：pprof profile 的路径，默认为 /debug/pprof/profile<br>–seconds：要执行 profiling 的时间长度，默认为 30s<br>要生成火焰图，需要事先安装 FlameGraph工具，这个工具的安装很简单，只要把对应的可执行文件放到 $PATH 目录下就行。</p>
+<p>参考资料<br>The Go Blog: Profiling Go Programs<br>go command tutorial: go tool pprof<br>Profiling and optimizing Go web applications<br>Debugging performance issues in Go programs</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/25/golang/govendor-quickstart/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/12/25/golang/govendor-quickstart/" itemprop="url">govendor-quickstart</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-25T13:16:56+08:00">
+                2018-12-25
               </time>
             
 
@@ -1566,165 +1604,344 @@
       
         
           
-            <h1 id="go遇到的一些问题"><a href="#go遇到的一些问题" class="headerlink" title="go遇到的一些问题"></a>go遇到的一些问题</h1><h3 id="chan关闭之后，还可以读写吗？"><a href="#chan关闭之后，还可以读写吗？" class="headerlink" title="chan关闭之后，还可以读写吗？"></a>chan关闭之后，还可以读写吗？</h3><blockquote>
-<p>不能写，但可以读<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;fmt&quot;</span><br><span class="line">	&quot;sync&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	var ret = make(chan []int, 1000)</span><br><span class="line">	var wg = sync.WaitGroup&#123;&#125;</span><br><span class="line">	wg.Add(3)</span><br><span class="line">	go func() &#123;</span><br><span class="line">		defer wg.Done()</span><br><span class="line">		var result = make([]int, 0)</span><br><span class="line">		for i := 0; i &lt; 10; i++ &#123;</span><br><span class="line">			result = append(result, i)</span><br><span class="line">		&#125;</span><br><span class="line">		ret &lt;- result</span><br><span class="line">	&#125;()</span><br><span class="line">	go func() &#123;</span><br><span class="line">		defer wg.Done()</span><br><span class="line">		var result = make([]int, 0)</span><br><span class="line">		for i := 10; i &lt; 20; i++ &#123;</span><br><span class="line">			result = append(result, i)</span><br><span class="line">		&#125;</span><br><span class="line">		ret &lt;- result</span><br><span class="line">	&#125;()</span><br><span class="line">	go func() &#123;</span><br><span class="line">		defer wg.Done()</span><br><span class="line">		var result = make([]int, 0)</span><br><span class="line">		for i := 20; i &lt; 30; i++ &#123;</span><br><span class="line">			result = append(result, i)</span><br><span class="line">		&#125;</span><br><span class="line">		ret &lt;- result</span><br><span class="line">	&#125;()</span><br><span class="line">	wg.Wait()</span><br><span class="line">	//go func() &#123;</span><br><span class="line">	//	for &#123;</span><br><span class="line">	//		ret &lt;- []int&#123;1&#125;</span><br><span class="line">	//		time.Sleep(time.Second)</span><br><span class="line">	//	&#125;</span><br><span class="line">	//&#125;()</span><br><span class="line">	//close(ret)</span><br><span class="line">	for v := range ret &#123; //0 range if v==0 break ,or panic</span><br><span class="line">		for _, v := range v &#123;</span><br><span class="line">			fmt.Println(v)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+            <h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p><code>go get -u -v github.com/kardianos/govendor</code></p>
+<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">0. 安装</span><br><span class="line">go get -u -v github.com/kardianos/govendor</span><br><span class="line"></span><br><span class="line">1. 初始化</span><br><span class="line">cd &quot;my project in GOPATH&quot;</span><br><span class="line">govendor init</span><br><span class="line"></span><br><span class="line">2. 添加依赖</span><br><span class="line"># Add existing GOPATH files to vendor.</span><br><span class="line">govendor add +external</span><br></pre></td></tr></table></figure>
+<h1 id="详细教程"><a href="#详细教程" class="headerlink" title="详细教程"></a>详细教程</h1><p>wiki:<a href="https://github.com/kardianos/govendor" target="_blank" rel="noopener">https://github.com/kardianos/govendor</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line">Quick Start, also see the FAQ</span><br><span class="line"># Setup your project.</span><br><span class="line">cd &quot;my project in GOPATH&quot;</span><br><span class="line">govendor init</span><br><span class="line"></span><br><span class="line"># Add existing GOPATH files to vendor.</span><br><span class="line">govendor add +external</span><br><span class="line"></span><br><span class="line"># View your work.</span><br><span class="line">govendor list</span><br><span class="line"></span><br><span class="line"># Look at what is using a package</span><br><span class="line">govendor list -v fmt</span><br><span class="line"></span><br><span class="line"># Specify a specific version or revision to fetch</span><br><span class="line">govendor fetch golang.org/x/net/context@a4bbce9fcae005b22ae5443f6af064d80a6f5a55</span><br><span class="line">govendor fetch golang.org/x/net/context@v1   # Get latest v1.*.* tag or branch.</span><br><span class="line">govendor fetch golang.org/x/net/context@=v1  # Get the tag or branch named &quot;v1&quot;.</span><br><span class="line"></span><br><span class="line"># Update a package to latest, given any prior version constraint</span><br><span class="line">govendor fetch golang.org/x/net/context</span><br><span class="line"></span><br><span class="line"># Format your repository only</span><br><span class="line">govendor fmt +local</span><br><span class="line"></span><br><span class="line"># Build everything in your repository only</span><br><span class="line">govendor install +local</span><br><span class="line"></span><br><span class="line"># Test your repository only</span><br><span class="line">govendor test +local</span><br><span class="line"></span><br><span class="line">Sub-commands</span><br><span class="line">	init     Create the &quot;vendor&quot; folder and the &quot;vendor.json&quot; file.</span><br><span class="line">	list     List and filter existing dependencies and packages.</span><br><span class="line">	add      Add packages from $GOPATH.</span><br><span class="line">	update   Update packages from $GOPATH.</span><br><span class="line">	remove   Remove packages from the vendor folder.</span><br><span class="line">	status   Lists any packages missing, out-of-date, or modified locally.</span><br><span class="line">	fetch    Add new or update vendor folder packages from remote repository.</span><br><span class="line">	sync     Pull packages into vendor folder from remote repository with revisions</span><br><span class="line">  	             from vendor.json file.</span><br><span class="line">	migrate  Move packages from a legacy tool to the vendor folder with metadata.</span><br><span class="line">	get      Like &quot;go get&quot; but copies dependencies into a &quot;vendor&quot; folder.</span><br><span class="line">	license  List discovered licenses for the given status or import paths.</span><br><span class="line">	shell    Run a &quot;shell&quot; to make multiple sub-commands more efficient for large</span><br><span class="line">	             projects.</span><br><span class="line"></span><br><span class="line">	go tool commands that are wrapped:</span><br><span class="line">	  `+&lt;status&gt;` package selection may be used with them</span><br><span class="line">	fmt, build, install, clean, test, vet, generate, tool</span><br><span class="line">Status</span><br><span class="line">Packages can be specified by their &quot;status&quot;.</span><br><span class="line"></span><br><span class="line">	+local    (l) packages in your project</span><br><span class="line">	+external (e) referenced packages in GOPATH but not in current project</span><br><span class="line">	+vendor   (v) packages in the vendor folder</span><br><span class="line">	+std      (s) packages in the standard library</span><br><span class="line"></span><br><span class="line">	+excluded (x) external packages explicitly excluded from vendoring</span><br><span class="line">	+unused   (u) packages in the vendor folder, but unused</span><br><span class="line">	+missing  (m) referenced packages but not found</span><br><span class="line"></span><br><span class="line">	+program  (p) package is a main package</span><br><span class="line"></span><br><span class="line">	+outside  +external +missing</span><br><span class="line">	+all      +all packages</span><br><span class="line">Status can be referenced by their initial letters.</span><br><span class="line"></span><br><span class="line">+std same as +s</span><br><span class="line">+external same as +ext same as +e</span><br><span class="line">+excluded same as +exc same as +x</span><br><span class="line">Status can be logically composed:</span><br><span class="line"></span><br><span class="line">+local,program (local AND program) local packages that are also programs</span><br><span class="line">+local +vendor (local OR vendor) local packages or vendor packages</span><br><span class="line">+vendor,program +std ((vendor AND program) OR std) vendor packages that are also programs or std library packages</span><br><span class="line">+vendor,^program (vendor AND NOT program) vendor package that are not &quot;main&quot; packages.</span><br></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/19/javascript/es6/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/12/19/javascript/es6/" itemprop="url">es6</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-19T16:13:42+08:00">
+                2018-12-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/front-end/" itemprop="url" rel="index">
+                    <span itemprop="name">front-end</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="ES6"><a href="#ES6" class="headerlink" title="ES6"></a>ES6</h1><h3 id="Babel是一个广泛使用的-ES6-转码器，可以将-ES6-代码转为-ES5-代码"><a href="#Babel是一个广泛使用的-ES6-转码器，可以将-ES6-代码转为-ES5-代码" class="headerlink" title="Babel是一个广泛使用的 ES6 转码器，可以将 ES6 代码转为 ES5 代码"></a>Babel是一个广泛使用的 ES6 转码器，可以将 ES6 代码转为 ES5 代码</h3><p>Babel 的配置文件是<code>.babelrc</code>，存放在项目的根目录下。使用 Babel 的第一步，就是配置这个文件。Babel 使用<code>babel-cli</code>工具，用于命令行转码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 转码前</span><br><span class="line">input.map(item =&gt; item + 1);</span><br><span class="line"></span><br><span class="line">// 转码后</span><br><span class="line">input.map(function (item) &#123;</span><br><span class="line">  return item + 1;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="let和const"><a href="#let和const" class="headerlink" title="let和const"></a>let和const</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">let 局部作用域，var全局作用域，const静态变量</span><br><span class="line">直接使用未声明，输出为：undefined</span><br></pre></td></tr></table></figure>
+<h3 id="变量解析"><a href="#变量解析" class="headerlink" title="变量解析"></a>变量解析</h3><p>变量的解构赋值用途很多。</p>
+<p><strong>（1）交换变量的值</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let x = 1;</span><br><span class="line">let y = 2;</span><br><span class="line"></span><br><span class="line">[x, y] = [y, x];</span><br></pre></td></tr></table></figure>
+<p>上面代码交换变量<code>x</code>和<code>y</code>的值，这样的写法不仅简洁，而且易读，语义非常清晰。</p>
+<p><strong>（2）从函数返回多个值</strong></p>
+<p>函数只能返回一个值，如果要返回多个值，只能将它们放在数组或对象里返回。有了解构赋值，取出这些值就非常方便。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// 返回一个数组</span><br><span class="line"></span><br><span class="line">function example() &#123;</span><br><span class="line">  return [1, 2, 3];</span><br><span class="line">&#125;</span><br><span class="line">let [a, b, c] = example();</span><br><span class="line"></span><br><span class="line">// 返回一个对象</span><br><span class="line"></span><br><span class="line">function example() &#123;</span><br><span class="line">  return &#123;</span><br><span class="line">    foo: 1,</span><br><span class="line">    bar: 2</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line">let &#123; foo, bar &#125; = example();</span><br></pre></td></tr></table></figure>
+<p><strong>（3）函数参数的定义</strong></p>
+<p>解构赋值可以方便地将一组参数与变量名对应起来。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 参数是一组有次序的值</span><br><span class="line">function f([x, y, z]) &#123; ... &#125;</span><br><span class="line">f([1, 2, 3]);</span><br><span class="line"></span><br><span class="line">// 参数是一组无次序的值</span><br><span class="line">function f(&#123;x, y, z&#125;) &#123; ... &#125;</span><br><span class="line">f(&#123;z: 3, y: 2, x: 1&#125;);</span><br></pre></td></tr></table></figure>
+<p><strong>（4）提取 JSON 数据</strong></p>
+<p>解构赋值对提取 JSON 对象中的数据，尤其有用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">let jsonData = &#123;</span><br><span class="line">  id: 42,</span><br><span class="line">  status: &quot;OK&quot;,</span><br><span class="line">  data: [867, 5309]</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">let &#123; id, status, data: number &#125; = jsonData;</span><br><span class="line"></span><br><span class="line">console.log(id, status, number);</span><br><span class="line">// 42, &quot;OK&quot;, [867, 5309]</span><br></pre></td></tr></table></figure>
+<p>上面代码可以快速提取 JSON 数据的值。</p>
+<p><strong>（5）函数参数的默认值</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">jQuery.ajax = function (url, &#123;</span><br><span class="line">  async = true,</span><br><span class="line">  beforeSend = function () &#123;&#125;,</span><br><span class="line">  cache = true,</span><br><span class="line">  complete = function () &#123;&#125;,</span><br><span class="line">  crossDomain = false,</span><br><span class="line">  global = true,</span><br><span class="line">  // ... more config</span><br><span class="line">&#125; = &#123;&#125;) &#123;</span><br><span class="line">  // ... do stuff</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>指定参数的默认值，就避免了在函数体内部再写<code>var foo = config.foo || &#39;default foo&#39;;</code>这样的语句。</p>
+<p><strong>（6）遍历 Map 结构</strong></p>
+<p>任何部署了 Iterator 接口的对象，都可以用<code>for...of</code>循环遍历。Map 结构原生支持 Iterator 接口，配合变量的解构赋值，获取键名和键值就非常方便。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">const map = new Map();</span><br><span class="line">map.set(&apos;first&apos;, &apos;hello&apos;);</span><br><span class="line">map.set(&apos;second&apos;, &apos;world&apos;);</span><br><span class="line"></span><br><span class="line">for (let [key, value] of map) &#123;</span><br><span class="line">  console.log(key + &quot; is &quot; + value);</span><br><span class="line">&#125;</span><br><span class="line">// first is hello</span><br><span class="line">// second is world</span><br></pre></td></tr></table></figure>
+<p>如果只想获取键名，或者只想获取键值，可以写成下面这样。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// 获取键名</span><br><span class="line">for (let [key] of map) &#123;</span><br><span class="line">  // ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 获取键值</span><br><span class="line">for (let [,value] of map) &#123;</span><br><span class="line">  // ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>（7）输入模块的指定方法</strong></p>
+<p>加载模块时，往往需要指定输入哪些方法。解构赋值使得输入语句非常清晰。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const &#123; SourceMapConsumer, SourceNode &#125; = require(&quot;source-map&quot;);</span><br></pre></td></tr></table></figure>
+<h3 id="字符串使用"><a href="#字符串使用" class="headerlink" title="字符串使用"></a>字符串使用</h3><h5 id="Unicode表示"><a href="#Unicode表示" class="headerlink" title="Unicode表示"></a>Unicode表示</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&apos;\z&apos; === &apos;z&apos;  // true</span><br><span class="line">&apos;\172&apos; === &apos;z&apos; // true</span><br><span class="line">&apos;\x7A&apos; === &apos;z&apos; // true</span><br><span class="line">&apos;\u007A&apos; === &apos;z&apos; // true</span><br><span class="line">&apos;\u&#123;7A&#125;&apos; === &apos;z&apos; // true</span><br></pre></td></tr></table></figure>
+<h5 id="codePointAt"><a href="#codePointAt" class="headerlink" title="codePointAt()"></a>codePointAt()</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">var s = &quot;𠮷&quot;;</span><br><span class="line"></span><br><span class="line">s.length // 2</span><br><span class="line">s.charAt(0) // &apos;&apos;</span><br><span class="line">s.charAt(1) // &apos;&apos;</span><br><span class="line">s.charCodeAt(0) // 55362</span><br><span class="line">s.charCodeAt(1) // 57271</span><br></pre></td></tr></table></figure>
+<h5 id="String-fromCodePoint"><a href="#String-fromCodePoint" class="headerlink" title="String.fromCodePoint()"></a>String.fromCodePoint()</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">String.fromCodePoint(0x20BB7)</span><br><span class="line">// &quot;𠮷&quot;</span><br><span class="line">String.fromCodePoint(0x78, 0x1f680, 0x79) === &apos;x\uD83D\uDE80y&apos;</span><br><span class="line">// true</span><br></pre></td></tr></table></figure>
+<h5 id="遍历-for-let-i-of-x"><a href="#遍历-for-let-i-of-x" class="headerlink" title="遍历 for let i of x"></a>遍历 for let i of x</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for (let codePoint of &apos;foo&apos;) &#123;</span><br><span class="line">  console.log(codePoint)</span><br><span class="line">&#125;</span><br><span class="line">// &quot;f&quot;</span><br><span class="line">// &quot;o&quot;</span><br><span class="line">// &quot;o&quot;</span><br></pre></td></tr></table></figure>
+<h5 id="字符串常用函数"><a href="#字符串常用函数" class="headerlink" title="字符串常用函数"></a>字符串常用函数</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">includes()</span><br><span class="line">startsWitch()</span><br><span class="line">endsWith()</span><br><span class="line">repeat()</span><br><span class="line">matchAll()</span><br><span class="line">match()、replace()、search()、split()</span><br></pre></td></tr></table></figure>
+<h4 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">//默认值</span><br><span class="line">function log(x, y = &apos;World&apos;) &#123;</span><br><span class="line">  console.log(x, y);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">log(&apos;Hello&apos;) // Hello World</span><br><span class="line">log(&apos;Hello&apos;, &apos;China&apos;) // Hello China</span><br><span class="line">log(&apos;Hello&apos;, &apos;&apos;) // Hello</span><br><span class="line"></span><br><span class="line">//...函数[和golang差不多]</span><br><span class="line">function add(...values) &#123;</span><br><span class="line">  let sum = 0;</span><br><span class="line"></span><br><span class="line">  for (var val of values) &#123;</span><br><span class="line">    sum += val;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  return sum;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">add(2, 5, 3) // 10</span><br><span class="line">add(...numbers) </span><br><span class="line"></span><br><span class="line">//lamda表达式</span><br><span class="line">var sum = (num1, num2) =&gt; &#123; return num1 + num2; &#125;</span><br><span class="line">var sum = (num1, num2) =&gt; num1 + num2;</span><br><span class="line">// 等同于</span><br><span class="line">var sum = function(num1, num2) &#123;</span><br><span class="line">  return num1 + num2;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">//Array.from()</span><br><span class="line">let arrayLike = &#123;</span><br><span class="line">    &apos;0&apos;: &apos;a&apos;,</span><br><span class="line">    &apos;1&apos;: &apos;b&apos;,</span><br><span class="line">    &apos;2&apos;: &apos;c&apos;,</span><br><span class="line">    length: 3</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">// ES6的写法</span><br><span class="line">let arr2 = Array.from(arrayLike); // [&apos;a&apos;, &apos;b&apos;, &apos;c&apos;]</span><br><span class="line">//Array.of()</span><br><span class="line">Array.of(3, 11, 8) // [3,11,8]</span><br><span class="line"></span><br><span class="line">//遍历数组</span><br><span class="line">for (let [index, elem] of [&apos;a&apos;, &apos;b&apos;].entries()) &#123;</span><br><span class="line">  console.log(index, elem);</span><br><span class="line">&#125;</span><br><span class="line">// 0 &quot;a&quot;</span><br><span class="line">// 1 &quot;b&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="SET"><a href="#SET" class="headerlink" title="SET"></a>SET</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 例一</span><br><span class="line">const set = new Set([1, 2, 3, 4, 4]);</span><br><span class="line">[...set]</span><br><span class="line">// [1, 2, 3, 4]</span><br><span class="line"></span><br><span class="line">// 例二</span><br><span class="line">const items = new Set([1, 2, 3, 4, 5, 5, 5, 5]);</span><br><span class="line">items.size // 5</span><br></pre></td></tr></table></figure>
+<h3 id="class"><a href="#class" class="headerlink" title="class"></a>class</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">class Point &#123;</span><br><span class="line">  constructor(x, y) &#123;</span><br><span class="line">    this.x = x;</span><br><span class="line">    this.y = y;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  toString() &#123;</span><br><span class="line">    return &apos;(&apos; + this.x + &apos;, &apos; + this.y + &apos;)&apos;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="模块加载"><a href="#模块加载" class="headerlink" title="模块加载"></a>模块加载</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// ES6 模块不是对象，而是通过export命令显式指定输出的代码，再通过import命令输入。</span><br><span class="line">export var firstName = &apos;Michael&apos;;</span><br><span class="line">export var lastName = &apos;Jackson&apos;;</span><br><span class="line">export var year = 1958;</span><br><span class="line">import &#123; stat, exists, readFile &#125; from &apos;fs&apos;;</span><br><span class="line">export &#123; area as circleArea &#125; from &apos;circle&apos;;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/09/golang/golang-dep/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/12/09/golang/golang-dep/" itemprop="url">golang-dep</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-09T15:48:45+08:00">
+                2018-12-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/categories/" itemprop="url" rel="index">
+                    <span itemprop="name">categories</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="go-dep"><a href="#go-dep" class="headerlink" title="go dep"></a>go dep</h1><h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//优先使用本地包初始化【本地获取较快,-v查看安装过程】</span><br><span class="line">dep init -gopath -v</span><br><span class="line"></span><br><span class="line">//保证同步</span><br><span class="line">dep ensure</span><br><span class="line"></span><br><span class="line">//查看状态【mac】</span><br><span class="line">brew install graphviz</span><br><span class="line">dep status -dot | dot -T png | open -f -a /Applications/Preview.app</span><br></pre></td></tr></table></figure>
+<h3 id="文件说明"><a href="#文件说明" class="headerlink" title="文件说明"></a>文件说明</h3><p><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fy0k6wfvtpj20pq0ao0tg.jpg" alt=""></p>
+<blockquote>
+<p><code>dep ensure</code> means: Hey dep, please make sure that my project is in sync: that Gopkg.lock satisfies all the imports in my project, and all the rules in Gopkg.toml, and that vendor/ contains exactly what Gopkg.lock says it should.”</p>
 </blockquote>
-<h3 id="并发获取数据，常见问题"><a href="#并发获取数据，常见问题" class="headerlink" title="并发获取数据，常见问题"></a>并发获取数据，常见问题</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">for _,v:=range uids&#123;</span><br><span class="line">	go func()&#123;</span><br><span class="line">    	fmt.Println(v)//v的值是一样的！</span><br><span class="line">    &#125;()</span><br><span class="line">&#125;</span><br><span class="line">==》</span><br><span class="line">for _,v:=range uids&#123;</span><br><span class="line">	go func(v int)&#123;</span><br><span class="line">    	fmt.Println(v)//v的值正常</span><br><span class="line">    &#125;(v)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/19/1.stack/golang/go-通道channel/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/19/1.stack/golang/go-通道channel/" itemprop="url">go-通道channel</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-19T10:52:42+08:00">
-                2018-09-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/go/" itemprop="url" rel="index">
-                    <span itemprop="name">go</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="通道"><a href="#通道" class="headerlink" title="通道"></a>通道</h1><p>两种配合方式：</p>
+<h3 id="什么时候使用-dep-ensure"><a href="#什么时候使用-dep-ensure" class="headerlink" title="什么时候使用 dep ensure"></a>什么时候使用 <code>dep ensure</code></h3><p>Using dep ensure<br>There are four times when you’ll run dep ensure:</p>
 <ul>
-<li>range</li>
-<li>select</li>
+<li>To add a new dependency<br><code>dep ensure -add github.com/pkg/errors</code></li>
+<li>To update an existing dependency<br><code>dep ensure -update</code></li>
+<li>To catch up after importing a package for the first time in your project, or removing the last import of a package in your project</li>
+<li>To catch up to a change to a rule in Gopkg.toml</li>
 </ul>
-<h3 id="range-方式"><a href="#range-方式" class="headerlink" title="range 方式"></a>range 方式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//关闭之后会跳出循环</span><br><span class="line">for v:=range c&#123;</span><br><span class="line">	//todo</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="select-方式"><a href="#select-方式" class="headerlink" title="select 方式"></a>select 方式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for &#123;</span><br><span class="line">	select &#123;</span><br><span class="line">    	case val,ok:=&lt;-c:</span><br><span class="line">        	if !ok&#123;break&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Close-ch-含义"><a href="#Close-ch-含义" class="headerlink" title="Close(ch)含义"></a>Close(ch)含义</h3><p>给通道写了一个结束标识值，接收到这个值表示通道已经关闭，有这个值就不能再写入了，还可以继续读取，读取到这个值的时候就表示已经读取完了，通道为空了。</p>
-<h3 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h3><ul>
-<li><p>从一个nil channel中接收数据会一直被block。</p>
-</li>
-<li><p>从一个被close的channel中接收数据不会被阻塞，而是立即返回，接收完已发送的数据后会返回元素类型的零值(zero value)。</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//如果OK 是false，表明接收的x是产生的零值，这个channel被关闭了或者为空。</span><br><span class="line">//从这个关闭的channel中不但可以读取出已发送的数据，还可以不断的读取零值(使用range或者判断是否关闭可以跳出)</span><br><span class="line">x, ok := &lt;-ch</span><br></pre></td></tr></table></figure>
+<h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><p><a href="https://studygolang.com/articles/10589" target="_blank" rel="noopener">https://studygolang.com/articles/10589</a></p>
+<p><a href="https://golang.github.io/dep/docs/daily-dep.html" target="_blank" rel="noopener">https://golang.github.io/dep/docs/daily-dep.html</a></p>
+
           
         
       
@@ -1763,7 +1980,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1807,7 +2024,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-count">53</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1818,7 +2035,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-count">30</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -1829,7 +2046,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-count">52</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="protobuf,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="为什么要使用protobuf最近的项目中，一直使用Json做数据传输。Json用起来的确很方便。但相对于protobuf数据量更大些。做一个移动端应用，为用户省点流量还是很有必要的。正好也可以学习一下protobuf的使用 跟Json相比protobuf性能更高，更加规范  编解码速度快，数据体积小 使用统一的规范，不用再担心大小写不同导致解析失败等蛋疼的问题了  但也失去了一些便利性  改动协议">
+<meta name="keywords" content="protobuf">
+<meta property="og:type" content="article">
+<meta property="og:title" content="protobuf_intro">
+<meta property="og:url" content="http://yoursite.com/2019/10/07/cs/protobuf-intro/index.html">
+<meta property="og:site_name" content="greyireland">
+<meta property="og:description" content="为什么要使用protobuf最近的项目中，一直使用Json做数据传输。Json用起来的确很方便。但相对于protobuf数据量更大些。做一个移动端应用，为用户省点流量还是很有必要的。正好也可以学习一下protobuf的使用 跟Json相比protobuf性能更高，更加规范  编解码速度快，数据体积小 使用统一的规范，不用再担心大小写不同导致解析失败等蛋疼的问题了  但也失去了一些便利性  改动协议">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-10-07T12:57:09.075Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="protobuf_intro">
+<meta name="twitter:description" content="为什么要使用protobuf最近的项目中，一直使用Json做数据传输。Json用起来的确很方便。但相对于protobuf数据量更大些。做一个移动端应用，为用户省点流量还是很有必要的。正好也可以学习一下protobuf的使用 跟Json相比protobuf性能更高，更加规范  编解码速度快，数据体积小 使用统一的规范，不用再担心大小写不同导致解析失败等蛋疼的问题了  但也失去了一些便利性  改动协议">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/10/07/cs/protobuf-intro/">
+
+
+
+
+
+  <title>protobuf_intro | greyireland</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">greyireland</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/07/cs/protobuf-intro/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">protobuf_intro</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-07T20:55:39+08:00">
+                2019-10-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/protobuf/" itemprop="url" rel="index">
+                    <span itemprop="name">protobuf</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="为什么要使用protobuf"><a href="#为什么要使用protobuf" class="headerlink" title="为什么要使用protobuf"></a>为什么要使用protobuf</h1><p>最近的项目中，一直使用Json做数据传输。Json用起来的确很方便。但相对于protobuf数据量更大些。做一个移动端应用，为用户省点流量还是很有必要的。正好也可以学习一下protobuf的使用</p>
+<p>跟Json相比protobuf性能更高，更加规范</p>
+<ul>
+<li>编解码速度快，数据体积小</li>
+<li>使用统一的规范，不用再担心大小写不同导致解析失败等蛋疼的问题了</li>
+</ul>
+<p>但也失去了一些便利性</p>
+<ul>
+<li>改动协议字段，需要重新生成文件。</li>
+<li>数据没有可读性</li>
+</ul>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>在go中使用protobuf，有两个可选用的包goprotobuf（go官方出品）和gogoprotobuf。<br>gogoprotobuf完全兼容google protobuf，它生成的代码质量和编解码性能均比goprotobuf高一些</p>
+<h2 id="安装protoc"><a href="#安装protoc" class="headerlink" title="安装protoc"></a>安装protoc</h2><p>首先去<a href="https://github.com/google/protobuf/releases" target="_blank" rel="noopener">https://github.com/google/pro…</a> 上下载protobuf的编译器protoc，windows上可以直接下到exe文件(linux则需要编译)，最后将下载好的可执行文件拷贝到$GOPATH的bin目录下($GOPATH/bin目录最好添加到系统环境变量里)</p>
+<h2 id="安装protobuf库文件"><a href="#安装protobuf库文件" class="headerlink" title="安装protobuf库文件"></a>安装protobuf库文件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go get github.com/golang/protobuf/proto</span><br></pre></td></tr></table></figure>
+<h2 id="goprotobuf"><a href="#goprotobuf" class="headerlink" title="goprotobuf"></a>goprotobuf</h2><h3 id="安装插件"><a href="#安装插件" class="headerlink" title="安装插件"></a>安装插件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go get github.com/golang/protobuf/protoc-gen-go</span><br></pre></td></tr></table></figure>
+<h3 id="生成go文件"><a href="#生成go文件" class="headerlink" title="生成go文件"></a>生成go文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protoc --go_out=. *.proto</span><br></pre></td></tr></table></figure>
+<h2 id="gogoprotobuf"><a href="#gogoprotobuf" class="headerlink" title="gogoprotobuf"></a>gogoprotobuf</h2><h3 id="安装插件-1"><a href="#安装插件-1" class="headerlink" title="安装插件"></a>安装插件</h3><p>gogoprotobuf有两个插件可以使用</p>
+<ul>
+<li>protoc-gen-gogo：和protoc-gen-go生成的文件差不多，性能也几乎一样(稍微快一点点)</li>
+<li>protoc-gen-gofast：生成的文件更复杂，性能也更高(快5-7倍)</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//gogo</span><br><span class="line">go get github.com/gogo/protobuf/protoc-gen-gogo</span><br><span class="line"></span><br><span class="line">//gofast</span><br><span class="line">go get github.com/gogo/protobuf/protoc-gen-gofast</span><br></pre></td></tr></table></figure>
+<h3 id="安装gogoprotobuf库文件【插件的依赖】"><a href="#安装gogoprotobuf库文件【插件的依赖】" class="headerlink" title="安装gogoprotobuf库文件【插件的依赖】"></a>安装gogoprotobuf库文件【插件的依赖】</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">go get github.com/gogo/protobuf/proto</span><br><span class="line">go get github.com/gogo/protobuf/gogoproto  //这个不装也没关系</span><br></pre></td></tr></table></figure>
+<h3 id="生成go文件-1"><a href="#生成go文件-1" class="headerlink" title="生成go文件"></a>生成go文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//gogo</span><br><span class="line">protoc --gogo_out=. *.proto</span><br><span class="line"></span><br><span class="line">//gofast</span><br><span class="line">protoc --gofast_out=. *.proto</span><br></pre></td></tr></table></figure>
+<h1 id="性能测试"><a href="#性能测试" class="headerlink" title="性能测试"></a>性能测试</h1><p>这里只是简单的用go test测试了一下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//goprotobuf</span><br><span class="line">&quot;编码&quot;：447ns/op</span><br><span class="line">&quot;解码&quot;：422ns/op</span><br><span class="line"></span><br><span class="line">//gogoprotobuf-go</span><br><span class="line">&quot;编码&quot;：433ns/op</span><br><span class="line">&quot;解码&quot;：427ns/op</span><br><span class="line"></span><br><span class="line">//gogoprotobuf-fast</span><br><span class="line">&quot;编码&quot;：112ns/op</span><br><span class="line">&quot;解码&quot;：112ns/op</span><br></pre></td></tr></table></figure>
+<h1 id="go-protobuf的简单使用"><a href="#go-protobuf的简单使用" class="headerlink" title="go_protobuf的简单使用"></a>go_protobuf的简单使用</h1><h2 id="test-proto"><a href="#test-proto" class="headerlink" title="test.proto"></a>test.proto</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">syntax = &quot;proto3&quot;;  //指定版本，必须要写（proto3、proto2）  </span><br><span class="line">package proto;</span><br><span class="line"></span><br><span class="line">enum FOO </span><br><span class="line">&#123; </span><br><span class="line">    X = 0; </span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">//message是固定的。UserInfo是类名，可以随意指定，符合规范即可</span><br><span class="line">message UserInfo&#123;</span><br><span class="line">    string message = 1;   //消息</span><br><span class="line">    int32 length = 2;    //消息大小</span><br><span class="line">    int32 cnt = 3;      //消息计数</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="client-protobuf-go"><a href="#client-protobuf-go" class="headerlink" title="client_protobuf.go"></a>client_protobuf.go</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">    &quot;bufio&quot;</span><br><span class="line">    &quot;fmt&quot;</span><br><span class="line">    &quot;net&quot;</span><br><span class="line">    &quot;os&quot;</span><br><span class="line">    stProto &quot;proto&quot;</span><br><span class="line">    &quot;time&quot;</span><br><span class="line"></span><br><span class="line">    //protobuf编解码库,下面两个库是相互兼容的，可以使用其中任意一个</span><br><span class="line">    &quot;github.com/golang/protobuf/proto&quot;</span><br><span class="line">    //&quot;github.com/gogo/protobuf/proto&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">    strIP := &quot;localhost:6600&quot;</span><br><span class="line">    var conn net.Conn</span><br><span class="line">    var err error</span><br><span class="line"></span><br><span class="line">    //连接服务器</span><br><span class="line">    for conn, err = net.Dial(&quot;tcp&quot;, strIP); err != nil; conn, err = net.Dial(&quot;tcp&quot;, strIP) &#123;</span><br><span class="line">        fmt.Println(&quot;connect&quot;, strIP, &quot;fail&quot;)</span><br><span class="line">        time.Sleep(time.Second)</span><br><span class="line">        fmt.Println(&quot;reconnect...&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Println(&quot;connect&quot;, strIP, &quot;success&quot;)</span><br><span class="line">    defer conn.Close()</span><br><span class="line"></span><br><span class="line">    //发送消息</span><br><span class="line">    cnt := 0</span><br><span class="line">    sender := bufio.NewScanner(os.Stdin)</span><br><span class="line">    for sender.Scan() &#123;</span><br><span class="line">        cnt++</span><br><span class="line">        stSend := &amp;stProto.UserInfo&#123;</span><br><span class="line">            Message: sender.Text(),</span><br><span class="line">            Length:  *proto.Int(len(sender.Text())),</span><br><span class="line">            Cnt:     *proto.Int(cnt),</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        //protobuf编码</span><br><span class="line">        pData, err := proto.Marshal(stSend)</span><br><span class="line">        if err != nil &#123;</span><br><span class="line">            panic(err)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        //发送</span><br><span class="line">        conn.Write(pData)</span><br><span class="line">        if sender.Text() == &quot;stop&quot; &#123;</span><br><span class="line">            return</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="server-protobuf-go"><a href="#server-protobuf-go" class="headerlink" title="server_protobuf.go"></a>server_protobuf.go</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">    &quot;fmt&quot;</span><br><span class="line">    &quot;net&quot;</span><br><span class="line">    &quot;os&quot;</span><br><span class="line">    stProto &quot;proto&quot;</span><br><span class="line"></span><br><span class="line">    //protobuf编解码库,下面两个库是相互兼容的，可以使用其中任意一个</span><br><span class="line">    &quot;github.com/golang/protobuf/proto&quot;</span><br><span class="line">    //&quot;github.com/gogo/protobuf/proto&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">    //监听</span><br><span class="line">    listener, err := net.Listen(&quot;tcp&quot;, &quot;localhost:6600&quot;)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        panic(err)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    for &#123;</span><br><span class="line">        conn, err := listener.Accept()</span><br><span class="line">        if err != nil &#123;</span><br><span class="line">            panic(err)</span><br><span class="line">        &#125;</span><br><span class="line">        fmt.Println(&quot;new connect&quot;, conn.RemoteAddr())</span><br><span class="line">        go readMessage(conn)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//接收消息</span><br><span class="line">func readMessage(conn net.Conn) &#123;</span><br><span class="line">    defer conn.Close()</span><br><span class="line">    buf := make([]byte, 4096, 4096)</span><br><span class="line">    for &#123;</span><br><span class="line">        //读消息</span><br><span class="line">        cnt, err := conn.Read(buf)</span><br><span class="line">        if err != nil &#123;</span><br><span class="line">            panic(err)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        stReceive := &amp;stProto.UserInfo&#123;&#125;</span><br><span class="line">        pData := buf[:cnt]</span><br><span class="line"></span><br><span class="line">        //protobuf解码</span><br><span class="line">        err = proto.Unmarshal(pData, stReceive)</span><br><span class="line">        if err != nil &#123;</span><br><span class="line">            panic(err)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        fmt.Println(&quot;receive&quot;, conn.RemoteAddr(), stReceive)</span><br><span class="line">        if stReceive.Message == &quot;stop&quot; &#123;</span><br><span class="line">            os.Exit(1)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="gRPC-go"><a href="#gRPC-go" class="headerlink" title="gRPC-go"></a>gRPC-go</h1><h3 id="安装-1"><a href="#安装-1" class="headerlink" title="安装"></a>安装</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">go get -u github.com/golang/protobuf/&#123;proto,protoc-gen-go&#125;</span><br><span class="line">go get -u google.golang.org/grpc</span><br><span class="line">protoc --go_out=plugins=grpc:. *.proto</span><br></pre></td></tr></table></figure>
+<h3 id="gRPC仓库"><a href="#gRPC仓库" class="headerlink" title="gRPC仓库"></a>gRPC仓库</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 引入包</span><br><span class="line">google.golang.org/grpc</span><br><span class="line"></span><br><span class="line"># github</span><br><span class="line">https://github.com/grpc/grpc-go</span><br></pre></td></tr></table></figure>
+<h3 id="gRPC文档"><a href="#gRPC文档" class="headerlink" title="gRPC文档"></a>gRPC文档</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://godoc.org/google.golang.org/grpc</span><br></pre></td></tr></table></figure>
+<p>gRPC需要使用插件：<code>plugins=grpc</code>，冒号<code>:</code>表示分割，点<code>.</code>表示当前目录</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protoc -I/usr/local/include -I. -I$GOPATH/src -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis --go_out=plugins=grpc:. *.proto</span><br></pre></td></tr></table></figure>
+<h4 id="protoc工作原理"><a href="#protoc工作原理" class="headerlink" title="protoc工作原理"></a>protoc工作原理</h4><p><a href="https://hitzhangjie.github.io/2017/05/23/Protoc%E5%8F%8A%E6%8F%92%E4%BB%B6%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90(%E7%B2%BE%E5%8D%8E%E7%89%88" target="_blank" rel="noopener">protoc原理</a>.html&gt;)</p>
+<h1 id="gRPC-gateway"><a href="#gRPC-gateway" class="headerlink" title="gRPC gateway"></a>gRPC gateway</h1><h4 id="仓库"><a href="#仓库" class="headerlink" title="仓库"></a>仓库</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 包含grpc=&gt;restful调用，swagger文档生成</span><br><span class="line">https://github.com/grpc-ecosystem/grpc-gateway</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/protobuf/" rel="tag"># protobuf</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/07/python/python常见问题/" rel="next" title="python常见问题">
+                <i class="fa fa-chevron-left"></i> python常见问题
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/10/07/javascript/nodejs问题/" rel="prev" title="nodejs问题">
+                nodejs问题 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="greyireland">
+          <p class="site-author-name" itemprop="name">greyireland</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">30</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">52</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/greyireland" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Github
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么要使用protobuf"><span class="nav-number">1.</span> <span class="nav-text">为什么要使用protobuf</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装protoc"><span class="nav-number">2.1.</span> <span class="nav-text">安装protoc</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装protobuf库文件"><span class="nav-number">2.2.</span> <span class="nav-text">安装protobuf库文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#goprotobuf"><span class="nav-number">2.3.</span> <span class="nav-text">goprotobuf</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装插件"><span class="nav-number">2.3.1.</span> <span class="nav-text">安装插件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#生成go文件"><span class="nav-number">2.3.2.</span> <span class="nav-text">生成go文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gogoprotobuf"><span class="nav-number">2.4.</span> <span class="nav-text">gogoprotobuf</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装插件-1"><span class="nav-number">2.4.1.</span> <span class="nav-text">安装插件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装gogoprotobuf库文件【插件的依赖】"><span class="nav-number">2.4.2.</span> <span class="nav-text">安装gogoprotobuf库文件【插件的依赖】</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#生成go文件-1"><span class="nav-number">2.4.3.</span> <span class="nav-text">生成go文件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#性能测试"><span class="nav-number">3.</span> <span class="nav-text">性能测试</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#go-protobuf的简单使用"><span class="nav-number">4.</span> <span class="nav-text">go_protobuf的简单使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#test-proto"><span class="nav-number">4.1.</span> <span class="nav-text">test.proto</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#client-protobuf-go"><span class="nav-number">4.2.</span> <span class="nav-text">client_protobuf.go</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#server-protobuf-go"><span class="nav-number">4.3.</span> <span class="nav-text">server_protobuf.go</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#gRPC-go"><span class="nav-number">5.</span> <span class="nav-text">gRPC-go</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装-1"><span class="nav-number">5.0.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gRPC仓库"><span class="nav-number">5.0.2.</span> <span class="nav-text">gRPC仓库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#gRPC文档"><span class="nav-number">5.0.3.</span> <span class="nav-text">gRPC文档</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#protoc工作原理"><span class="nav-number">5.0.3.1.</span> <span class="nav-text">protoc工作原理</span></a></li></ol></li></ol></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#gRPC-gateway"><span class="nav-number">6.</span> <span class="nav-text">gRPC gateway</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#仓库"><span class="nav-number">6.0.0.1.</span> <span class="nav-text">仓库</span></a></li></ol></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">greyireland</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
