@@ -280,6 +280,179 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/19/golang/go-文件io/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/19/golang/go-文件io/" itemprop="url">go-文件io</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-19T10:47:35+08:00">
+                2018-09-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/go/" itemprop="url" rel="index">
+                    <span itemprop="name">go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="golang-文件读写"><a href="#golang-文件读写" class="headerlink" title="golang 文件读写"></a>golang 文件读写</h1><h3 id="使用io-ioutil进行读写文件"><a href="#使用io-ioutil进行读写文件" class="headerlink" title="使用io/ioutil进行读写文件"></a>使用io/ioutil进行读写文件</h3><p>先回忆下之前的ioutil包介绍：<br>Go语言学习之ioutil包(The way to go)</p>
+<p>其中提到了两个方法：<br>func ReadFile</p>
+<p><code>func ReadFile(filename string) ([]byte, error)</code></p>
+<p>ReadFile reads the file named by filename and returns the contents. A successful call returns err == nil, not err == EOF. Because ReadFile reads the whole file, it does not treat an EOF from Read as an error to be reported.</p>
+<p>func WriteFile</p>
+<p><code>func WriteFile(filename string, data []byte, perm os.FileMode) error</code><br>WriteFile writes data to a file named by filename. If the file does not exist, WriteFile creates it with permissions perm; otherwise WriteFile truncates it before writing.</p>
+<p>读文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">    &quot;fmt&quot;</span><br><span class="line">    &quot;io/ioutil&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">    b, err := ioutil.ReadFile(&quot;test.log&quot;)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        fmt.Print(err)</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Println(b)</span><br><span class="line">    str := string(b)</span><br><span class="line">    fmt.Println(str)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>写文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">    &quot;io/ioutil&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func check(e error) &#123;</span><br><span class="line">    if e != nil &#123;</span><br><span class="line">        panic(e)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line"></span><br><span class="line">    d1 := []byte(&quot;hello\ngo\n&quot;)</span><br><span class="line">    err := ioutil.WriteFile(&quot;test.txt&quot;, d1, 0644)</span><br><span class="line">    check(err)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="使用os进行读写文件"><a href="#使用os进行读写文件" class="headerlink" title="使用os进行读写文件"></a>使用os进行读写文件</h3><p>同样，先回忆下之前的os包的介绍：<br>Go语言学习之os包中文件相关的操作(The way to go)</p>
+<p>首先要注意的就是两个打开文件的方法：<br>func Open</p>
+<p><code>func Open(name string) (*File, error)</code></p>
+<p>Open opens the named file for reading. If successful, methods on the returned file can be used for reading; the associated file descriptor has mode O_RDONLY. If there is an error, it will be of type *PathError.</p>
+<p>读文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">file, err := os.Open(path)</span><br><span class="line">if err != nil &#123;</span><br><span class="line">    panic(err)</span><br><span class="line">&#125;</span><br><span class="line">defer file.Close()</span><br></pre></td></tr></table></figure></p>
+<p>func OpenFile<br>需要提供文件路径、打开模式、文件权限</p>
+<p><code>func OpenFile(name string, flag int, perm FileMode) (*File, error)</code></p>
+<p>OpenFile is the generalized open call; most users will use Open or Create instead. It opens the named file with specified flag (O_RDONLY etc.) and perm, (0666 etc.) if applicable. If successful, methods on the returned File can be used for I/O. If there is an error, it will be of type *PathError.</p>
+<p>读文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">    &quot;log&quot;</span><br><span class="line">    &quot;os&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">    f, err := os.OpenFile(&quot;notes.txt&quot;, os.O_RDWR|os.O_CREATE, 0755)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        log.Fatal(err)</span><br><span class="line">    &#125;</span><br><span class="line">    if err := f.Close(); err != nil &#123;</span><br><span class="line">        log.Fatal(err)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>读方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">    &quot;bufio&quot;</span><br><span class="line">    &quot;fmt&quot;</span><br><span class="line">    &quot;io&quot;</span><br><span class="line">    &quot;io/ioutil&quot;</span><br><span class="line">    &quot;os&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func check(e error) &#123;</span><br><span class="line">    if e != nil &#123;</span><br><span class="line">        panic(e)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line"></span><br><span class="line">    f, err := os.Open(&quot;/tmp/dat&quot;)</span><br><span class="line">    check(err)</span><br><span class="line"></span><br><span class="line">    b1 := make([]byte, 5)</span><br><span class="line">    n1, err := f.Read(b1)</span><br><span class="line">    </span><br><span class="line">    check(err)</span><br><span class="line">    fmt.Printf(&quot;%d bytes: %s\n&quot;, n1, string(b1))</span><br><span class="line"></span><br><span class="line">    o2, err := f.Seek(6, 0)</span><br><span class="line">    //n1, err := f.ReadAt(b1,offset)</span><br><span class="line">    check(err)</span><br><span class="line">    b2 := make([]byte, 2)</span><br><span class="line">    n2, err := f.Read(b2)</span><br><span class="line">    check(err)</span><br><span class="line">    fmt.Printf(&quot;%d bytes @ %d: %s\n&quot;, n2, o2, string(b2))</span><br><span class="line"></span><br><span class="line">    o3, err := f.Seek(6, 0)</span><br><span class="line">    check(err)</span><br><span class="line">    b3 := make([]byte, 2)</span><br><span class="line">    n3, err := io.ReadAtLeast(f, b3, 2)</span><br><span class="line">    check(err)</span><br><span class="line">    fmt.Printf(&quot;%d bytes @ %d: %s\n&quot;, n3, o3, string(b3))</span><br><span class="line"></span><br><span class="line">    _, err = f.Seek(0, 0)</span><br><span class="line">    check(err)</span><br><span class="line"></span><br><span class="line">    r4 := bufio.NewReader(f)</span><br><span class="line">    b4, err := r4.Peek(5)</span><br><span class="line">    check(err)</span><br><span class="line">    fmt.Printf(&quot;5 bytes: %s\n&quot;, string(b4))</span><br><span class="line"></span><br><span class="line">    f.Close()</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>寻址取偏移量：<code>func (f *File) Seek(offset int64, whence int) (ret int64, err error)</code><br>// Seek sets the offset for the next Read or Write on file to offset,interpreted<br>// according to whence: 0 means relative to the origin of the file, 1 means<br>// relative to the current offset, and 2 means relative to the end.<br>// It returns the new offset and an error, if any.<br>// The behavior of Seek on a file opened with O_APPEND is not specified.</p>
+</blockquote>
+<p>写方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">    &quot;bufio&quot;</span><br><span class="line">    &quot;fmt&quot;</span><br><span class="line">    &quot;io/ioutil&quot;</span><br><span class="line">    &quot;os&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func check(e error) &#123;</span><br><span class="line">    if e != nil &#123;</span><br><span class="line">        panic(e)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line"></span><br><span class="line">    f, err := os.Create(&quot;/tmp/dat2&quot;)</span><br><span class="line">    check(err)</span><br><span class="line"></span><br><span class="line">    defer f.Close()</span><br><span class="line"></span><br><span class="line">    d2 := []byte&#123;115, 111, 109, 101, 10&#125;</span><br><span class="line">    n2, err := f.Write(d2)</span><br><span class="line">    check(err)</span><br><span class="line">    fmt.Printf(&quot;wrote %d bytes\n&quot;, n2)</span><br><span class="line"></span><br><span class="line">    n3, err := f.WriteString(&quot;writes\n&quot;)</span><br><span class="line">    fmt.Printf(&quot;wrote %d bytes\n&quot;, n3)</span><br><span class="line">    f.Sync()</span><br><span class="line">    w := bufio.NewWriter(f)</span><br><span class="line">    n4, err := w.WriteString(&quot;buffered\n&quot;)</span><br><span class="line">    fmt.Printf(&quot;wrote %d bytes\n&quot;, n4)</span><br><span class="line"></span><br><span class="line">    w.Flush()</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>几种读取文件方法速度比较<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">    &quot;bufio&quot;</span><br><span class="line">    &quot;fmt&quot;</span><br><span class="line">    &quot;io&quot;</span><br><span class="line">    &quot;io/ioutil&quot;</span><br><span class="line">    &quot;os&quot;</span><br><span class="line">    &quot;time&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func read0(path string) string &#123;</span><br><span class="line">    f, err := ioutil.ReadFile(path)//底层调用file.read(fileSizeBuf)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        fmt.Printf(&quot;%s\n&quot;, err)</span><br><span class="line">        panic(err)</span><br><span class="line">    &#125;</span><br><span class="line">    return string(f)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func read1(path string) string &#123;</span><br><span class="line">    fi, err := os.Open(path)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        panic(err)</span><br><span class="line">    &#125;</span><br><span class="line">    defer fi.Close()</span><br><span class="line"></span><br><span class="line">    chunks := make([]byte, 1024, 1024)</span><br><span class="line">    buf := make([]byte, 1024)</span><br><span class="line">    for &#123;</span><br><span class="line">        n, err := fi.Read(buf)//一块一块读</span><br><span class="line">        if err != nil &amp;&amp; err != io.EOF &#123;</span><br><span class="line">            panic(err)</span><br><span class="line">        &#125;</span><br><span class="line">        if 0 == n &#123;</span><br><span class="line">            break</span><br><span class="line">        &#125;</span><br><span class="line">        chunks = append(chunks, buf[:n]...)</span><br><span class="line">    &#125;</span><br><span class="line">    return string(chunks)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func read2(path string) string &#123;</span><br><span class="line">    fi, err := os.Open(path)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        panic(err)</span><br><span class="line">    &#125;</span><br><span class="line">    defer fi.Close()</span><br><span class="line">    r := bufio.NewReader(fi)</span><br><span class="line"></span><br><span class="line">    chunks := make([]byte, 1024, 1024)</span><br><span class="line"></span><br><span class="line">    buf := make([]byte, 1024)</span><br><span class="line">    for &#123;</span><br><span class="line">        n, err := r.Read(buf)//缓存读</span><br><span class="line">        if err != nil &amp;&amp; err != io.EOF &#123;</span><br><span class="line">            panic(err)</span><br><span class="line">        &#125;</span><br><span class="line">        if 0 == n &#123;</span><br><span class="line">            break</span><br><span class="line">        &#125;</span><br><span class="line">        chunks = append(chunks, buf[:n]...)</span><br><span class="line">    &#125;</span><br><span class="line">    return string(chunks)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func read3(path string) string &#123;</span><br><span class="line">    fi, err := os.Open(path)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        panic(err)</span><br><span class="line">    &#125;</span><br><span class="line">    defer fi.Close()</span><br><span class="line">    fd, err := ioutil.ReadAll(fi)//底层实现使用bytes.Buffer缓存读(和io.Reader/io.Writer一样)</span><br><span class="line">    return string(fd)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line"></span><br><span class="line">    file := &quot;test.log&quot;</span><br><span class="line"></span><br><span class="line">    start := time.Now()</span><br><span class="line"></span><br><span class="line">    read0(file)</span><br><span class="line">    t0 := time.Now()</span><br><span class="line">    fmt.Printf(&quot;Cost time %v\n&quot;, t0.Sub(start))</span><br><span class="line"></span><br><span class="line">    read1(file)</span><br><span class="line">    t1 := time.Now()</span><br><span class="line">    fmt.Printf(&quot;Cost time %v\n&quot;, t1.Sub(t0))</span><br><span class="line"></span><br><span class="line">    read2(file)</span><br><span class="line">    t2 := time.Now()</span><br><span class="line">    fmt.Printf(&quot;Cost time %v\n&quot;, t2.Sub(t1))</span><br><span class="line"></span><br><span class="line">    read3(file)</span><br><span class="line">    t3 := time.Now()</span><br><span class="line">    fmt.Printf(&quot;Cost time %v\n&quot;, t3.Sub(t2))</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>运行结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Cost time 4.0105ms </span><br><span class="line">Cost time 11.5043ms </span><br><span class="line">Cost time 7.0042ms </span><br><span class="line">Cost time 2.4983ms</span><br></pre></td></tr></table></figure></p>
+<h1 id="读写分析"><a href="#读写分析" class="headerlink" title="读写分析"></a>读写分析</h1><h3 id="底层IO"><a href="#底层IO" class="headerlink" title="底层IO"></a>底层IO</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">//os提供的功能</span><br><span class="line">file=os.open(path)</span><br><span class="line">file.read(buf)</span><br><span class="line">file.write(buf)</span><br><span class="line">file.readAt(buf,offset)</span><br><span class="line">file.writeAt(buf,offset)</span><br></pre></td></tr></table></figure>
+<h3 id="缓冲IO"><a href="#缓冲IO" class="headerlink" title="缓冲IO"></a>缓冲IO</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">bufio.Reader/Writer</span><br><span class="line">file=open(path)</span><br><span class="line">bufFile=bufio.NewReader(file)</span><br><span class="line">bufFile.read(buf)</span><br><span class="line"></span><br><span class="line">file=open(path)</span><br><span class="line">bufFile = bufio.NewWriter(file)</span><br><span class="line">bufFile.Write([]byte(&quot;haha&quot;))</span><br><span class="line">w.Flush()//将bufFile里面的数据刷到file里面去，操作系统可能还有一层buf！</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p> 标准IO操作数据流向路径：数据—&gt;进程缓冲（用户态）—&gt;内核缓存区（内核态）—&gt;磁盘<br>为什么包一层buf，buf读的时候读一大块，给你读取的时候，你只需要从buf里面去读一点数据，下次再读一点数据，不用每次读取都去调用系统库，buf写的时候，当写满一大块的时候，才真正调用系统写，因为不用每次写都去调用系统写，这样会提高性能，但数据可能丢失或是不一致的情况</p>
+</blockquote>
+<h4 id="任务"><a href="#任务" class="headerlink" title="任务"></a>任务</h4><ol>
+<li>内存大小为4G的电脑给10G的文件排序？</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/19/golang/go协程调度/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -861,7 +1034,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-count">54</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -883,7 +1056,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">52</span>
+                <span class="site-state-item-count">54</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
