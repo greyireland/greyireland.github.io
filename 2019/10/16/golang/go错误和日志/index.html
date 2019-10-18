@@ -94,18 +94,18 @@
 
 
 
-<meta name="description" content="错误处理在 Go 语言中声明 error 可以有多种方式：  errors.New 声明包含简单静态字符串的 error fmt.Errorf 格式化 error string 其他自定义类型使用了 Error() 方法 使用 “pkg/errors”.Wrap  当要把 error 作为返回值的时候，可以考虑如下的处理方式  是不是不需要额外信息，如果是，errors.New 就足够了。（4星）">
+<meta name="description" content="错误处理在 Go 语言中声明 error 可以有多种方式：  errors.New 声明包含简单静态字符串的 error fmt.Errorf 格式化 error string  其他自定义类型使用了 Error() 方法  使用 “pkg/errors”.Wrap  当要把 error 作为返回值的时候，可以考虑如下的处理方式  是不是不需要额外信息，如果是，errors.New 就足够了。（4">
 <meta name="keywords" content="go,error,log">
 <meta property="og:type" content="article">
 <meta property="og:title" content="go错误和日志">
 <meta property="og:url" content="http://yoursite.com/2019/10/16/golang/go错误和日志/index.html">
 <meta property="og:site_name" content="greyireland">
-<meta property="og:description" content="错误处理在 Go 语言中声明 error 可以有多种方式：  errors.New 声明包含简单静态字符串的 error fmt.Errorf 格式化 error string 其他自定义类型使用了 Error() 方法 使用 “pkg/errors”.Wrap  当要把 error 作为返回值的时候，可以考虑如下的处理方式  是不是不需要额外信息，如果是，errors.New 就足够了。（4星）">
+<meta property="og:description" content="错误处理在 Go 语言中声明 error 可以有多种方式：  errors.New 声明包含简单静态字符串的 error fmt.Errorf 格式化 error string  其他自定义类型使用了 Error() 方法  使用 “pkg/errors”.Wrap  当要把 error 作为返回值的时候，可以考虑如下的处理方式  是不是不需要额外信息，如果是，errors.New 就足够了。（4">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-10-16T05:23:39.274Z">
+<meta property="og:updated_time" content="2019-10-18T06:25:59.190Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="go错误和日志">
-<meta name="twitter:description" content="错误处理在 Go 语言中声明 error 可以有多种方式：  errors.New 声明包含简单静态字符串的 error fmt.Errorf 格式化 error string 其他自定义类型使用了 Error() 方法 使用 “pkg/errors”.Wrap  当要把 error 作为返回值的时候，可以考虑如下的处理方式  是不是不需要额外信息，如果是，errors.New 就足够了。（4星）">
+<meta name="twitter:description" content="错误处理在 Go 语言中声明 error 可以有多种方式：  errors.New 声明包含简单静态字符串的 error fmt.Errorf 格式化 error string  其他自定义类型使用了 Error() 方法  使用 “pkg/errors”.Wrap  当要把 error 作为返回值的时候，可以考虑如下的处理方式  是不是不需要额外信息，如果是，errors.New 就足够了。（4">
 
 
 
@@ -372,11 +372,13 @@
       
 
       
-        <h1 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h1><p>在 Go 语言中声明 error 可以有多种方式：</p>
+        <h2 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h2><p>在 Go 语言中声明 error 可以有多种方式：</p>
 <ul>
 <li>errors.New 声明包含简单静态字符串的 error</li>
-<li>fmt.Errorf 格式化 error string</li>
-<li>其他自定义类型使用了 Error() 方法</li>
+<li><p>fmt.Errorf 格式化 error string</p>
+</li>
+<li><p>其他自定义类型使用了 Error() 方法</p>
+</li>
 <li>使用 “pkg/errors”.Wrap</li>
 </ul>
 <p>当要把 error 作为返回值的时候，可以考虑如下的处理方式</p>
@@ -386,8 +388,10 @@
 <li>error 是不是从下游函数传递过来的？如果是，考虑一下 error wrap。（5星）</li>
 <li>其他情况，fmt.Errorf 一般足够了。（5星）</li>
 </ul>
-<p>另外：在直接暴露自定义的 error 类型的时候，最好 export 配套的检测自定义 error 类型的函数。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">type errNotFound struct &#123;</span><br><span class="line">  file string</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (e errNotFound) Error() string &#123;</span><br><span class="line">  return fmt.Sprintf(&quot;file %q not found&quot;, e.file)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func IsNotFoundError(err error) bool &#123;</span><br><span class="line">  _, ok := err.(errNotFound)</span><br><span class="line">  return ok</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func Open(file string) error &#123;</span><br><span class="line">  return errNotFound&#123;file: file&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// package bar</span><br><span class="line"></span><br><span class="line">if err := foo.Open(&quot;foo&quot;); err != nil &#123;</span><br><span class="line">  if foo.IsNotFoundError(err) &#123;</span><br><span class="line">    // handle</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    panic(&quot;unknown error&quot;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h1 id="日志处理"><a href="#日志处理" class="headerlink" title="日志处理"></a>日志处理</h1><h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">fmt.Errorf(&quot;unsupported signing method: %T&quot;, opts.SignMethod)</span><br><span class="line">log.Warn(&quot;unknown JWT options&quot;, zap.Strings(&quot;keys&quot;, keys))</span><br><span class="line">plog.Errorf(&quot;problem loading JWT options: %s&quot;, err)</span><br><span class="line">plog.Infof(&quot;deleting token %s for user %s&quot;, tk, username)</span><br><span class="line">plog.Errorf(&quot;failed to hash password: %s&quot;, err)</span><br></pre></td></tr></table></figure>
+<p>另外：在直接暴露自定义的 error 类型的时候，最好 export 配套的检测自定义 error 类型的函数。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> errNotFound <span class="keyword">struct</span> &#123;</span><br><span class="line">  file <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(e errNotFound)</span> <span class="title">Error</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">  <span class="keyword">return</span> fmt.Sprintf(<span class="string">"file %q not found"</span>, e.file)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">IsNotFoundError</span><span class="params">(err error)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">  _, ok := err.(errNotFound)</span><br><span class="line">  <span class="keyword">return</span> ok</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Open</span><span class="params">(file <span class="keyword">string</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errNotFound&#123;file: file&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// package bar</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> err := foo.Open(<span class="string">"foo"</span>); err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> foo.IsNotFoundError(err) &#123;</span><br><span class="line">    <span class="comment">// handle</span></span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="built_in">panic</span>(<span class="string">"unknown error"</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="日志处理"><a href="#日志处理" class="headerlink" title="日志处理"></a>日志处理</h2><h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">fmt.Errorf(<span class="string">"unsupported signing method: %T"</span>, opts.SignMethod)</span><br><span class="line">log.Warn(<span class="string">"unknown JWT options"</span>, zap.Strings(<span class="string">"keys"</span>, keys))</span><br><span class="line">plog.Errorf(<span class="string">"problem loading JWT options: %s"</span>, err)</span><br><span class="line">plog.Infof(<span class="string">"deleting token %s for user %s"</span>, tk, username)</span><br><span class="line">plog.Errorf(<span class="string">"failed to hash password: %s"</span>, err)</span><br></pre></td></tr></table></figure>
+
       
     </div>
     
@@ -574,7 +578,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#错误处理"><span class="nav-number">1.</span> <span class="nav-text">错误处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#日志处理"><span class="nav-number">2.</span> <span class="nav-text">日志处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#示例"><span class="nav-number">3.</span> <span class="nav-text">示例</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#错误处理"><span class="nav-number">1.</span> <span class="nav-text">错误处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#日志处理"><span class="nav-number">2.</span> <span class="nav-text">日志处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例"><span class="nav-number">3.</span> <span class="nav-text">示例</span></a></li></ol></div>
             
 
           </div>
