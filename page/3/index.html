@@ -1146,8 +1146,8 @@
 <li>Value 查找是回溯树的方式 （从下到上）</li>
 </ul>
 <p>context树<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">tree</span><span class="params">()</span></span> &#123;</span><br><span class="line">  ctx1 := context.Background()</span><br><span class="line">  ctx2, _ := context.WithCancel(ctx1)</span><br><span class="line">  ctx3, _ := context.WithTimeout(ctx2, time.Second * <span class="number">5</span>)</span><br><span class="line">  ctx4, _ := context.WithTimeout(ctx3, time.Second * <span class="number">3</span>)</span><br><span class="line">  ctx5, _ := context.WithTimeout(ctx3, time.Second * <span class="number">6</span>)</span><br><span class="line">  ctx6 := context.WithValue(ctx5, <span class="string">"userID"</span>, <span class="number">12</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><img src="https://ws1.sinaimg.cn/large/e5320b2aly1g0zzr8v1daj20ud0aidgl.jpg" alt=""></p>
-<p>5s超时之后<br><img src="https://ws1.sinaimg.cn/large/e5320b2aly1g0zzro55rgj20ud0aidgn.jpg" alt=""></p>
+<p><img src="https://raw.githubusercontent.com/greyireland/images/master/img/20191029111804.png" alt=""></p>
+<p>5s超时之后<br><img src="https://raw.githubusercontent.com/greyireland/images/master/img/20191029111828.png" alt=""></p>
 <p>什么时候用context</p>
 <ul>
 <li>任何函数可能被阻塞，或者需要很长时间来完成的，都应该有个 context.Context</li>
