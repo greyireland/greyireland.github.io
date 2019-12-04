@@ -280,184 +280,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/07/python/python常见问题/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/10/07/python/python常见问题/" itemprop="url">python常见问题</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-07T20:48:01+08:00">
-                2019-10-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/python/" itemprop="url" rel="index">
-                    <span itemprop="name">python</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="python安装"><a href="#python安装" class="headerlink" title="python安装"></a>python安装</h1><p><code>virtualenv -p /usr/bin/python2.7 venv</code></p>
-<h1 id="python常用函数"><a href="#python常用函数" class="headerlink" title="python常用函数"></a>python常用函数</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"># str</span><br><span class="line">s1 = str()</span><br><span class="line"># in python `&apos;&apos;` or `&quot;&quot;` is the same</span><br><span class="line">s2 = &quot;shaunwei&quot; # &apos;shaunwei&apos;</span><br><span class="line">s2len = len(s2)</span><br><span class="line"># last 3 chars</span><br><span class="line">s2[-3:] # wei</span><br><span class="line">s2[5:8] # wei</span><br><span class="line">s3 = s2[:5] # shaun</span><br><span class="line">s3 += &apos;wei&apos; # return &apos;shaunwei&apos;</span><br><span class="line"># list in python is same as ArrayList in java</span><br><span class="line">s2list = list(s3)</span><br><span class="line"># string at index 4</span><br><span class="line">s2[4] # &apos;n&apos;</span><br><span class="line"># find index at first</span><br><span class="line">s2.index(&apos;w&apos;) # return 5, if not found, throw ValueError</span><br><span class="line">s2.find(&apos;w&apos;) # return 5, if not found, return -1</span><br><span class="line"></span><br><span class="line"># 链表</span><br><span class="line">class ListNode:</span><br><span class="line">    def __init__(self, val):</span><br><span class="line">        self.val = val</span><br><span class="line">        self.next = None</span><br><span class="line">class DListNode:</span><br><span class="line">    def __init__(self, val):</span><br><span class="line">        self.val = val</span><br><span class="line">        self.prev = self.next = None</span><br><span class="line">    def reverse(self, head):</span><br><span class="line">        curt = None</span><br><span class="line">        while head:</span><br><span class="line">            curt = head</span><br><span class="line">            head = curt.next</span><br><span class="line">            curt.next = curt.prev</span><br><span class="line">            curt.prev = head</span><br><span class="line">        return curt</span><br><span class="line"></span><br><span class="line">class TreeNode:</span><br><span class="line">    def __init__(self, val):</span><br><span class="line">        self.val = val</span><br><span class="line">        self.left, self.right = None, None</span><br><span class="line"></span><br><span class="line">queue = [] # same as list()</span><br><span class="line">size = len(queue)</span><br><span class="line">queue.append(1)</span><br><span class="line">queue.append(2)</span><br><span class="line">queue.pop(0) # return 1</span><br><span class="line">queue[0] # return 2 examine the first element</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">s = set()</span><br><span class="line">s1 = &#123;1, 2, 3&#125;</span><br><span class="line">s.add(&apos;shaunwei&apos;)</span><br><span class="line">&apos;shaun&apos; in s # return true</span><br><span class="line">s.remove(&apos;shaunwei&apos;)</span><br><span class="line"></span><br><span class="line"># map 在 python 中是一个keyword</span><br><span class="line">hash_map = &#123;&#125; # or dict()</span><br><span class="line">hash_map[&apos;shaun&apos;] = 98</span><br><span class="line">hash_map[&apos;wei&apos;] = 99</span><br><span class="line">exist = &apos;wei&apos; in hash_map # check existence</span><br><span class="line">point = hash_map[&apos;shaun&apos;] # get value by key</span><br><span class="line">point = hash_map.pop(&apos;shaun&apos;) # remove by key, return value</span><br><span class="line">keys = hash_map.keys() # return key list</span><br><span class="line"># iterate dictionary(map)</span><br><span class="line">for key, value in hash_map.items():</span><br><span class="line">    # do something with k, v</span><br><span class="line">    pass</span><br><span class="line"></span><br><span class="line">class Person(object):</span><br><span class="line">    def __init__(self,name,age):</span><br><span class="line">        self.name=name</span><br><span class="line">        self.age=age</span><br><span class="line"></span><br><span class="line">    def hello(self):</span><br><span class="line">        print &apos;hello:&apos;+self.name+&quot;:&quot;+str(self.age)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class Tom(Person):</span><br><span class="line">    def __init__(self,name):</span><br><span class="line">        super(Tom,self).__init__(name,18)</span><br><span class="line">    def hello2(self):#只要子类有重复的名字就会覆盖</span><br><span class="line">        pass</span><br><span class="line">        #print &apos;child say hello&apos;</span><br><span class="line">t=Tom(&apos;tom&apos;)</span><br><span class="line">t.hello()</span><br></pre></td></tr></table></figure>
-<h3 id="Python一些注意点"><a href="#Python一些注意点" class="headerlink" title="Python一些注意点"></a>Python一些注意点</h3><ol>
-<li>Python有七个序列类型： 字符串、 Unicode字符串、 列表、 元组、 字节数组、 缓冲区和xrange对象。序列类型 —  str、unicode、list、 tuple、 bytearray、buffer、xrange</li>
-<li>if and执行逻辑</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">def is_a():</span><br><span class="line">    print &apos;a&apos;</span><br><span class="line">    return False</span><br><span class="line">def is_b():</span><br><span class="line">    print &apos;b&apos;</span><br><span class="line">    return False</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__==&apos;__main__&apos;:</span><br><span class="line">    #第一个条件如果为False,and后面的就直接不执行了</span><br><span class="line">    if is_a() and is_b():</span><br><span class="line">        print &apos;if中有先后顺序的&apos;</span><br></pre></td></tr></table></figure>
-<h3 id="遇到的一些问题"><a href="#遇到的一些问题" class="headerlink" title="遇到的一些问题"></a>遇到的一些问题</h3><ol>
-<li>tornado框架：</li>
-</ol>
-<p>1）异步async+await配合，2）效果和yield差不多，3）也可以使用callback</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">from tornado import gen</span><br><span class="line"></span><br><span class="line">@gen.coroutine</span><br><span class="line">def fetch_coroutine(url):</span><br><span class="line">    http_client = AsyncHTTPClient()</span><br><span class="line">    response = yield http_client.fetch(url)</span><br><span class="line">    # In Python versions prior to 3.3, returning a value from</span><br><span class="line">    # a generator is not allowed and you must use</span><br><span class="line">    #   raise gen.Return(response.body)</span><br><span class="line">    # instead.</span><br><span class="line">    return response.body</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">async def fetch_coroutine(url):</span><br><span class="line">    http_client = AsyncHTTPClient()</span><br><span class="line">    response = await http_client.fetch(url)</span><br><span class="line">    return response.body</span><br></pre></td></tr></table></figure>
-<ol start="2">
-<li>python语法</li>
-</ol>
-<ul>
-<li>何时执行装饰器：导入模块时</li>
-</ul>
-<p>用处：将函数添加到中央注册处，url-》相应函数</p>
-<ul>
-<li>装饰器将函数替换成新的函数(添加一个记时功能给函数)：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@clock</span><br><span class="line">def haha():</span><br><span class="line">	xxxxx</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">def clock(func):</span><br><span class="line">	def clocked(*arg):</span><br><span class="line">		func(*arg)</span><br><span class="line">	return clocked #返回新的函数了，替换掉原来的haha()</span><br></pre></td></tr></table></figure>
-<ul>
-<li>== a.__eq–(b)和比较值Java中：equals，is比较对象标识（地址）Java中：==</li>
-<li>Copy.deepcopy(obj)会记住循环引用，优雅处理</li>
-<li>@classmethod 最常见的用法是构建备选的构造方法</li>
-</ul>
-<ol start="3">
-<li>重试函数</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">#encoding=utf8</span><br><span class="line"></span><br><span class="line">#有参数，必须再包一层（最外层的变量大家都可以访问）</span><br><span class="line">def retry(times=1,exceptions=None):</span><br><span class="line">   exceptions = exceptions if exceptions is not None else Exception</span><br><span class="line"></span><br><span class="line">   # 包一层,传入对应的函数</span><br><span class="line">   def wrapper(func):</span><br><span class="line">      #替换函数</span><br><span class="line">      def wrapper(*args,**kwargs):</span><br><span class="line">         last_exception =None</span><br><span class="line">         for _ in range(times):</span><br><span class="line">            try:</span><br><span class="line">               return func(*args, **kwargs)</span><br><span class="line">            except exceptions as e:</span><br><span class="line">               last_exception = e</span><br><span class="line">         raise last_exception</span><br><span class="line">      return wrapper</span><br><span class="line">   return wrapper</span><br><span class="line"></span><br><span class="line">if __name__==&quot;__main__&quot;:</span><br><span class="line">   @retry(5)</span><br><span class="line">   def test(uid,name):</span><br><span class="line">      print(&quot;do something&quot;,uid,name)</span><br><span class="line">      raise Exception</span><br><span class="line">   test(&apos;123&apos;,&apos;tome&apos;)</span><br></pre></td></tr></table></figure>
-<ol start="4">
-<li>回调函数callback调用</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">class Callback:</span><br><span class="line">    def run_callback(self,fn,*args,**kwargs):</span><br><span class="line">        print &apos;call function&apos;,fn.__name__</span><br><span class="line">        print args,kwargs</span><br><span class="line">        #fn(args)相当于传入一个元组参数</span><br><span class="line">        #fn(*args)会把元组拆开，给对应的参数赋值</span><br><span class="line">        fn(*args)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    def hi(self,name,age):</span><br><span class="line">        print &apos;hello,&apos;,name,age</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @classmethod</span><br><span class="line">    def start(cls):</span><br><span class="line">        cls().run_callback(cls().hi,&apos;tome&apos;,18)</span><br><span class="line"></span><br><span class="line">Callback.start()</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/07/mysql/redis注意点/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1794,6 +1616,151 @@
 <h4 id="数据结构hash"><a href="#数据结构hash" class="headerlink" title="数据结构hash"></a>数据结构hash</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">string、int、bool、object hashCode()</span><br></pre></td></tr></table></figure>
 <h4 id="密码学hash"><a href="#密码学hash" class="headerlink" title="密码学hash"></a>密码学hash</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">| 算法   | bit位数 | 16进制字符串                                                 |</span><br><span class="line">| ------ | ------- | ------------------------------------------------------------ |</span><br><span class="line">| md5    | 128     | e10adc3949ba59abbe56e057f20f883e                             |</span><br><span class="line">| sha1   | 160     | 7c4a8d09ca3762af61e59520943dc26494f8941b                     |</span><br><span class="line">| sha256 | 256     | 8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92 |</span><br><span class="line">| crc32  | 32      | 70930f27                                                     |</span><br><span class="line">| fnv    | 32      | -                                                            |</span><br></pre></td></tr></table></figure>
 <h4 id="其他工具"><a href="#其他工具" class="headerlink" title="其他工具"></a>其他工具</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fnv：FNV能快速hash大量数据并保持较小的冲突率，它的高度分散使它适用于hash一些非常相近的字符串，比如URL，hostname，文件名，text，IP地址等。</span><br><span class="line">base64:编码后的数据比原始数据略长，为原来的4/3,用64个可见字符表示数据a-z A-Z 0-9 + / ,可序列化可反序列化</span><br><span class="line">urlencode:url中只有字母和数字[0-9a-zA-Z]、一些特殊符号&quot;$-_.+!*&apos;(),&quot;[不包括双引号]、以及某些保留字，才可以不经过编码直接用于URL。</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/05/framework/gin概览/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/05/framework/gin概览/" itemprop="url">gin概览</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-05T23:23:09+08:00">
+                2019-04-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/框架/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Gin框架概览"><a href="#Gin框架概览" class="headerlink" title="Gin框架概览"></a>Gin框架概览</h1><h3 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import &quot;github.com/gin-gonic/gin&quot;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	r := gin.Default()</span><br><span class="line">	r.GET(&quot;/ping&quot;, func(c *gin.Context) &#123;</span><br><span class="line">		c.JSON(200, gin.H&#123;</span><br><span class="line">			&quot;message&quot;: &quot;pong&quot;,</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line">	r.Run() // listen and serve on 0.0.0.0:8080</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="1-实现middleware"><a href="#1-实现middleware" class="headerlink" title="1.实现middleware"></a>1.实现middleware</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">//使用middleware</span><br><span class="line">r := gin.New()</span><br><span class="line">r.Use(gin.Recovery())</span><br><span class="line"></span><br><span class="line">//定义middleware</span><br><span class="line">func Recovery() HandlerFunc &#123;</span><br><span class="line">	return func(c *Context) &#123;</span><br><span class="line">		defer func() &#123;</span><br><span class="line">			if err := recover(); err != nil &#123;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;()</span><br><span class="line">		//fmt.Print(&quot;before&quot;)</span><br><span class="line">		c.Next()</span><br><span class="line">		//fmt.Print(&quot;after&quot;)</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//核心实现，调用下一个handler</span><br><span class="line">func (c *Context) Next() &#123;</span><br><span class="line">	c.index++</span><br><span class="line">	for c.index &lt; int8(len(c.handlers)) &#123;</span><br><span class="line">		c.handlers[c.index](c)</span><br><span class="line">		c.index++</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type RouterGroup struct &#123;</span><br><span class="line">	Handlers HandlersChain //添加middleware链条</span><br><span class="line">	basePath string //base路径</span><br><span class="line">	engine   *Engine //引用全局engine</span><br><span class="line">	root     bool //是否根</span><br><span class="line">&#125;</span><br><span class="line">r.Use(gin.Recovery()) //添加middleware到Handlers链条</span><br><span class="line">接入和handler一样</span><br><span class="line">type HandlerFunc func(*Context)</span><br></pre></td></tr></table></figure>
+<h4 id="2-路径分组实现"><a href="#2-路径分组实现" class="headerlink" title="2.路径分组实现"></a>2.路径分组实现</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">//使用方式</span><br><span class="line">mux = gin.New()</span><br><span class="line">api := mux.Group(&quot;/api/v1&quot;)</span><br><span class="line">&#123;</span><br><span class="line">	api.POST(&quot;/login&quot;, controller.Login)</span><br><span class="line">	api.DELETE(&quot;/logout&quot;, middleware.SessionCheck(), controller.Logout)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//实现</span><br><span class="line">func (group *RouterGroup) Group(relativePath string, handlers ...HandlerFunc) *RouterGroup &#123;</span><br><span class="line">	return &amp;RouterGroup&#123;</span><br><span class="line">		Handlers: group.combineHandlers(handlers),//全局的handlers+当前组的handlers</span><br><span class="line">		basePath: group.calculateAbsolutePath(relativePath),//计算相对/路径</span><br><span class="line">		engine:   group.engine,//全局的engine对象</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="3-入口"><a href="#3-入口" class="headerlink" title="3.入口"></a>3.入口</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) &#123;</span><br><span class="line">	c := engine.pool.Get().(*Context)//并发：多个context</span><br><span class="line">	c.writermem.reset(w) //resp</span><br><span class="line">	c.Request = req //req</span><br><span class="line">	c.reset() //重置gincontext</span><br><span class="line"></span><br><span class="line">	engine.handleHTTPRequest(c) //执行handler链条</span><br><span class="line"></span><br><span class="line">	engine.pool.Put(c)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
           
         

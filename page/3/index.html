@@ -280,151 +280,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/05/framework/gin概览/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/05/framework/gin概览/" itemprop="url">gin概览</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-05T23:23:09+08:00">
-                2019-04-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/框架/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Gin框架概览"><a href="#Gin框架概览" class="headerlink" title="Gin框架概览"></a>Gin框架概览</h1><h3 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import &quot;github.com/gin-gonic/gin&quot;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	r := gin.Default()</span><br><span class="line">	r.GET(&quot;/ping&quot;, func(c *gin.Context) &#123;</span><br><span class="line">		c.JSON(200, gin.H&#123;</span><br><span class="line">			&quot;message&quot;: &quot;pong&quot;,</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line">	r.Run() // listen and serve on 0.0.0.0:8080</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="1-实现middleware"><a href="#1-实现middleware" class="headerlink" title="1.实现middleware"></a>1.实现middleware</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">//使用middleware</span><br><span class="line">r := gin.New()</span><br><span class="line">r.Use(gin.Recovery())</span><br><span class="line"></span><br><span class="line">//定义middleware</span><br><span class="line">func Recovery() HandlerFunc &#123;</span><br><span class="line">	return func(c *Context) &#123;</span><br><span class="line">		defer func() &#123;</span><br><span class="line">			if err := recover(); err != nil &#123;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;()</span><br><span class="line">		//fmt.Print(&quot;before&quot;)</span><br><span class="line">		c.Next()</span><br><span class="line">		//fmt.Print(&quot;after&quot;)</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//核心实现，调用下一个handler</span><br><span class="line">func (c *Context) Next() &#123;</span><br><span class="line">	c.index++</span><br><span class="line">	for c.index &lt; int8(len(c.handlers)) &#123;</span><br><span class="line">		c.handlers[c.index](c)</span><br><span class="line">		c.index++</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type RouterGroup struct &#123;</span><br><span class="line">	Handlers HandlersChain //添加middleware链条</span><br><span class="line">	basePath string //base路径</span><br><span class="line">	engine   *Engine //引用全局engine</span><br><span class="line">	root     bool //是否根</span><br><span class="line">&#125;</span><br><span class="line">r.Use(gin.Recovery()) //添加middleware到Handlers链条</span><br><span class="line">接入和handler一样</span><br><span class="line">type HandlerFunc func(*Context)</span><br></pre></td></tr></table></figure>
-<h4 id="2-路径分组实现"><a href="#2-路径分组实现" class="headerlink" title="2.路径分组实现"></a>2.路径分组实现</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">//使用方式</span><br><span class="line">mux = gin.New()</span><br><span class="line">api := mux.Group(&quot;/api/v1&quot;)</span><br><span class="line">&#123;</span><br><span class="line">	api.POST(&quot;/login&quot;, controller.Login)</span><br><span class="line">	api.DELETE(&quot;/logout&quot;, middleware.SessionCheck(), controller.Logout)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//实现</span><br><span class="line">func (group *RouterGroup) Group(relativePath string, handlers ...HandlerFunc) *RouterGroup &#123;</span><br><span class="line">	return &amp;RouterGroup&#123;</span><br><span class="line">		Handlers: group.combineHandlers(handlers),//全局的handlers+当前组的handlers</span><br><span class="line">		basePath: group.calculateAbsolutePath(relativePath),//计算相对/路径</span><br><span class="line">		engine:   group.engine,//全局的engine对象</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="3-入口"><a href="#3-入口" class="headerlink" title="3.入口"></a>3.入口</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) &#123;</span><br><span class="line">	c := engine.pool.Get().(*Context)//并发：多个context</span><br><span class="line">	c.writermem.reset(w) //resp</span><br><span class="line">	c.Request = req //req</span><br><span class="line">	c.reset() //重置gincontext</span><br><span class="line"></span><br><span class="line">	engine.handleHTTPRequest(c) //执行handler链条</span><br><span class="line"></span><br><span class="line">	engine.pool.Put(c)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/19/tool/gitbook使用/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1796,6 +1651,193 @@
 <li>调用函数,注入配置到选项</li>
 </ol>
 <h3 id="实际项目使用"><a href="#实际项目使用" class="headerlink" title="实际项目使用"></a>实际项目使用</h3><p>redigo go的redis连接客户端代码片段<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//1 声明options</span></span><br><span class="line"><span class="keyword">type</span> dialOptions <span class="keyword">struct</span> &#123;</span><br><span class="line">	readTimeout  time.Duration</span><br><span class="line">	writeTimeout time.Duration</span><br><span class="line">	dialer       *net.Dialer</span><br><span class="line">	dial         <span class="function"><span class="keyword">func</span><span class="params">(network, addr <span class="keyword">string</span>)</span> <span class="params">(net.Conn, error)</span></span></span><br><span class="line"><span class="function">	<span class="title">db</span>           <span class="title">int</span></span></span><br><span class="line"><span class="function">	<span class="title">password</span>     <span class="title">string</span></span></span><br><span class="line"><span class="function">	<span class="title">useTLS</span>       <span class="title">bool</span></span></span><br><span class="line"><span class="function">	<span class="title">skipVerify</span>   <span class="title">bool</span></span></span><br><span class="line"><span class="function">	<span class="title">tlsConfig</span>    *<span class="title">tls</span>.<span class="title">Config</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function">//2 声明<span class="title">option</span></span></span><br><span class="line"><span class="function"><span class="title">type</span> <span class="title">DialOption</span> <span class="title">struct</span></span> &#123;</span><br><span class="line">	f <span class="function"><span class="keyword">func</span><span class="params">(*dialOptions)</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function">// <span class="title">DialReadTimeout</span> <span class="title">specifies</span> <span class="title">the</span> <span class="title">timeout</span> <span class="title">for</span> <span class="title">reading</span> <span class="title">a</span> <span class="title">single</span> <span class="title">command</span> <span class="title">reply</span></span></span><br><span class="line"><span class="function">//3 声明闭包函数</span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">DialReadTimeout</span><span class="params">(d time.Duration)</span> <span class="title">DialOption</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> DialOption&#123;<span class="function"><span class="keyword">func</span><span class="params">(do *dialOptions)</span></span> &#123;</span><br><span class="line">		do.readTimeout = d</span><br><span class="line">	&#125;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// DialWriteTimeout specifies the timeout for writing a single command.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">DialWriteTimeout</span><span class="params">(d time.Duration)</span> <span class="title">DialOption</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> DialOption&#123;<span class="function"><span class="keyword">func</span><span class="params">(do *dialOptions)</span></span> &#123;</span><br><span class="line">		do.writeTimeout = d</span><br><span class="line">	&#125;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// DialConnectTimeout specifies the timeout for connecting to the Redis server when</span></span><br><span class="line"><span class="comment">// no DialNetDial option is specified.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">DialConnectTimeout</span><span class="params">(d time.Duration)</span> <span class="title">DialOption</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> DialOption&#123;<span class="function"><span class="keyword">func</span><span class="params">(do *dialOptions)</span></span> &#123;</span><br><span class="line">		do.dialer.Timeout = d</span><br><span class="line">	&#125;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// DialKeepAlive specifies the keep-alive period for TCP connections to the Redis server</span></span><br><span class="line"><span class="comment">// when no DialNetDial option is specified.</span></span><br><span class="line"><span class="comment">// If zero, keep-alives are not enabled. If no DialKeepAlive option is specified then</span></span><br><span class="line"><span class="comment">// the default of 5 minutes is used to ensure that half-closed TCP sessions are detected.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">DialKeepAlive</span><span class="params">(d time.Duration)</span> <span class="title">DialOption</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> DialOption&#123;<span class="function"><span class="keyword">func</span><span class="params">(do *dialOptions)</span></span> &#123;</span><br><span class="line">		do.dialer.KeepAlive = d</span><br><span class="line">	&#125;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// DialNetDial specifies a custom dial function for creating TCP</span></span><br><span class="line"><span class="comment">// connections, otherwise a net.Dialer customized via the other options is used.</span></span><br><span class="line"><span class="comment">// DialNetDial overrides DialConnectTimeout and DialKeepAlive.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">DialNetDial</span><span class="params">(dial <span class="keyword">func</span>(network, addr <span class="keyword">string</span>)</span> <span class="params">(net.Conn, error)</span>) <span class="title">DialOption</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> DialOption&#123;<span class="function"><span class="keyword">func</span><span class="params">(do *dialOptions)</span></span> &#123;</span><br><span class="line">		do.dial = dial</span><br><span class="line">	&#125;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// DialDatabase specifies the database to select when dialing a connection.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">DialDatabase</span><span class="params">(db <span class="keyword">int</span>)</span> <span class="title">DialOption</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> DialOption&#123;<span class="function"><span class="keyword">func</span><span class="params">(do *dialOptions)</span></span> &#123;</span><br><span class="line">		do.db = db</span><br><span class="line">	&#125;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// DialPassword specifies the password to use when connecting to</span></span><br><span class="line"><span class="comment">// the Redis server.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">DialPassword</span><span class="params">(password <span class="keyword">string</span>)</span> <span class="title">DialOption</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> DialOption&#123;<span class="function"><span class="keyword">func</span><span class="params">(do *dialOptions)</span></span> &#123;</span><br><span class="line">		do.password = password</span><br><span class="line">	&#125;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// DialTLSConfig specifies the config to use when a TLS connection is dialed.</span></span><br><span class="line"><span class="comment">// Has no effect when not dialing a TLS connection.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">DialTLSConfig</span><span class="params">(c *tls.Config)</span> <span class="title">DialOption</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> DialOption&#123;<span class="function"><span class="keyword">func</span><span class="params">(do *dialOptions)</span></span> &#123;</span><br><span class="line">		do.tlsConfig = c</span><br><span class="line">	&#125;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// DialTLSSkipVerify disables server name verification when connecting over</span></span><br><span class="line"><span class="comment">// TLS. Has no effect when not dialing a TLS connection.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">DialTLSSkipVerify</span><span class="params">(skip <span class="keyword">bool</span>)</span> <span class="title">DialOption</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> DialOption&#123;<span class="function"><span class="keyword">func</span><span class="params">(do *dialOptions)</span></span> &#123;</span><br><span class="line">		do.skipVerify = skip</span><br><span class="line">	&#125;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// DialUseTLS specifies whether TLS should be used when connecting to the</span></span><br><span class="line"><span class="comment">// server. This option is ignore by DialURL.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">DialUseTLS</span><span class="params">(useTLS <span class="keyword">bool</span>)</span> <span class="title">DialOption</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> DialOption&#123;<span class="function"><span class="keyword">func</span><span class="params">(do *dialOptions)</span></span> &#123;</span><br><span class="line">		do.useTLS = useTLS</span><br><span class="line">	&#125;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Dial connects to the Redis server at the given network and</span></span><br><span class="line"><span class="comment">// address using the specified options.</span></span><br><span class="line"><span class="comment">//4传入参数</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Dial</span><span class="params">(network, address <span class="keyword">string</span>, options ...DialOption)</span> <span class="params">(Conn, error)</span></span> &#123;</span><br><span class="line">	do := dialOptions&#123;</span><br><span class="line">		dialer: &amp;net.Dialer&#123;</span><br><span class="line">			KeepAlive: time.Minute * <span class="number">5</span>,</span><br><span class="line">		&#125;,</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">//5 注入</span></span><br><span class="line">	<span class="keyword">for</span> _, option := <span class="keyword">range</span> options &#123;</span><br><span class="line">		option.f(&amp;do)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> do.dial == <span class="literal">nil</span> &#123;</span><br><span class="line">		do.dial = do.dialer.Dial</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	netConn, err := do.dial(network, address)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> do.useTLS &#123;</span><br><span class="line">		<span class="keyword">var</span> tlsConfig *tls.Config</span><br><span class="line">		<span class="keyword">if</span> do.tlsConfig == <span class="literal">nil</span> &#123;</span><br><span class="line">			tlsConfig = &amp;tls.Config&#123;InsecureSkipVerify: do.skipVerify&#125;</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			tlsConfig = cloneTLSConfig(do.tlsConfig)</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> tlsConfig.ServerName == <span class="string">""</span> &#123;</span><br><span class="line">			host, _, err := net.SplitHostPort(address)</span><br><span class="line">			<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">				netConn.Close()</span><br><span class="line">				<span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">			&#125;</span><br><span class="line">			tlsConfig.ServerName = host</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		tlsConn := tls.Client(netConn, tlsConfig)</span><br><span class="line">		<span class="keyword">if</span> err := tlsConn.Handshake(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			netConn.Close()</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">		&#125;</span><br><span class="line">		netConn = tlsConn</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	c := &amp;conn&#123;</span><br><span class="line">		conn:         netConn,</span><br><span class="line">		bw:           bufio.NewWriter(netConn),</span><br><span class="line">		br:           bufio.NewReader(netConn),</span><br><span class="line">		readTimeout:  do.readTimeout,</span><br><span class="line">		writeTimeout: do.writeTimeout,</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> do.password != <span class="string">""</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> _, err := c.Do(<span class="string">"AUTH"</span>, do.password); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			netConn.Close()</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> do.db != <span class="number">0</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> _, err := c.Do(<span class="string">"SELECT"</span>, do.db); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			netConn.Close()</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> c, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/03/golang/net-http包关键点解析/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/03/golang/net-http包关键点解析/" itemprop="url">net/http包关键点解析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-03T13:23:19+08:00">
+                2019-03-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/go/" itemprop="url" rel="index">
+                    <span itemprop="name">go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="net-http包关键点解析"><a href="#net-http包关键点解析" class="headerlink" title="net/http包关键点解析"></a>net/http包关键点解析</h1><h2 id="Go创建一个http-server"><a href="#Go创建一个http-server" class="headerlink" title="Go创建一个http server"></a>Go创建一个http server</h2><p>如何创建http server服务端?</p>
+<p>核心：</p>
+<p>1.保存path和handler的对应关系</p>
+<p>2.请求过来时，查找path对应的handler，然后调用handler的ServeHTTP(w, r)方法<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"net/http"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">SayHello</span><span class="params">(w http.ResponseWriter, req *http.Request)</span></span> &#123;</span><br><span class="line">    w.Write([]<span class="keyword">byte</span>(<span class="string">"Hello"</span>))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    http.HandleFunc(<span class="string">"/hello"</span>, SayHello)</span><br><span class="line">    http.ListenAndServe(<span class="string">":8001"</span>, <span class="literal">nil</span>)</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>首先调用Http.HandleFunc</p>
+<p>按顺序做了几件事：</p>
+<ol>
+<li>调用了DefaultServerMux的HandleFunc</li>
+<li>调用了DefaultServerMux的Handle</li>
+<li>往DefaultServeMux的map[string]muxEntry中增加对应的handler和路由规则</li>
+</ol>
+<p>其次调用http.ListenAndServe(“:8001”, nil)<br>按顺序做了几件事情：</p>
+<ol>
+<li>实例化Server</li>
+<li>调用Server的ListenAndServe()</li>
+<li>调用net.Listen(“tcp”, addr)监听端口</li>
+<li>启动一个for循环，在循环体中Accept请求<br>对每个请求实例化一个Conn，并且开启一个goroutine为这个请求进行服务go c.serve()<br>读取每个请求的内容w, err := c.readRequest()<br>判断header是否为空，如果没有设置handler（这个例子就没有设置handler），handler就设置为DefaultServeMux调用handler的ServeHttp</li>
+<li><p>下面就进入到DefaultServerMux.ServeHttp<br>根据request选择handler，并且进入到这个handler的ServeHTTP mux.handler(r).ServeHTTP(w, r)选择handler：</p>
+<ul>
+<li><p>判断是否有路由能满足这个request（循环遍历ServerMux的muxEntry）</p>
+</li>
+<li><p>如果有路由满足，调用这个路由handler的ServeHttp</p>
+</li>
+<li><p>如果没有路由满足，调用NotFoundHandler的ServeHttp</p>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="Go-发送http请求"><a href="#Go-发送http请求" class="headerlink" title="Go 发送http请求"></a>Go 发送http请求</h2><p>步骤：</p>
+<ol>
+<li>创建request</li>
+<li>创建一个Client将request发送出去，依赖底层RT实现，可以是默认的Transport，也可以是Mock的Transport或者带缓存的Transport</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">httpDo</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">//默认的往返车RT,RoundTripper ，http.Transport默认的网络传输器net.Conn读写</span></span><br><span class="line">    tr := &amp;http.Transport&#123;</span><br><span class="line">    MaxIdleConns:       <span class="number">10</span>,</span><br><span class="line">    IdleConnTimeout:    <span class="number">30</span> * time.Second,</span><br><span class="line">    DisableCompression: <span class="literal">true</span>,</span><br><span class="line">  &#125;</span><br><span class="line">    client := &amp;http.Client&#123;Transport: tr&#125;</span><br><span class="line"> </span><br><span class="line">    req, err := http.NewRequest(<span class="string">"POST"</span>, <span class="string">"http://www.baidu.com"</span>, strings.NewReader(<span class="string">"name=cjb"</span>))</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="comment">// handle error</span></span><br><span class="line">    &#125;</span><br><span class="line">    req.Header.Set(<span class="string">"Cookie"</span>, <span class="string">"name=anny"</span>)</span><br><span class="line"> </span><br><span class="line">    resp, err := client.Do(req)</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">defer</span> resp.Body.Close()</span><br><span class="line"> </span><br><span class="line">    body, err := ioutil.ReadAll(resp.Body)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="comment">// handle error</span></span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    fmt.Println(<span class="keyword">string</span>(body))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//带缓存的传输器</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *cacheTransport)</span> <span class="title">RoundTrip</span><span class="params">(r *http.Request)</span> <span class="params">(*http.Response, error)</span></span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Check if we have the response cached..</span></span><br><span class="line">    <span class="comment">// If yes, we don't have to hit the server</span></span><br><span class="line">    <span class="comment">// We just return it as is from the cache store.</span></span><br><span class="line">    <span class="keyword">if</span> val, err := c.Get(r); err == <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Println(<span class="string">"Fetching the response from the cache"</span>)</span><br><span class="line">        <span class="keyword">return</span> cachedResponse([]<span class="keyword">byte</span>(val), r)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Ok, we don't have the response cached, the store was probably cleared.</span></span><br><span class="line">    <span class="comment">// Make the request to the server.</span></span><br><span class="line">    resp, err := c.originalTransport.RoundTrip(r)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Get the body of the response so we can save it in the cache for the next request.</span></span><br><span class="line">    buf, err := httputil.DumpResponse(resp, <span class="literal">true</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Saving it to the cache store</span></span><br><span class="line">    c.Set(r, <span class="keyword">string</span>(buf))</span><br><span class="line"></span><br><span class="line">    fmt.Println(<span class="string">"Fetching the data from the real source"</span>)</span><br><span class="line">    <span class="keyword">return</span> resp, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//使用：</span></span><br><span class="line">cachedTransport := newTransport()</span><br><span class="line"><span class="comment">// cachedTransport 是自定义实现http.RoundTripper接口的 Transport</span></span><br><span class="line">client := &amp;http.Client&#123;</span><br><span class="line">    Transport: cachedTransport,</span><br><span class="line">    Timeout:   time.Second * <span class="number">5</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="QA问题？"><a href="#QA问题？" class="headerlink" title="QA问题？"></a>QA问题？</h3><ol start="0">
+<li><p>net/http相关类介绍？</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Server： 服务器类，接收请求后起协程 处理请求：<span class="keyword">go</span> srv.newConn(rw).serve(ctx)</span><br><span class="line"></span><br><span class="line">conn：server的连接实例，负责解析请求，构建Request和Response，并将参数传递给路由Mux处理</span><br><span class="line"></span><br><span class="line">DefaultServerMux：默认路由，负责根据path找对应的handler执行，对应的ServeHTTP(w,r)</span><br><span class="line"></span><br><span class="line">Handler：业务自己写的逻辑函数，包含一个ServeHTTP(w,r)方法</span><br><span class="line"></span><br><span class="line">Request：请求体，包含请求头和请求体等各种参数</span><br><span class="line"></span><br><span class="line">Response：返回体，包含请求体，返回的conn实例</span><br><span class="line"></span><br><span class="line">Client：客户端client，调用底层传输器发送请求</span><br><span class="line"></span><br><span class="line">Transport：Http默认传输器，发送网络请求</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>函数HandlerFunc变成handler?【设计模式之适配器模式】</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Handler <span class="keyword">interface</span> &#123;</span><br><span class="line">	ServeHTTP(ResponseWriter, *Request)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//适配器模式，函数是一个类，也可以拥有函数</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(f HandlerFunc)</span> <span class="title">ServeHTTP</span><span class="params">(w ResponseWriter, r *Request)</span></span> &#123;</span><br><span class="line">	f(w, r)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>DefaultServerMux可以替换吗？</p>
+</li>
+</ol>
+<p>可以，如使用httprouter替换默认的DefaultServerMux路由<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"github.com/julienschmidt/httprouter"</span></span><br><span class="line">    <span class="string">"net/http"</span></span><br><span class="line">    <span class="string">"log"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Index</span><span class="params">(w http.ResponseWriter, r *http.Request, _ httprouter.Params)</span></span> &#123;</span><br><span class="line">    fmt.Fprint(w, <span class="string">"Welcome!\n"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Hello</span><span class="params">(w http.ResponseWriter, r *http.Request, ps httprouter.Params)</span></span> &#123;</span><br><span class="line">    fmt.Fprintf(w, <span class="string">"hello, %s!\n"</span>, ps.ByName(<span class="string">"name"</span>))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    router := httprouter.New()</span><br><span class="line">    router.GET(<span class="string">"/"</span>, Index)</span><br><span class="line">    router.GET(<span class="string">"/hello/:name"</span>, Hello)</span><br><span class="line"></span><br><span class="line">    log.Fatal(http.ListenAndServe(<span class="string">":8080"</span>, router))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 
           
         

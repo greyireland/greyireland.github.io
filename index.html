@@ -1028,218 +1028,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/07/golang/golang入门笔记/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/10/07/golang/golang入门笔记/" itemprop="url">golang入门笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-07T21:10:08+08:00">
-                2019-10-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/go/" itemprop="url" rel="index">
-                    <span itemprop="name">go</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="GO笔记"><a href="#GO笔记" class="headerlink" title="GO笔记"></a>GO笔记</h1><p>需要掌握的点：</p>
-<ul>
-<li>http请求==ok</li>
-<li>http服务==ok</li>
-<li>json解析==ok</li>
-<li>日志==ok</li>
-<li>mysql库==ok</li>
-<li>redis库==ok</li>
-<li>list和map使用==ok</li>
-<li>goroutine使用==ok</li>
-<li>网络框架使用==ok</li>
-</ul>
-<p>基本库和概念</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//*T 可以传给值接收，也可以传给指针接收，所以传入尽量*T,接收也尽量用*T呗</span><br><span class="line">//使用接口：1.定义接口 2.定义类 3.类实现接口</span><br><span class="line">//a:=[2]byte&#123;&apos;a&apos;,&apos;1&apos;,2&#125;//byte ascii 1 2等这些是显示不出来的，他和&apos;1&apos;,&apos;2&apos;不一样，后面ascii码：31 32</span><br><span class="line">	</span><br><span class="line">//传入的所有参数都是interface&#123;&#125;，传出的所有参数也是interface&#123;&#125; 所以出来的时候必须要转为所需要的类型</span><br></pre></td></tr></table></figure>
-<ol>
-<li>模块 类概念</li>
-</ol>
-<h4 id="go的包和文件夹名是一样的（跟文件名关系不大）"><a href="#go的包和文件夹名是一样的（跟文件名关系不大）" class="headerlink" title="go的包和文件夹名是一样的（跟文件名关系不大）"></a>go的包和文件夹名是一样的（跟文件名关系不大）</h4><blockquote>
-<p>java:com.alibaba.dubbo.xxx</p>
-<p>c++:namespace std</p>
-</blockquote>
-<blockquote>
-<p>go: package 包 </p>
-</blockquote>
-<h4 id="类"><a href="#类" class="headerlink" title="类"></a>类</h4><h5 id="继承、封装、多态"><a href="#继承、封装、多态" class="headerlink" title="继承、封装、多态"></a>继承、封装、多态</h5><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Person <span class="keyword">struct</span>&#123;</span><br><span class="line">  Book <span class="comment">//==组合继承</span></span><br><span class="line">  name <span class="keyword">string</span></span><br><span class="line">  age <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//构造函数-一般自己创建构造函数</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewPerson</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> &amp;Person&#123;Book&#123;&#125;,name:<span class="string">"jack"</span>,age:<span class="number">19</span>&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//类函数外置</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *Person)</span><span class="title">say</span><span class="params">()</span></span>&#123;<span class="comment">//小写函数 包内访问==封装</span></span><br><span class="line">  p.name=<span class="string">"jack ma"</span><span class="comment">//指针(引用)接受者和普通</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//==多态</span></span><br><span class="line"><span class="keyword">type</span> Flyable <span class="keyword">interface</span> &#123;</span><br><span class="line">	Fly()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Duck <span class="keyword">struct</span>&#123;</span><br><span class="line">	Flyable<span class="comment">//隐式继承接口</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> Cat <span class="keyword">struct</span> &#123;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *Duck)</span><span class="title">Fly</span><span class="params">()</span></span>  &#123;</span><br><span class="line">	fmt.Println(<span class="string">"duck flying"</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *Cat)</span><span class="title">Fly</span><span class="params">()</span></span>  &#123;<span class="comment">//隐式继承接口</span></span><br><span class="line">	fmt.Println(<span class="string">"cat flying"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="类型包含嵌入类型，就包含嵌入类型所有的财产（你是我的，你所有东西都是我的）"><a href="#类型包含嵌入类型，就包含嵌入类型所有的财产（你是我的，你所有东西都是我的）" class="headerlink" title="类型包含嵌入类型，就包含嵌入类型所有的财产（你是我的，你所有东西都是我的）"></a>类型包含嵌入类型，就包含嵌入类型所有的财产（你是我的，你所有东西都是我的）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">类型</span><br><span class="line">type 类型名字 底层类型</span><br><span class="line">1.代表类型别名，附带新方法</span><br><span class="line">2.代表新类型</span><br><span class="line"></span><br><span class="line">方法</span><br><span class="line">包方法-静态方法</span><br><span class="line">类型方法-实例方法</span><br></pre></td></tr></table></figure>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>  &#123;</span><br><span class="line">	a:=&amp;A&#123;&#125;</span><br><span class="line">	fmt.Println(a,)</span><br><span class="line">	fmt.Println(a.Age)</span><br><span class="line">	fmt.Println(a.Dd.Birth)<span class="comment">//初始化为空对象</span></span><br><span class="line">	<span class="comment">//fmt.Println(a.Ee.Gender)//初始化为空指针，拿不到实例的熟悉，所以报错</span></span><br><span class="line">	a.Ee.Efunc() <span class="comment">//空指针可以调用方法</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> A <span class="keyword">struct</span>&#123;<span class="comment">//</span></span><br><span class="line">	B <span class="comment">//嵌入B类型所有财产</span></span><br><span class="line">	*C <span class="comment">//这里和嵌入C类型区别是，指针类型不能调用其属性</span></span><br><span class="line">	Dd D <span class="comment">//嵌入D类型的实例，有实例了什么都可以干(嵌入实例和嵌入指针比较多一些)</span></span><br><span class="line">	Ee *E <span class="comment">//嵌入E类型的指针，有了指针天下无敌(嵌入实例和嵌入指针比较多一些)</span></span><br><span class="line">	Name <span class="keyword">string</span> <span class="comment">//本身自带的财产，自己的属性(属性一般是大写，大写导出和c一样私有字段set()get())</span></span><br><span class="line">  	CheckArg <span class="function"><span class="keyword">func</span><span class="params">(*context.Context)</span> <span class="title">error</span> //属性的类型的是一个<span class="title">func</span>，可以直接调用<span class="title">a</span>.<span class="title">CheckArg</span><span class="params">()</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function"><span class="title">type</span> <span class="title">B</span> <span class="title">struct</span></span>&#123;</span><br><span class="line">	Age <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> C <span class="keyword">struct</span>&#123;</span><br><span class="line">	Email <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(*C)</span><span class="title">Cfunc</span><span class="params">()</span></span>  &#123;</span><br><span class="line">	fmt.Println(<span class="string">"c func"</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> D <span class="keyword">struct</span>&#123;</span><br><span class="line">	Birth <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> E <span class="keyword">struct</span>&#123;</span><br><span class="line">	Gender <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(*E)</span><span class="title">Efunc</span><span class="params">()</span></span>  &#123;</span><br><span class="line">	fmt.Println(<span class="string">"e func"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="可变参数…interface-，传入的当做-interface-切片"><a href="#可变参数…interface-，传入的当做-interface-切片" class="headerlink" title="可变参数…interface{}，传入的当做[]interface{}切片"></a>可变参数…interface{}，传入的当做[]interface{}切片</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Println</span><span class="params">(vals ...<span class="keyword">interface</span>&#123;&#125;)</span></span>&#123;</span><br><span class="line">  fmt.Println(vals)</span><br><span class="line">&#125;</span><br><span class="line">类似：</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Println</span><span class="params">(vals []<span class="keyword">interface</span>&#123;&#125;)</span></span>&#123;&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="http-Request请求（服务端需要Request-和Response往里面写数据）"><a href="#http-Request请求（服务端需要Request-和Response往里面写数据）" class="headerlink" title="http.Request请求（服务端需要Request,和Response往里面写数据）"></a>http.Request请求（服务端需要Request,和Response往里面写数据）</h4><p>包括：</p>
-<p>1.第一行</p>
-<p>2.请求头</p>
-<p>3.请求体（一般post才有）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">resp:=DefaultTransport.send(req)//创建一个连接，然后通过这条连接发送req数据，服务端通过这条连接读取req然后构建resp，（也通过resp可以拿到连接的标识，去某个地方获取到这条连接），然后通过连接把resp发送回去</span><br></pre></td></tr></table></figure>
-<h4 id="http-Response响应（客户端需要Response从里面读数据，读完了就关闭）"><a href="#http-Response响应（客户端需要Response从里面读数据，读完了就关闭）" class="headerlink" title="http.Response响应（客户端需要Response从里面读数据，读完了就关闭）"></a>http.Response响应（客户端需要Response从里面读数据，读完了就关闭）</h4><p>包括：</p>
-<p>1.第一行数据</p>
-<p>2.返回头</p>
-<p>3.返回body</p>
-<p>4.请求实例http.Request</p>
-<p>可拿到底层连接net.Conn(可读可写)</p>
-<h4 id="读写锁"><a href="#读写锁" class="headerlink" title="读写锁"></a>读写锁</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">func (rw *RWMutex) Lock()　　写锁，如果在添加写锁之前已经有其他的读锁和写锁，则lock就会阻塞直到该锁可用，为确保该锁最终可用，已阻塞的 Lock 调用会从获得的锁中排除新的读取器，即写锁权限高于读锁，有写锁时优先进行写锁定</span><br><span class="line">func (rw *RWMutex) Unlock()　写锁解锁，如果没有进行写锁定，则就会引起一个运行时错误</span><br><span class="line"></span><br><span class="line">func (rw *RWMutex) RLock() 读锁，当有写锁时，无法加载读锁，当只有读锁或者没有锁时，可以加载读锁，读锁可以加载多个，所以适用于＂读多写少＂的场景</span><br><span class="line"></span><br><span class="line">func (rw *RWMutex)RUnlock()　读锁解锁，RUnlock 撤销单次RLock 调用，它对于其它同时存在的读取器则没有效果。若 rw 并没有为读取而锁定，调用 RUnlock 就会引发一个运行时错误(注：这种说法在go1.3版本中是不对的，例如下面这个例子)。</span><br></pre></td></tr></table></figure>
-<h4 id="context"><a href="#context" class="headerlink" title="context"></a>context</h4><h5 id="三种ctx："><a href="#三种ctx：" class="headerlink" title="三种ctx："></a>三种ctx：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">timerCtx:超时的ctx，超过某个时间就close(chan)</span><br><span class="line">cancelCtx:可取消的ctx，使用close(chan)</span><br><span class="line">valueCtx:保存键值的ctx</span><br></pre></td></tr></table></figure>
-<h4 id="并发、channel、select、sync"><a href="#并发、channel、select、sync" class="headerlink" title="并发、channel、select、sync"></a>并发、channel、select、sync</h4><h5 id="超时控制："><a href="#超时控制：" class="headerlink" title="超时控制："></a>超时控制：</h5><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">taskdone:=<span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;,<span class="number">1</span>)</span><br><span class="line"><span class="comment">//1.任务异步做，做完发一个taskdone消息</span></span><br><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">  <span class="comment">//dosomething</span></span><br><span class="line">  time.Sleep(time.Second)</span><br><span class="line">  taskdone&lt;- <span class="keyword">struct</span> &#123;&#125;&#123;&#125;</span><br><span class="line">&#125;()</span><br><span class="line"><span class="comment">//2.等待taskdone 或者等待超时</span></span><br><span class="line"><span class="keyword">select</span> &#123;</span><br><span class="line"><span class="keyword">case</span> &lt;-taskdone:</span><br><span class="line">	fmt.Println(<span class="string">"task done"</span>)</span><br><span class="line"><span class="keyword">case</span> &lt;-time.After(time.Millisecond*<span class="number">5000</span>):</span><br><span class="line">	fmt.Println(<span class="string">"task timeout"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="scanf-扫描，一行一行读取数据嘛，或者一个个字符的读取"><a href="#scanf-扫描，一行一行读取数据嘛，或者一个个字符的读取" class="headerlink" title="scanf 扫描，一行一行读取数据嘛，或者一个个字符的读取"></a>scanf 扫描，一行一行读取数据嘛，或者一个个字符的读取</h5><h4 id="go-buffer"><a href="#go-buffer" class="headerlink" title="go buffer"></a>go buffer</h4><p>读完之后就丢弃掉数据</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">buf:=bytes.NewBuffer(sli)<span class="comment">//buffer读完之后就丢弃掉数据</span></span><br><span class="line">data0,_,_:=buf.ReadRune()</span><br><span class="line">fmt.Println(<span class="keyword">string</span>(data0),buf.String())</span><br></pre></td></tr></table></figure>
-<h4 id="go-time"><a href="#go-time" class="headerlink" title="go time"></a>go time</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">转为ts:t.unix()</span><br><span class="line">转为str:t.Format(layout,val)</span><br><span class="line">转为Time:time.parse(str,layout)</span><br></pre></td></tr></table></figure>
-<h4 id="json-xml-gob"><a href="#json-xml-gob" class="headerlink" title="json,xml,gob"></a>json,xml,gob</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> network bytes.Buffer</span><br><span class="line">enc:=gob.NewEncoder(&amp;network)<span class="comment">//编码到什么地方去</span></span><br><span class="line">enc.Encode(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>&#123;<span class="string">"k1"</span>: <span class="string">"v1"</span>&#125;)<span class="comment">//编码什么东西</span></span><br><span class="line">fmt.Println(network.Bytes())</span><br><span class="line"></span><br><span class="line">dec:=gob.NewDecoder(&amp;network)<span class="comment">//从什么地方解码</span></span><br><span class="line"><span class="keyword">var</span> m <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span></span><br><span class="line">dec.Decode(&amp;m)<span class="comment">//解码到哪里</span></span><br><span class="line">fmt.Println(m)</span><br></pre></td></tr></table></figure>
-<h4 id="字符串拼接："><a href="#字符串拼接：" class="headerlink" title="字符串拼接："></a>字符串拼接：</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">a+=<span class="string">"hello"</span></span><br><span class="line"><span class="keyword">var</span> b bytes.Buffer</span><br><span class="line"><span class="keyword">for</span> condition &#123;</span><br><span class="line">    b.WriteString(str) <span class="comment">// 将字符串str写入缓存buffer</span></span><br><span class="line">&#125;</span><br><span class="line">    <span class="keyword">return</span> b.String()</span><br></pre></td></tr></table></figure>
-<h4 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h4><blockquote>
-<p><strong>永远不要使用一个指针指向一个接口类型，因为它已经是一个指针。</strong></p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">write(w io.Writer)//没有w *io.Writer这种</span><br></pre></td></tr></table></figure>
-<h4 id="包管理"><a href="#包管理" class="headerlink" title="包管理"></a>包管理</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">自己clone</span><br><span class="line">mkdir -p github.com/user</span><br><span class="line">git clone repo</span><br><span class="line">cd github.com/user/repo</span><br><span class="line">go build xxx//缺啥去下载啥</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">golang.org/x/net ，其实镜像托管在在 github.com/golang/net</span><br><span class="line">你可以用 go get github.com/golang/net 之后，到 GOPATH/src 中</span><br><span class="line">mv github.com/golang/net golang.org/x/net</span><br><span class="line"></span><br><span class="line">golang.org/x/text</span><br><span class="line">go get github.com/golang/text</span><br><span class="line">mv github.com/golang/text golang.org/x/text</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p $GOPATH/src/golang.org/x/</span><br><span class="line">cd !$</span><br><span class="line">git clone https://github.com/golang/net.git</span><br><span class="line">git clone https://github.com/golang/sys.git</span><br><span class="line">git clone https://github.com/golang/tools.git</span><br></pre></td></tr></table></figure>
-<h4 id="http参数解析"><a href="#http参数解析" class="headerlink" title="http参数解析"></a>http参数解析</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">r.ParseForm()</span><br><span class="line">uid :=r.Form.Get(&quot;uid&quot;)//get post/form-data</span><br><span class="line">fmt.Println(uid)</span><br><span class="line">body,_:=ioutil.ReadAll(r.Body)//json post</span><br><span class="line">fmt.Println(string(body))</span><br></pre></td></tr></table></figure>
-<h4 id="error错误处理"><a href="#error错误处理" class="headerlink" title="error错误处理"></a>error错误处理</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">//1.最普通</span><br><span class="line">if err!=nil&#123;</span><br><span class="line">  return result,err</span><br><span class="line">&#125;</span><br><span class="line">//2.recover() panic()</span><br><span class="line">defer func()&#123;</span><br><span class="line">  if err:=recover();err!=nil&#123;</span><br><span class="line">    //dosomething()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">panic()	</span><br><span class="line"></span><br><span class="line">//有些错误可以处理，有些选择处理</span><br></pre></td></tr></table></figure>
-<h4 id="go的http请求比Java的http请求"><a href="#go的http请求比Java的http请求" class="headerlink" title="go的http请求比Java的http请求"></a>go的http请求比Java的http请求</h4><blockquote>
-<p>有一个[]byte到string的一个转换</p>
-</blockquote>
-<h4 id="默认值和nil"><a href="#默认值和nil" class="headerlink" title="=默认值和nil"></a>=默认值和nil</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">bool      -&gt; false                              </span><br><span class="line">numbers -&gt; 0                                 </span><br><span class="line">string    -&gt; &quot;&quot;      </span><br><span class="line"></span><br><span class="line">pointers -&gt; nil</span><br><span class="line">slices -&gt; nil</span><br><span class="line">maps -&gt; nil</span><br><span class="line">channels -&gt; nil</span><br><span class="line">functions -&gt; nil</span><br><span class="line">interfaces -&gt; nil</span><br><span class="line"></span><br><span class="line">//可以使用len(slice)==0</span><br></pre></td></tr></table></figure>
-<h4 id="TCP和UDP"><a href="#TCP和UDP" class="headerlink" title="TCP和UDP"></a>TCP和UDP</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">//tcp</span><br><span class="line">func ResolveTCPAddr(net, addr string) (*TCPAddr, os.Error)</span><br><span class="line">func ListenTCP(net string, laddr *TCPAddr) (l *TCPListener, err os.Error)</span><br><span class="line">func DialTCP(net string, laddr, raddr *TCPAddr) (c *TCPConn, err os.Error)</span><br><span class="line">func (l *TCPListener) Accept() (c Conn, err os.Error)</span><br><span class="line">func (c *TCPConn) Write(b []byte) (n int, err os.Error)</span><br><span class="line">func (c *TCPConn) Read(b []byte) (n int, err os.Error)</span><br><span class="line"></span><br><span class="line">//udp</span><br><span class="line">func ResolveUDPAddr(net, addr string) (*UDPAddr, os.Error)</span><br><span class="line">func DialUDP(net string, laddr, raddr *UDPAddr) (c *UDPConn, err os.Error)</span><br><span class="line">func ListenUDP(net string, laddr *UDPAddr) (c *UDPConn, err os.Error)</span><br><span class="line">func (c *UDPConn) ReadFromUDP(b []byte) (n int, addr *UDPAddr, err os.Error</span><br><span class="line">func (c *UDPConn) WriteToUDP(b []byte, addr *UDPAddr) (n int, err os.Error)</span><br><span class="line"></span><br><span class="line">//通用Conn, PacketConn and Listener</span><br><span class="line">net.Dial(&quot;tcp&quot;,addr)</span><br></pre></td></tr></table></figure>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">  encoder := json.NewEncoder(conn)</span><br><span class="line">  decoder := json.NewDecoder(conn)</span><br><span class="line">  <span class="keyword">for</span> n := <span class="number">0</span>; n &lt; <span class="number">10</span>; n++ &#123;</span><br><span class="line">    encoder.Encode(person)<span class="comment">//类似于write</span></span><br><span class="line">    <span class="keyword">var</span> newPerson Person</span><br><span class="line">    decoder.Decode(&amp;newPerson)<span class="comment">//类似于read</span></span><br><span class="line">    fmt.Println(newPerson.String())</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* Base64</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line"><span class="string">"bytes"</span></span><br><span class="line"><span class="string">"encoding/base64"</span></span><br><span class="line"><span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">  eightBitData := []<span class="keyword">byte</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>&#125;</span><br><span class="line">  bb := &amp;bytes.Buffer&#123;&#125;</span><br><span class="line">  encoder := base64.NewEncoder(base64.StdEncoding, bb)<span class="comment">//转为base64字符串</span></span><br><span class="line">  encoder.Write(eightBitData)</span><br><span class="line">  encoder.Close()</span><br><span class="line">  fmt.Println(bb)</span><br><span class="line">  dbuf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">12</span>)</span><br><span class="line">  decoder := base64.NewDecoder(base64.StdEncoding, bb)</span><br><span class="line">  decoder.Read(dbuf)</span><br><span class="line">  <span class="keyword">for</span> _, ch := <span class="keyword">range</span> dbuf &#123;</span><br><span class="line">  	fmt.Print(ch)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="项目分层"><a href="#项目分层" class="headerlink" title="#项目分层"></a>#项目分层</h4><h4 id="笔记"><a href="#笔记" class="headerlink" title="笔记"></a>笔记</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select&#123;&#125;//阻塞</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SERVE_HTTP=&quot;:3030&quot; go run 43.go</span><br><span class="line">address = os.Getenv(&quot;SERVE_HTTP&quot;)//直接从上面拿</span><br></pre></td></tr></table></figure>
-<h1 id="类型"><a href="#类型" class="headerlink" title="类型"></a>类型</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nil 是 interface、function、pointer、map、slice 和 channel 类型变量的默认初始值</span><br></pre></td></tr></table></figure>
-<h1 id="注意注意"><a href="#注意注意" class="headerlink" title="注意注意"></a>注意注意</h1><p>go 修改值全部用指针</p>
-<p>切片，map先make，再取地址比较好</p>
-<p>问题代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">问题代码</span><br><span class="line">//下面是一个坑</span><br><span class="line">	//for _, v := range *userInfos &#123;</span><br><span class="line">	//	userInfoTempMap[v.User.ID] = &amp;v</span><br><span class="line">	//&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">func fillUserInfo(queryUids *[]int64, userInfoTempMap map[int64]*model.RUserInfo, selfU int64) &#123;</span><br><span class="line">	if queryUids == nil || len(*queryUids) == 0 &#123;</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	//获取用户信息</span><br><span class="line">	userInfos, err := manager.MGetUserInfo(queryUids, selfU)</span><br><span class="line">	if err != nil || userInfos == nil &#123;</span><br><span class="line">		log.Errorf(&quot;get user info error:|%#v|&quot;, err)</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	//创建临时map给后面直接使用</span><br><span class="line">	for i:=0;i&lt;len(*userInfos);i++&#123;</span><br><span class="line">		userInfoTempMap[(*userInfos)[i].User.ID] = &amp;(*userInfos)[i]</span><br><span class="line">	&#125;</span><br><span class="line">	for _, v := range *userInfos &#123;</span><br><span class="line">		userInfoTempMap[v.User.ID] = &amp;v</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(userInfoTempMap)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/07/mysql/gorm源码分析/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1829,6 +1617,184 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protoc -I/usr/local/include -I. -I$GOPATH/src -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis --go_out=plugins=grpc:. *.proto</span><br></pre></td></tr></table></figure>
 <h4 id="protoc工作原理"><a href="#protoc工作原理" class="headerlink" title="protoc工作原理"></a>protoc工作原理</h4><p><a href="https://hitzhangjie.github.io/2017/05/23/Protoc%E5%8F%8A%E6%8F%92%E4%BB%B6%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90(%E7%B2%BE%E5%8D%8E%E7%89%88" target="_blank" rel="noopener">protoc原理</a>.html&gt;)</p>
 <h1 id="gRPC-gateway"><a href="#gRPC-gateway" class="headerlink" title="gRPC gateway"></a>gRPC gateway</h1><h4 id="仓库"><a href="#仓库" class="headerlink" title="仓库"></a>仓库</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 包含grpc=&gt;restful调用，swagger文档生成</span><br><span class="line">https://github.com/grpc-ecosystem/grpc-gateway</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/07/python/python常见问题/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/07/python/python常见问题/" itemprop="url">python常见问题</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-07T20:48:01+08:00">
+                2019-10-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/python/" itemprop="url" rel="index">
+                    <span itemprop="name">python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="python安装"><a href="#python安装" class="headerlink" title="python安装"></a>python安装</h1><p><code>virtualenv -p /usr/bin/python2.7 venv</code></p>
+<h1 id="python常用函数"><a href="#python常用函数" class="headerlink" title="python常用函数"></a>python常用函数</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"># str</span><br><span class="line">s1 = str()</span><br><span class="line"># in python `&apos;&apos;` or `&quot;&quot;` is the same</span><br><span class="line">s2 = &quot;shaunwei&quot; # &apos;shaunwei&apos;</span><br><span class="line">s2len = len(s2)</span><br><span class="line"># last 3 chars</span><br><span class="line">s2[-3:] # wei</span><br><span class="line">s2[5:8] # wei</span><br><span class="line">s3 = s2[:5] # shaun</span><br><span class="line">s3 += &apos;wei&apos; # return &apos;shaunwei&apos;</span><br><span class="line"># list in python is same as ArrayList in java</span><br><span class="line">s2list = list(s3)</span><br><span class="line"># string at index 4</span><br><span class="line">s2[4] # &apos;n&apos;</span><br><span class="line"># find index at first</span><br><span class="line">s2.index(&apos;w&apos;) # return 5, if not found, throw ValueError</span><br><span class="line">s2.find(&apos;w&apos;) # return 5, if not found, return -1</span><br><span class="line"></span><br><span class="line"># 链表</span><br><span class="line">class ListNode:</span><br><span class="line">    def __init__(self, val):</span><br><span class="line">        self.val = val</span><br><span class="line">        self.next = None</span><br><span class="line">class DListNode:</span><br><span class="line">    def __init__(self, val):</span><br><span class="line">        self.val = val</span><br><span class="line">        self.prev = self.next = None</span><br><span class="line">    def reverse(self, head):</span><br><span class="line">        curt = None</span><br><span class="line">        while head:</span><br><span class="line">            curt = head</span><br><span class="line">            head = curt.next</span><br><span class="line">            curt.next = curt.prev</span><br><span class="line">            curt.prev = head</span><br><span class="line">        return curt</span><br><span class="line"></span><br><span class="line">class TreeNode:</span><br><span class="line">    def __init__(self, val):</span><br><span class="line">        self.val = val</span><br><span class="line">        self.left, self.right = None, None</span><br><span class="line"></span><br><span class="line">queue = [] # same as list()</span><br><span class="line">size = len(queue)</span><br><span class="line">queue.append(1)</span><br><span class="line">queue.append(2)</span><br><span class="line">queue.pop(0) # return 1</span><br><span class="line">queue[0] # return 2 examine the first element</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">s = set()</span><br><span class="line">s1 = &#123;1, 2, 3&#125;</span><br><span class="line">s.add(&apos;shaunwei&apos;)</span><br><span class="line">&apos;shaun&apos; in s # return true</span><br><span class="line">s.remove(&apos;shaunwei&apos;)</span><br><span class="line"></span><br><span class="line"># map 在 python 中是一个keyword</span><br><span class="line">hash_map = &#123;&#125; # or dict()</span><br><span class="line">hash_map[&apos;shaun&apos;] = 98</span><br><span class="line">hash_map[&apos;wei&apos;] = 99</span><br><span class="line">exist = &apos;wei&apos; in hash_map # check existence</span><br><span class="line">point = hash_map[&apos;shaun&apos;] # get value by key</span><br><span class="line">point = hash_map.pop(&apos;shaun&apos;) # remove by key, return value</span><br><span class="line">keys = hash_map.keys() # return key list</span><br><span class="line"># iterate dictionary(map)</span><br><span class="line">for key, value in hash_map.items():</span><br><span class="line">    # do something with k, v</span><br><span class="line">    pass</span><br><span class="line"></span><br><span class="line">class Person(object):</span><br><span class="line">    def __init__(self,name,age):</span><br><span class="line">        self.name=name</span><br><span class="line">        self.age=age</span><br><span class="line"></span><br><span class="line">    def hello(self):</span><br><span class="line">        print &apos;hello:&apos;+self.name+&quot;:&quot;+str(self.age)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class Tom(Person):</span><br><span class="line">    def __init__(self,name):</span><br><span class="line">        super(Tom,self).__init__(name,18)</span><br><span class="line">    def hello2(self):#只要子类有重复的名字就会覆盖</span><br><span class="line">        pass</span><br><span class="line">        #print &apos;child say hello&apos;</span><br><span class="line">t=Tom(&apos;tom&apos;)</span><br><span class="line">t.hello()</span><br></pre></td></tr></table></figure>
+<h3 id="Python一些注意点"><a href="#Python一些注意点" class="headerlink" title="Python一些注意点"></a>Python一些注意点</h3><ol>
+<li>Python有七个序列类型： 字符串、 Unicode字符串、 列表、 元组、 字节数组、 缓冲区和xrange对象。序列类型 —  str、unicode、list、 tuple、 bytearray、buffer、xrange</li>
+<li>if and执行逻辑</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">def is_a():</span><br><span class="line">    print &apos;a&apos;</span><br><span class="line">    return False</span><br><span class="line">def is_b():</span><br><span class="line">    print &apos;b&apos;</span><br><span class="line">    return False</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__==&apos;__main__&apos;:</span><br><span class="line">    #第一个条件如果为False,and后面的就直接不执行了</span><br><span class="line">    if is_a() and is_b():</span><br><span class="line">        print &apos;if中有先后顺序的&apos;</span><br></pre></td></tr></table></figure>
+<h3 id="遇到的一些问题"><a href="#遇到的一些问题" class="headerlink" title="遇到的一些问题"></a>遇到的一些问题</h3><ol>
+<li>tornado框架：</li>
+</ol>
+<p>1）异步async+await配合，2）效果和yield差不多，3）也可以使用callback</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">from tornado import gen</span><br><span class="line"></span><br><span class="line">@gen.coroutine</span><br><span class="line">def fetch_coroutine(url):</span><br><span class="line">    http_client = AsyncHTTPClient()</span><br><span class="line">    response = yield http_client.fetch(url)</span><br><span class="line">    # In Python versions prior to 3.3, returning a value from</span><br><span class="line">    # a generator is not allowed and you must use</span><br><span class="line">    #   raise gen.Return(response.body)</span><br><span class="line">    # instead.</span><br><span class="line">    return response.body</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">async def fetch_coroutine(url):</span><br><span class="line">    http_client = AsyncHTTPClient()</span><br><span class="line">    response = await http_client.fetch(url)</span><br><span class="line">    return response.body</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>python语法</li>
+</ol>
+<ul>
+<li>何时执行装饰器：导入模块时</li>
+</ul>
+<p>用处：将函数添加到中央注册处，url-》相应函数</p>
+<ul>
+<li>装饰器将函数替换成新的函数(添加一个记时功能给函数)：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@clock</span><br><span class="line">def haha():</span><br><span class="line">	xxxxx</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">def clock(func):</span><br><span class="line">	def clocked(*arg):</span><br><span class="line">		func(*arg)</span><br><span class="line">	return clocked #返回新的函数了，替换掉原来的haha()</span><br></pre></td></tr></table></figure>
+<ul>
+<li>== a.__eq–(b)和比较值Java中：equals，is比较对象标识（地址）Java中：==</li>
+<li>Copy.deepcopy(obj)会记住循环引用，优雅处理</li>
+<li>@classmethod 最常见的用法是构建备选的构造方法</li>
+</ul>
+<ol start="3">
+<li>重试函数</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">#encoding=utf8</span><br><span class="line"></span><br><span class="line">#有参数，必须再包一层（最外层的变量大家都可以访问）</span><br><span class="line">def retry(times=1,exceptions=None):</span><br><span class="line">   exceptions = exceptions if exceptions is not None else Exception</span><br><span class="line"></span><br><span class="line">   # 包一层,传入对应的函数</span><br><span class="line">   def wrapper(func):</span><br><span class="line">      #替换函数</span><br><span class="line">      def wrapper(*args,**kwargs):</span><br><span class="line">         last_exception =None</span><br><span class="line">         for _ in range(times):</span><br><span class="line">            try:</span><br><span class="line">               return func(*args, **kwargs)</span><br><span class="line">            except exceptions as e:</span><br><span class="line">               last_exception = e</span><br><span class="line">         raise last_exception</span><br><span class="line">      return wrapper</span><br><span class="line">   return wrapper</span><br><span class="line"></span><br><span class="line">if __name__==&quot;__main__&quot;:</span><br><span class="line">   @retry(5)</span><br><span class="line">   def test(uid,name):</span><br><span class="line">      print(&quot;do something&quot;,uid,name)</span><br><span class="line">      raise Exception</span><br><span class="line">   test(&apos;123&apos;,&apos;tome&apos;)</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>回调函数callback调用</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">class Callback:</span><br><span class="line">    def run_callback(self,fn,*args,**kwargs):</span><br><span class="line">        print &apos;call function&apos;,fn.__name__</span><br><span class="line">        print args,kwargs</span><br><span class="line">        #fn(args)相当于传入一个元组参数</span><br><span class="line">        #fn(*args)会把元组拆开，给对应的参数赋值</span><br><span class="line">        fn(*args)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    def hi(self,name,age):</span><br><span class="line">        print &apos;hello,&apos;,name,age</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @classmethod</span><br><span class="line">    def start(cls):</span><br><span class="line">        cls().run_callback(cls().hi,&apos;tome&apos;,18)</span><br><span class="line"></span><br><span class="line">Callback.start()</span><br></pre></td></tr></table></figure>
 
           
         
