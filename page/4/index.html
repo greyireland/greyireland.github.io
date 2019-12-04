@@ -280,6 +280,361 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/03/golang/net-http包关键点解析/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/03/golang/net-http包关键点解析/" itemprop="url">net/http包关键点解析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-03T13:23:19+08:00">
+                2019-03-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/go/" itemprop="url" rel="index">
+                    <span itemprop="name">go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="net-http包关键点解析"><a href="#net-http包关键点解析" class="headerlink" title="net/http包关键点解析"></a>net/http包关键点解析</h1><h2 id="Go创建一个http-server"><a href="#Go创建一个http-server" class="headerlink" title="Go创建一个http server"></a>Go创建一个http server</h2><p>如何创建http server服务端?</p>
+<p>核心：</p>
+<p>1.保存path和handler的对应关系</p>
+<p>2.请求过来时，查找path对应的handler，然后调用handler的ServeHTTP(w, r)方法<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"net/http"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">SayHello</span><span class="params">(w http.ResponseWriter, req *http.Request)</span></span> &#123;</span><br><span class="line">    w.Write([]<span class="keyword">byte</span>(<span class="string">"Hello"</span>))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    http.HandleFunc(<span class="string">"/hello"</span>, SayHello)</span><br><span class="line">    http.ListenAndServe(<span class="string">":8001"</span>, <span class="literal">nil</span>)</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>首先调用Http.HandleFunc</p>
+<p>按顺序做了几件事：</p>
+<ol>
+<li>调用了DefaultServerMux的HandleFunc</li>
+<li>调用了DefaultServerMux的Handle</li>
+<li>往DefaultServeMux的map[string]muxEntry中增加对应的handler和路由规则</li>
+</ol>
+<p>其次调用http.ListenAndServe(“:8001”, nil)<br>按顺序做了几件事情：</p>
+<ol>
+<li>实例化Server</li>
+<li>调用Server的ListenAndServe()</li>
+<li>调用net.Listen(“tcp”, addr)监听端口</li>
+<li>启动一个for循环，在循环体中Accept请求<br>对每个请求实例化一个Conn，并且开启一个goroutine为这个请求进行服务go c.serve()<br>读取每个请求的内容w, err := c.readRequest()<br>判断header是否为空，如果没有设置handler（这个例子就没有设置handler），handler就设置为DefaultServeMux调用handler的ServeHttp</li>
+<li><p>下面就进入到DefaultServerMux.ServeHttp<br>根据request选择handler，并且进入到这个handler的ServeHTTP mux.handler(r).ServeHTTP(w, r)选择handler：</p>
+<ul>
+<li><p>判断是否有路由能满足这个request（循环遍历ServerMux的muxEntry）</p>
+</li>
+<li><p>如果有路由满足，调用这个路由handler的ServeHttp</p>
+</li>
+<li><p>如果没有路由满足，调用NotFoundHandler的ServeHttp</p>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="Go-发送http请求"><a href="#Go-发送http请求" class="headerlink" title="Go 发送http请求"></a>Go 发送http请求</h2><p>步骤：</p>
+<ol>
+<li>创建request</li>
+<li>创建一个Client将request发送出去，依赖底层RT实现，可以是默认的Transport，也可以是Mock的Transport或者带缓存的Transport</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">httpDo</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">//默认的往返车RT,RoundTripper ，http.Transport默认的网络传输器net.Conn读写</span></span><br><span class="line">    tr := &amp;http.Transport&#123;</span><br><span class="line">    MaxIdleConns:       <span class="number">10</span>,</span><br><span class="line">    IdleConnTimeout:    <span class="number">30</span> * time.Second,</span><br><span class="line">    DisableCompression: <span class="literal">true</span>,</span><br><span class="line">  &#125;</span><br><span class="line">    client := &amp;http.Client&#123;Transport: tr&#125;</span><br><span class="line"> </span><br><span class="line">    req, err := http.NewRequest(<span class="string">"POST"</span>, <span class="string">"http://www.baidu.com"</span>, strings.NewReader(<span class="string">"name=cjb"</span>))</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="comment">// handle error</span></span><br><span class="line">    &#125;</span><br><span class="line">    req.Header.Set(<span class="string">"Cookie"</span>, <span class="string">"name=anny"</span>)</span><br><span class="line"> </span><br><span class="line">    resp, err := client.Do(req)</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">defer</span> resp.Body.Close()</span><br><span class="line"> </span><br><span class="line">    body, err := ioutil.ReadAll(resp.Body)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="comment">// handle error</span></span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    fmt.Println(<span class="keyword">string</span>(body))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//带缓存的传输器</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *cacheTransport)</span> <span class="title">RoundTrip</span><span class="params">(r *http.Request)</span> <span class="params">(*http.Response, error)</span></span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Check if we have the response cached..</span></span><br><span class="line">    <span class="comment">// If yes, we don't have to hit the server</span></span><br><span class="line">    <span class="comment">// We just return it as is from the cache store.</span></span><br><span class="line">    <span class="keyword">if</span> val, err := c.Get(r); err == <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Println(<span class="string">"Fetching the response from the cache"</span>)</span><br><span class="line">        <span class="keyword">return</span> cachedResponse([]<span class="keyword">byte</span>(val), r)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Ok, we don't have the response cached, the store was probably cleared.</span></span><br><span class="line">    <span class="comment">// Make the request to the server.</span></span><br><span class="line">    resp, err := c.originalTransport.RoundTrip(r)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Get the body of the response so we can save it in the cache for the next request.</span></span><br><span class="line">    buf, err := httputil.DumpResponse(resp, <span class="literal">true</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Saving it to the cache store</span></span><br><span class="line">    c.Set(r, <span class="keyword">string</span>(buf))</span><br><span class="line"></span><br><span class="line">    fmt.Println(<span class="string">"Fetching the data from the real source"</span>)</span><br><span class="line">    <span class="keyword">return</span> resp, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//使用：</span></span><br><span class="line">cachedTransport := newTransport()</span><br><span class="line"><span class="comment">// cachedTransport 是自定义实现http.RoundTripper接口的 Transport</span></span><br><span class="line">client := &amp;http.Client&#123;</span><br><span class="line">    Transport: cachedTransport,</span><br><span class="line">    Timeout:   time.Second * <span class="number">5</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="QA问题？"><a href="#QA问题？" class="headerlink" title="QA问题？"></a>QA问题？</h3><ol start="0">
+<li><p>net/http相关类介绍？</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Server： 服务器类，接收请求后起协程 处理请求：<span class="keyword">go</span> srv.newConn(rw).serve(ctx)</span><br><span class="line"></span><br><span class="line">conn：server的连接实例，负责解析请求，构建Request和Response，并将参数传递给路由Mux处理</span><br><span class="line"></span><br><span class="line">DefaultServerMux：默认路由，负责根据path找对应的handler执行，对应的ServeHTTP(w,r)</span><br><span class="line"></span><br><span class="line">Handler：业务自己写的逻辑函数，包含一个ServeHTTP(w,r)方法</span><br><span class="line"></span><br><span class="line">Request：请求体，包含请求头和请求体等各种参数</span><br><span class="line"></span><br><span class="line">Response：返回体，包含请求体，返回的conn实例</span><br><span class="line"></span><br><span class="line">Client：客户端client，调用底层传输器发送请求</span><br><span class="line"></span><br><span class="line">Transport：Http默认传输器，发送网络请求</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>函数HandlerFunc变成handler?【设计模式之适配器模式】</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Handler <span class="keyword">interface</span> &#123;</span><br><span class="line">	ServeHTTP(ResponseWriter, *Request)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//适配器模式，函数是一个类，也可以拥有函数</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(f HandlerFunc)</span> <span class="title">ServeHTTP</span><span class="params">(w ResponseWriter, r *Request)</span></span> &#123;</span><br><span class="line">	f(w, r)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>DefaultServerMux可以替换吗？</p>
+</li>
+</ol>
+<p>可以，如使用httprouter替换默认的DefaultServerMux路由<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"github.com/julienschmidt/httprouter"</span></span><br><span class="line">    <span class="string">"net/http"</span></span><br><span class="line">    <span class="string">"log"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Index</span><span class="params">(w http.ResponseWriter, r *http.Request, _ httprouter.Params)</span></span> &#123;</span><br><span class="line">    fmt.Fprint(w, <span class="string">"Welcome!\n"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Hello</span><span class="params">(w http.ResponseWriter, r *http.Request, ps httprouter.Params)</span></span> &#123;</span><br><span class="line">    fmt.Fprintf(w, <span class="string">"hello, %s!\n"</span>, ps.ByName(<span class="string">"name"</span>))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    router := httprouter.New()</span><br><span class="line">    router.GET(<span class="string">"/"</span>, Index)</span><br><span class="line">    router.GET(<span class="string">"/hello/:name"</span>, Hello)</span><br><span class="line"></span><br><span class="line">    log.Fatal(http.ListenAndServe(<span class="string">":8080"</span>, router))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/23/algorithm/01_二分搜索系列/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/02/23/algorithm/01_二分搜索系列/" itemprop="url">01_二分搜索系列</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-23T20:58:30+08:00">
+                2019-02-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/algorithm/" itemprop="url" rel="index">
+                    <span itemprop="name">algorithm</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="二分搜索模板"><a href="#二分搜索模板" class="headerlink" title="二分搜索模板"></a>二分搜索模板</h1><h3 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h3><p>给一个有序数组和目标值，找第一次/最后一次/任何一次出现的索引，如果没有出现返回-1</p>
+<p>通用模板<br>四点要素:</p>
+<ol>
+<li>start + 1 &lt; end</li>
+<li>start + (end - start) / 2 </li>
+<li>A[mid] ==, &lt;, &gt;</li>
+<li>A[start] A[end] ? target</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">标准代码：</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">search</span><span class="params">(nums []<span class="keyword">int</span>, target <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    start:=<span class="number">0</span></span><br><span class="line">    end:=<span class="built_in">len</span>(nums)<span class="number">-1</span></span><br><span class="line">    <span class="keyword">for</span>(start+<span class="number">1</span>&lt;end)&#123;</span><br><span class="line">        mid:=start+(end-start)/<span class="number">2</span></span><br><span class="line">        <span class="keyword">if</span> nums[mid]==target&#123;</span><br><span class="line">            end=mid</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span> nums[mid]&lt;target&#123;</span><br><span class="line">            start=mid</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span> nums[mid]&gt;target&#123;</span><br><span class="line">            end=mid</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> nums[start]==target&#123;</span><br><span class="line">        <span class="keyword">return</span> start</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> nums[end]==target&#123;</span><br><span class="line">        <span class="keyword">return</span> end</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>大部分二分查找类的题目都可以用这个模板，然后做一点特殊逻辑即可</p>
+<h3 id="常见题目："><a href="#常见题目：" class="headerlink" title="常见题目："></a>常见题目：</h3><ol>
+<li><p>二分查找</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。</span><br><span class="line">你可以假设数组中无重复元素。</span><br><span class="line"></span><br><span class="line">示例 <span class="number">1</span>:</span><br><span class="line">输入: [<span class="number">1</span>,<span class="number">3</span>,<span class="number">5</span>,<span class="number">6</span>], <span class="number">5</span></span><br><span class="line">输出: <span class="number">2</span></span><br><span class="line"></span><br><span class="line">示例 <span class="number">2</span>:</span><br><span class="line">输入: [<span class="number">1</span>,<span class="number">3</span>,<span class="number">5</span>,<span class="number">6</span>], <span class="number">2</span></span><br><span class="line">输出: <span class="number">1</span></span><br><span class="line"></span><br><span class="line">示例 <span class="number">3</span>:</span><br><span class="line">输入: [<span class="number">1</span>,<span class="number">3</span>,<span class="number">5</span>,<span class="number">6</span>], <span class="number">7</span></span><br><span class="line">输出: <span class="number">4</span></span><br><span class="line"></span><br><span class="line">示例 <span class="number">4</span>:</span><br><span class="line">输入: [<span class="number">1</span>,<span class="number">3</span>,<span class="number">5</span>,<span class="number">6</span>], <span class="number">0</span></span><br><span class="line">输出: <span class="number">0</span></span><br><span class="line"></span><br><span class="line">解答：</span><br><span class="line">- 二分查找</span><br><span class="line">- 判断首尾的情况，找first position +<span class="number">1</span>，判断end</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">searchInsert</span><span class="params">(nums []<span class="keyword">int</span>, target <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(nums)==<span class="number">0</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">    start:=<span class="number">0</span></span><br><span class="line">    end:=<span class="built_in">len</span>(nums)<span class="number">-1</span></span><br><span class="line">    <span class="keyword">for</span>(start+<span class="number">1</span>&lt;end)&#123;</span><br><span class="line">        mid:=start+(end-start)/<span class="number">2</span></span><br><span class="line">        <span class="keyword">if</span> nums[mid]&gt;target&#123;</span><br><span class="line">            end=mid</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span> nums[mid]&lt;target&#123;</span><br><span class="line">            start=mid</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span> nums[mid]==target &#123;</span><br><span class="line">            end=mid</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> nums[start]&gt;=target&#123;</span><br><span class="line">        <span class="keyword">return</span> start</span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span> nums[end]&lt;target&#123;</span><br><span class="line">        <span class="keyword">return</span> end+<span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> start+<span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>矩阵搜索</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">编写一个高效的算法来判断 m x n 矩阵中，是否存在一个目标值。该矩阵具有如下特性：</span><br><span class="line">每行中的整数从左到右按升序排列。</span><br><span class="line">每行的第一个整数大于前一行的最后一个整数。</span><br><span class="line"></span><br><span class="line">示例 <span class="number">1</span>:</span><br><span class="line">输入:</span><br><span class="line">matrix = [</span><br><span class="line">  [<span class="number">1</span>,   <span class="number">3</span>,  <span class="number">5</span>,  <span class="number">7</span>],</span><br><span class="line">  [<span class="number">10</span>, <span class="number">11</span>, <span class="number">16</span>, <span class="number">20</span>],</span><br><span class="line">  [<span class="number">23</span>, <span class="number">30</span>, <span class="number">34</span>, <span class="number">50</span>]</span><br><span class="line">]</span><br><span class="line">target = <span class="number">3</span></span><br><span class="line">输出: <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">示例 <span class="number">2</span>:</span><br><span class="line">输入:</span><br><span class="line">matrix = [</span><br><span class="line">  [<span class="number">1</span>,   <span class="number">3</span>,  <span class="number">5</span>,  <span class="number">7</span>],</span><br><span class="line">  [<span class="number">10</span>, <span class="number">11</span>, <span class="number">16</span>, <span class="number">20</span>],</span><br><span class="line">  [<span class="number">23</span>, <span class="number">30</span>, <span class="number">34</span>, <span class="number">50</span>]</span><br><span class="line">]</span><br><span class="line">target = <span class="number">13</span></span><br><span class="line">输出: <span class="literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//从右上角开始查找log(m)+log(n)</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">searchMatrix</span><span class="params">(matrix [][]<span class="keyword">int</span>, target <span class="keyword">int</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(matrix)==<span class="number">0</span>||<span class="built_in">len</span>(matrix[<span class="number">0</span>])==<span class="number">0</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line">    i:=<span class="built_in">len</span>(matrix)<span class="number">-1</span></span><br><span class="line">    j:=<span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span>(i&gt;=<span class="number">0</span>&amp;&amp;j&lt;<span class="built_in">len</span>(matrix[<span class="number">0</span>]))&#123;</span><br><span class="line">        <span class="keyword">if</span> matrix[i][j]&lt;target&#123;</span><br><span class="line">            j++</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span> matrix[i][j]&gt;target&#123;</span><br><span class="line">            i--</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>旋转数组搜索</p>
+</li>
+</ol>
+<p>核心思路：</p>
+<p>根据nums[start]&lt;nums[mid] 判断两种情况</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">假设按照升序排序的数组在预先未知的某个点上进行了旋转。</span><br><span class="line">( 例如，数组 [<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>] 可能变为 [<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>] )。</span><br><span class="line">搜索一个给定的目标值，如果数组中存在这个目标值，则返回它的索引，否则返回 <span class="number">-1</span> 。</span><br><span class="line">你可以假设数组中不存在重复的元素。</span><br><span class="line">你的算法时间复杂度必须是 O(log n) 级别。</span><br><span class="line"></span><br><span class="line">示例 <span class="number">1</span>:</span><br><span class="line">输入: nums = [<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>], target = <span class="number">0</span></span><br><span class="line">输出: <span class="number">4</span></span><br><span class="line"></span><br><span class="line">示例 <span class="number">2</span>:</span><br><span class="line">输入: nums = [<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>], target = <span class="number">3</span></span><br><span class="line">输出: <span class="number">-1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">search</span><span class="params">(nums []<span class="keyword">int</span>, target <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(nums)==<span class="number">0</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line">    &#125;</span><br><span class="line">    start:=<span class="number">0</span></span><br><span class="line">    end:=<span class="built_in">len</span>(nums)<span class="number">-1</span></span><br><span class="line">    <span class="keyword">for</span>(start+<span class="number">1</span>&lt;end)&#123;</span><br><span class="line">        mid:=start+(end-start)/<span class="number">2</span></span><br><span class="line">        <span class="keyword">if</span> nums[start]&lt;nums[mid]&#123;</span><br><span class="line">            <span class="keyword">if</span> target&gt;=nums[start]&amp;&amp;target&lt;=nums[mid]&#123;</span><br><span class="line">                end=mid</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                start=mid</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span> nums[start]&gt;nums[mid]&#123;</span><br><span class="line">            <span class="keyword">if</span> nums[mid]&lt;=target&amp;&amp;target&lt;=nums[end]&#123;</span><br><span class="line">                start=mid</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                end=mid</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span> nums[mid]==target&#123;</span><br><span class="line">            <span class="keyword">return</span> mid</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> nums[start]==target&#123;</span><br><span class="line">        <span class="keyword">return</span> start</span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span> nums[end]==target&#123;</span><br><span class="line">        <span class="keyword">return</span> end</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">存在重复元素情况，只能线性判断</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">search</span><span class="params">(nums []<span class="keyword">int</span>, target <span class="keyword">int</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> i:=<span class="number">0</span>;i&lt;<span class="built_in">len</span>(nums);i++&#123;</span><br><span class="line">        <span class="keyword">if</span> nums[i]==target&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>每一个模板都是前人总结的经验。</li>
+<li>没有模板就自己创造一个模板。</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/23/algorithm/00_算法入门/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1660,329 +2015,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/25/golang/govendor-quickstart/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/12/25/golang/govendor-quickstart/" itemprop="url">govendor-quickstart</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-25T13:16:56+08:00">
-                2018-12-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/go/" itemprop="url" rel="index">
-                    <span itemprop="name">go</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p><code>go get -u -v github.com/kardianos/govendor</code></p>
-<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">0. 安装</span><br><span class="line">go get -u -v github.com/kardianos/govendor</span><br><span class="line"></span><br><span class="line">1. 初始化</span><br><span class="line">cd &quot;my project in GOPATH&quot;</span><br><span class="line">govendor init</span><br><span class="line"></span><br><span class="line">2. 添加依赖</span><br><span class="line"># Add existing GOPATH files to vendor.</span><br><span class="line">govendor add +external</span><br></pre></td></tr></table></figure>
-<h1 id="详细教程"><a href="#详细教程" class="headerlink" title="详细教程"></a>详细教程</h1><p>wiki:<a href="https://github.com/kardianos/govendor" target="_blank" rel="noopener">https://github.com/kardianos/govendor</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line">Quick Start, also see the FAQ</span><br><span class="line"># Setup your project.</span><br><span class="line">cd &quot;my project in GOPATH&quot;</span><br><span class="line">govendor init</span><br><span class="line"></span><br><span class="line"># Add existing GOPATH files to vendor.</span><br><span class="line">govendor add +external</span><br><span class="line"></span><br><span class="line"># View your work.</span><br><span class="line">govendor list</span><br><span class="line"></span><br><span class="line"># Look at what is using a package</span><br><span class="line">govendor list -v fmt</span><br><span class="line"></span><br><span class="line"># Specify a specific version or revision to fetch</span><br><span class="line">govendor fetch golang.org/x/net/context@a4bbce9fcae005b22ae5443f6af064d80a6f5a55</span><br><span class="line">govendor fetch golang.org/x/net/context@v1   # Get latest v1.*.* tag or branch.</span><br><span class="line">govendor fetch golang.org/x/net/context@=v1  # Get the tag or branch named &quot;v1&quot;.</span><br><span class="line"></span><br><span class="line"># Update a package to latest, given any prior version constraint</span><br><span class="line">govendor fetch golang.org/x/net/context</span><br><span class="line"></span><br><span class="line"># Format your repository only</span><br><span class="line">govendor fmt +local</span><br><span class="line"></span><br><span class="line"># Build everything in your repository only</span><br><span class="line">govendor install +local</span><br><span class="line"></span><br><span class="line"># Test your repository only</span><br><span class="line">govendor test +local</span><br><span class="line"></span><br><span class="line">Sub-commands</span><br><span class="line">	init     Create the &quot;vendor&quot; folder and the &quot;vendor.json&quot; file.</span><br><span class="line">	list     List and filter existing dependencies and packages.</span><br><span class="line">	add      Add packages from $GOPATH.</span><br><span class="line">	update   Update packages from $GOPATH.</span><br><span class="line">	remove   Remove packages from the vendor folder.</span><br><span class="line">	status   Lists any packages missing, out-of-date, or modified locally.</span><br><span class="line">	fetch    Add new or update vendor folder packages from remote repository.</span><br><span class="line">	sync     Pull packages into vendor folder from remote repository with revisions</span><br><span class="line">  	             from vendor.json file.</span><br><span class="line">	migrate  Move packages from a legacy tool to the vendor folder with metadata.</span><br><span class="line">	get      Like &quot;go get&quot; but copies dependencies into a &quot;vendor&quot; folder.</span><br><span class="line">	license  List discovered licenses for the given status or import paths.</span><br><span class="line">	shell    Run a &quot;shell&quot; to make multiple sub-commands more efficient for large</span><br><span class="line">	             projects.</span><br><span class="line"></span><br><span class="line">	go tool commands that are wrapped:</span><br><span class="line">	  `+&lt;status&gt;` package selection may be used with them</span><br><span class="line">	fmt, build, install, clean, test, vet, generate, tool</span><br><span class="line">Status</span><br><span class="line">Packages can be specified by their &quot;status&quot;.</span><br><span class="line"></span><br><span class="line">	+local    (l) packages in your project</span><br><span class="line">	+external (e) referenced packages in GOPATH but not in current project</span><br><span class="line">	+vendor   (v) packages in the vendor folder</span><br><span class="line">	+std      (s) packages in the standard library</span><br><span class="line"></span><br><span class="line">	+excluded (x) external packages explicitly excluded from vendoring</span><br><span class="line">	+unused   (u) packages in the vendor folder, but unused</span><br><span class="line">	+missing  (m) referenced packages but not found</span><br><span class="line"></span><br><span class="line">	+program  (p) package is a main package</span><br><span class="line"></span><br><span class="line">	+outside  +external +missing</span><br><span class="line">	+all      +all packages</span><br><span class="line">Status can be referenced by their initial letters.</span><br><span class="line"></span><br><span class="line">+std same as +s</span><br><span class="line">+external same as +ext same as +e</span><br><span class="line">+excluded same as +exc same as +x</span><br><span class="line">Status can be logically composed:</span><br><span class="line"></span><br><span class="line">+local,program (local AND program) local packages that are also programs</span><br><span class="line">+local +vendor (local OR vendor) local packages or vendor packages</span><br><span class="line">+vendor,program +std ((vendor AND program) OR std) vendor packages that are also programs or std library packages</span><br><span class="line">+vendor,^program (vendor AND NOT program) vendor package that are not &quot;main&quot; packages.</span><br></pre></td></tr></table></figure></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/19/javascript/es6/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/12/19/javascript/es6/" itemprop="url">es6</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-19T16:13:42+08:00">
-                2018-12-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/front-end/" itemprop="url" rel="index">
-                    <span itemprop="name">front-end</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="ES6"><a href="#ES6" class="headerlink" title="ES6"></a>ES6</h1><h3 id="Babel是一个广泛使用的-ES6-转码器，可以将-ES6-代码转为-ES5-代码"><a href="#Babel是一个广泛使用的-ES6-转码器，可以将-ES6-代码转为-ES5-代码" class="headerlink" title="Babel是一个广泛使用的 ES6 转码器，可以将 ES6 代码转为 ES5 代码"></a>Babel是一个广泛使用的 ES6 转码器，可以将 ES6 代码转为 ES5 代码</h3><p>Babel 的配置文件是<code>.babelrc</code>，存放在项目的根目录下。使用 Babel 的第一步，就是配置这个文件。Babel 使用<code>babel-cli</code>工具，用于命令行转码。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 转码前</span><br><span class="line">input.map(item =&gt; item + 1);</span><br><span class="line"></span><br><span class="line">// 转码后</span><br><span class="line">input.map(function (item) &#123;</span><br><span class="line">  return item + 1;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h3 id="let和const"><a href="#let和const" class="headerlink" title="let和const"></a>let和const</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">let 局部作用域，var全局作用域，const静态变量</span><br><span class="line">直接使用未声明，输出为：undefined</span><br></pre></td></tr></table></figure>
-<h3 id="变量解析"><a href="#变量解析" class="headerlink" title="变量解析"></a>变量解析</h3><p>变量的解构赋值用途很多。</p>
-<p><strong>（1）交换变量的值</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let x = 1;</span><br><span class="line">let y = 2;</span><br><span class="line"></span><br><span class="line">[x, y] = [y, x];</span><br></pre></td></tr></table></figure>
-<p>上面代码交换变量<code>x</code>和<code>y</code>的值，这样的写法不仅简洁，而且易读，语义非常清晰。</p>
-<p><strong>（2）从函数返回多个值</strong></p>
-<p>函数只能返回一个值，如果要返回多个值，只能将它们放在数组或对象里返回。有了解构赋值，取出这些值就非常方便。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// 返回一个数组</span><br><span class="line"></span><br><span class="line">function example() &#123;</span><br><span class="line">  return [1, 2, 3];</span><br><span class="line">&#125;</span><br><span class="line">let [a, b, c] = example();</span><br><span class="line"></span><br><span class="line">// 返回一个对象</span><br><span class="line"></span><br><span class="line">function example() &#123;</span><br><span class="line">  return &#123;</span><br><span class="line">    foo: 1,</span><br><span class="line">    bar: 2</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line">let &#123; foo, bar &#125; = example();</span><br></pre></td></tr></table></figure>
-<p><strong>（3）函数参数的定义</strong></p>
-<p>解构赋值可以方便地将一组参数与变量名对应起来。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 参数是一组有次序的值</span><br><span class="line">function f([x, y, z]) &#123; ... &#125;</span><br><span class="line">f([1, 2, 3]);</span><br><span class="line"></span><br><span class="line">// 参数是一组无次序的值</span><br><span class="line">function f(&#123;x, y, z&#125;) &#123; ... &#125;</span><br><span class="line">f(&#123;z: 3, y: 2, x: 1&#125;);</span><br></pre></td></tr></table></figure>
-<p><strong>（4）提取 JSON 数据</strong></p>
-<p>解构赋值对提取 JSON 对象中的数据，尤其有用。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">let jsonData = &#123;</span><br><span class="line">  id: 42,</span><br><span class="line">  status: &quot;OK&quot;,</span><br><span class="line">  data: [867, 5309]</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">let &#123; id, status, data: number &#125; = jsonData;</span><br><span class="line"></span><br><span class="line">console.log(id, status, number);</span><br><span class="line">// 42, &quot;OK&quot;, [867, 5309]</span><br></pre></td></tr></table></figure>
-<p>上面代码可以快速提取 JSON 数据的值。</p>
-<p><strong>（5）函数参数的默认值</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">jQuery.ajax = function (url, &#123;</span><br><span class="line">  async = true,</span><br><span class="line">  beforeSend = function () &#123;&#125;,</span><br><span class="line">  cache = true,</span><br><span class="line">  complete = function () &#123;&#125;,</span><br><span class="line">  crossDomain = false,</span><br><span class="line">  global = true,</span><br><span class="line">  // ... more config</span><br><span class="line">&#125; = &#123;&#125;) &#123;</span><br><span class="line">  // ... do stuff</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>指定参数的默认值，就避免了在函数体内部再写<code>var foo = config.foo || &#39;default foo&#39;;</code>这样的语句。</p>
-<p><strong>（6）遍历 Map 结构</strong></p>
-<p>任何部署了 Iterator 接口的对象，都可以用<code>for...of</code>循环遍历。Map 结构原生支持 Iterator 接口，配合变量的解构赋值，获取键名和键值就非常方便。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">const map = new Map();</span><br><span class="line">map.set(&apos;first&apos;, &apos;hello&apos;);</span><br><span class="line">map.set(&apos;second&apos;, &apos;world&apos;);</span><br><span class="line"></span><br><span class="line">for (let [key, value] of map) &#123;</span><br><span class="line">  console.log(key + &quot; is &quot; + value);</span><br><span class="line">&#125;</span><br><span class="line">// first is hello</span><br><span class="line">// second is world</span><br></pre></td></tr></table></figure>
-<p>如果只想获取键名，或者只想获取键值，可以写成下面这样。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// 获取键名</span><br><span class="line">for (let [key] of map) &#123;</span><br><span class="line">  // ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 获取键值</span><br><span class="line">for (let [,value] of map) &#123;</span><br><span class="line">  // ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>（7）输入模块的指定方法</strong></p>
-<p>加载模块时，往往需要指定输入哪些方法。解构赋值使得输入语句非常清晰。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const &#123; SourceMapConsumer, SourceNode &#125; = require(&quot;source-map&quot;);</span><br></pre></td></tr></table></figure>
-<h3 id="字符串使用"><a href="#字符串使用" class="headerlink" title="字符串使用"></a>字符串使用</h3><h5 id="Unicode表示"><a href="#Unicode表示" class="headerlink" title="Unicode表示"></a>Unicode表示</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&apos;\z&apos; === &apos;z&apos;  // true</span><br><span class="line">&apos;\172&apos; === &apos;z&apos; // true</span><br><span class="line">&apos;\x7A&apos; === &apos;z&apos; // true</span><br><span class="line">&apos;\u007A&apos; === &apos;z&apos; // true</span><br><span class="line">&apos;\u&#123;7A&#125;&apos; === &apos;z&apos; // true</span><br></pre></td></tr></table></figure>
-<h5 id="codePointAt"><a href="#codePointAt" class="headerlink" title="codePointAt()"></a>codePointAt()</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">var s = &quot;𠮷&quot;;</span><br><span class="line"></span><br><span class="line">s.length // 2</span><br><span class="line">s.charAt(0) // &apos;&apos;</span><br><span class="line">s.charAt(1) // &apos;&apos;</span><br><span class="line">s.charCodeAt(0) // 55362</span><br><span class="line">s.charCodeAt(1) // 57271</span><br></pre></td></tr></table></figure>
-<h5 id="String-fromCodePoint"><a href="#String-fromCodePoint" class="headerlink" title="String.fromCodePoint()"></a>String.fromCodePoint()</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">String.fromCodePoint(0x20BB7)</span><br><span class="line">// &quot;𠮷&quot;</span><br><span class="line">String.fromCodePoint(0x78, 0x1f680, 0x79) === &apos;x\uD83D\uDE80y&apos;</span><br><span class="line">// true</span><br></pre></td></tr></table></figure>
-<h5 id="遍历-for-let-i-of-x"><a href="#遍历-for-let-i-of-x" class="headerlink" title="遍历 for let i of x"></a>遍历 for let i of x</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for (let codePoint of &apos;foo&apos;) &#123;</span><br><span class="line">  console.log(codePoint)</span><br><span class="line">&#125;</span><br><span class="line">// &quot;f&quot;</span><br><span class="line">// &quot;o&quot;</span><br><span class="line">// &quot;o&quot;</span><br></pre></td></tr></table></figure>
-<h5 id="字符串常用函数"><a href="#字符串常用函数" class="headerlink" title="字符串常用函数"></a>字符串常用函数</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">includes()</span><br><span class="line">startsWitch()</span><br><span class="line">endsWith()</span><br><span class="line">repeat()</span><br><span class="line">matchAll()</span><br><span class="line">match()、replace()、search()、split()</span><br></pre></td></tr></table></figure>
-<h4 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">//默认值</span><br><span class="line">function log(x, y = &apos;World&apos;) &#123;</span><br><span class="line">  console.log(x, y);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">log(&apos;Hello&apos;) // Hello World</span><br><span class="line">log(&apos;Hello&apos;, &apos;China&apos;) // Hello China</span><br><span class="line">log(&apos;Hello&apos;, &apos;&apos;) // Hello</span><br><span class="line"></span><br><span class="line">//...函数[和golang差不多]</span><br><span class="line">function add(...values) &#123;</span><br><span class="line">  let sum = 0;</span><br><span class="line"></span><br><span class="line">  for (var val of values) &#123;</span><br><span class="line">    sum += val;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  return sum;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">add(2, 5, 3) // 10</span><br><span class="line">add(...numbers) </span><br><span class="line"></span><br><span class="line">//lamda表达式</span><br><span class="line">var sum = (num1, num2) =&gt; &#123; return num1 + num2; &#125;</span><br><span class="line">var sum = (num1, num2) =&gt; num1 + num2;</span><br><span class="line">// 等同于</span><br><span class="line">var sum = function(num1, num2) &#123;</span><br><span class="line">  return num1 + num2;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">//Array.from()</span><br><span class="line">let arrayLike = &#123;</span><br><span class="line">    &apos;0&apos;: &apos;a&apos;,</span><br><span class="line">    &apos;1&apos;: &apos;b&apos;,</span><br><span class="line">    &apos;2&apos;: &apos;c&apos;,</span><br><span class="line">    length: 3</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">// ES6的写法</span><br><span class="line">let arr2 = Array.from(arrayLike); // [&apos;a&apos;, &apos;b&apos;, &apos;c&apos;]</span><br><span class="line">//Array.of()</span><br><span class="line">Array.of(3, 11, 8) // [3,11,8]</span><br><span class="line"></span><br><span class="line">//遍历数组</span><br><span class="line">for (let [index, elem] of [&apos;a&apos;, &apos;b&apos;].entries()) &#123;</span><br><span class="line">  console.log(index, elem);</span><br><span class="line">&#125;</span><br><span class="line">// 0 &quot;a&quot;</span><br><span class="line">// 1 &quot;b&quot;</span><br></pre></td></tr></table></figure>
-<h3 id="SET"><a href="#SET" class="headerlink" title="SET"></a>SET</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 例一</span><br><span class="line">const set = new Set([1, 2, 3, 4, 4]);</span><br><span class="line">[...set]</span><br><span class="line">// [1, 2, 3, 4]</span><br><span class="line"></span><br><span class="line">// 例二</span><br><span class="line">const items = new Set([1, 2, 3, 4, 5, 5, 5, 5]);</span><br><span class="line">items.size // 5</span><br></pre></td></tr></table></figure>
-<h3 id="class"><a href="#class" class="headerlink" title="class"></a>class</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">class Point &#123;</span><br><span class="line">  constructor(x, y) &#123;</span><br><span class="line">    this.x = x;</span><br><span class="line">    this.y = y;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  toString() &#123;</span><br><span class="line">    return &apos;(&apos; + this.x + &apos;, &apos; + this.y + &apos;)&apos;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="模块加载"><a href="#模块加载" class="headerlink" title="模块加载"></a>模块加载</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// ES6 模块不是对象，而是通过export命令显式指定输出的代码，再通过import命令输入。</span><br><span class="line">export var firstName = &apos;Michael&apos;;</span><br><span class="line">export var lastName = &apos;Jackson&apos;;</span><br><span class="line">export var year = 1958;</span><br><span class="line">import &#123; stat, exists, readFile &#125; from &apos;fs&apos;;</span><br><span class="line">export &#123; area as circleArea &#125; from &apos;circle&apos;;</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2031,7 +2063,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">54</span>
+                <span class="site-state-item-count">56</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -2042,7 +2074,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">30</span>
+                <span class="site-state-item-count">32</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -2053,7 +2085,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">54</span>
+                <span class="site-state-item-count">58</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
