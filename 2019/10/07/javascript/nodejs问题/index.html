@@ -94,18 +94,18 @@
 
 
 
-<meta name="description" content="Nodejs踩坑 1.执行函数后面记得加分号结束; 123function hello(uid,callback)hello(uid,function()&amp;#123;&amp;#125;);//一定要加; functionfunction 2.判断条件 12345678910111213141516171819202122232425262728293031323334353637383940414243">
+<meta name="description" content="Nodejs 注意点执行函数后面记得加分号结束; 12function hello(uid,callback)hello(uid,function()&amp;#123;&amp;#125;);//一定要加; 判断条件 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535">
 <meta name="keywords" content="tags">
 <meta property="og:type" content="article">
 <meta property="og:title" content="nodejs问题">
 <meta property="og:url" content="http://yoursite.com/2019/10/07/javascript/nodejs问题/index.html">
 <meta property="og:site_name" content="greyireland">
-<meta property="og:description" content="Nodejs踩坑 1.执行函数后面记得加分号结束; 123function hello(uid,callback)hello(uid,function()&amp;#123;&amp;#125;);//一定要加; functionfunction 2.判断条件 12345678910111213141516171819202122232425262728293031323334353637383940414243">
+<meta property="og:description" content="Nodejs 注意点执行函数后面记得加分号结束; 12function hello(uid,callback)hello(uid,function()&amp;#123;&amp;#125;);//一定要加; 判断条件 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-12-04T07:41:08.150Z">
+<meta property="og:updated_time" content="2020-05-25T05:42:40.951Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="nodejs问题">
-<meta name="twitter:description" content="Nodejs踩坑 1.执行函数后面记得加分号结束; 123function hello(uid,callback)hello(uid,function()&amp;#123;&amp;#125;);//一定要加; functionfunction 2.判断条件 12345678910111213141516171819202122232425262728293031323334353637383940414243">
+<meta name="twitter:description" content="Nodejs 注意点执行函数后面记得加分号结束; 12function hello(uid,callback)hello(uid,function()&amp;#123;&amp;#125;);//一定要加; 判断条件 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535">
 
 
 
@@ -372,12 +372,10 @@
       
 
       
-        <p>Nodejs踩坑</p>
-<p>1.执行函数后面记得加分号结束;</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hello</span>(<span class="params">uid,callback</span>)</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">hello</span>(<span class="params">uid,function(</span>)</span>&#123;&#125;);<span class="comment">//一定要加;</span></span><br></pre></td></tr></table></figure>
-<p>functionfunction</p>
-<p>2.判断条件</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">a = []</span><br><span class="line">b = <span class="string">""</span></span><br><span class="line">c = &#123;&#125;</span><br><span class="line">d = <span class="number">0</span></span><br><span class="line">f = <span class="literal">false</span></span><br><span class="line">g=<span class="string">"0"</span></span><br><span class="line">h=<span class="literal">undefined</span></span><br><span class="line">i=<span class="literal">null</span></span><br><span class="line"><span class="comment">//&#123;&#125;对象</span></span><br><span class="line"><span class="keyword">if</span> (a) &#123;</span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">"a"</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (a.length) &#123;</span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">"a.length"</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (b) &#123;</span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">"b"</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (b.length) &#123;</span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">"b.length"</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//[]也是对象</span></span><br><span class="line"><span class="keyword">if</span> (c) &#123;</span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">"c"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (d) &#123;</span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">"d"</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span>(d.length) &#123;</span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">"d.length"</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (f) &#123;</span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">"f"</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (f.length) &#123;</span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">"f.length"</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//字符串</span></span><br><span class="line"><span class="keyword">if</span> (g) &#123;</span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">'g'</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//转为0了</span></span><br><span class="line"><span class="keyword">if</span>(<span class="built_in">parseInt</span>(g))&#123;</span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">'parseInt g'</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (h) &#123;</span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">'h'</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (i) &#123;</span><br><span class="line">    <span class="built_in">console</span>.info(<span class="string">'i'</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//a</span></span><br><span class="line"><span class="comment">//c</span></span><br><span class="line"><span class="comment">//g</span></span><br></pre></td></tr></table></figure>
+        <h2 id="Nodejs-注意点"><a href="#Nodejs-注意点" class="headerlink" title="Nodejs 注意点"></a>Nodejs 注意点</h2><p>执行函数后面记得加分号结束;</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hello</span>(<span class="params">uid,callback</span>)</span></span><br><span class="line"><span class="function"><span class="title">hello</span>(<span class="params">uid,function(</span>)</span>&#123;&#125;);<span class="comment">//一定要加;</span></span><br></pre></td></tr></table></figure>
+<p>判断条件</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">a = [];</span><br><span class="line">b = <span class="string">""</span>;</span><br><span class="line">c = &#123;&#125;;</span><br><span class="line">d = <span class="number">0</span>;</span><br><span class="line">f = <span class="literal">false</span>;</span><br><span class="line">g = <span class="string">"0"</span>;</span><br><span class="line">h = <span class="literal">undefined</span>;</span><br><span class="line">i = <span class="literal">null</span>;</span><br><span class="line"><span class="comment">//&#123;&#125;对象</span></span><br><span class="line"><span class="keyword">if</span> (a) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"a"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (a.length) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"a.length"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (b) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"b"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (b.length) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"b.length"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//[]也是对象</span></span><br><span class="line"><span class="keyword">if</span> (c) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"c"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (d) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"d"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (d.length) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"d.length"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (f) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"f"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (f.length) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"f.length"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//字符串</span></span><br><span class="line"><span class="keyword">if</span> (g) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"g"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//转为0了</span></span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">parseInt</span>(g)) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"parseInt g"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (h) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"h"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (i) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"i"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//a</span></span><br><span class="line"><span class="comment">//c</span></span><br><span class="line"><span class="comment">//g</span></span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -472,8 +470,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="greyireland">
           <p class="site-author-name" itemprop="name">greyireland</p>
@@ -486,7 +493,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-count">42</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -497,7 +504,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-count">27</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -508,7 +515,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">58</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -547,6 +554,22 @@
       </section>
 
       
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Nodejs-注意点"><span class="nav-number">1.</span> <span class="nav-text">Nodejs 注意点</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
 
       
 
@@ -563,7 +586,7 @@
         <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

@@ -94,18 +94,18 @@
 
 
 
-<meta name="description" content="mysql原理事务ACID如何实现？1234567redo log重做日志其实保障的是事务的持久性和一致性，而undo log撤销日志则保障了事务的原子性，锁保证隔离性。(一个事务)写操作对(另一个事务)写操作的影响：锁机制保证隔离性(一个事务)写操作对(另一个事务)读操作的影响：MVCC保证隔离性原子性：使用 undo log ，从而达到回滚持久性：使用 redo log，从而达到故障后恢复隔离">
+<meta name="description" content="mysql 原理事务 ACID 如何实现redo log 重做日志其实保障的是事务的持久性和一致性，而 undo log 撤销日志则保障了事务的原子性，锁保证隔离性。一个事务写操作对另一个事务写操作的影响：锁机制保证隔离性一个事务写操作对另一个事务读操作的影响：MVCC 保证隔离性  原子性：使用 undo log ，从而达到回滚 持久性：使用 redo log，从而达到故障后恢复 隔离性：使用锁">
 <meta name="keywords" content="mysql">
 <meta property="og:type" content="article">
 <meta property="og:title" content="mysql常见问题">
 <meta property="og:url" content="http://yoursite.com/2019/10/07/mysql/mysql常见问题/index.html">
 <meta property="og:site_name" content="greyireland">
-<meta property="og:description" content="mysql原理事务ACID如何实现？1234567redo log重做日志其实保障的是事务的持久性和一致性，而undo log撤销日志则保障了事务的原子性，锁保证隔离性。(一个事务)写操作对(另一个事务)写操作的影响：锁机制保证隔离性(一个事务)写操作对(另一个事务)读操作的影响：MVCC保证隔离性原子性：使用 undo log ，从而达到回滚持久性：使用 redo log，从而达到故障后恢复隔离">
+<meta property="og:description" content="mysql 原理事务 ACID 如何实现redo log 重做日志其实保障的是事务的持久性和一致性，而 undo log 撤销日志则保障了事务的原子性，锁保证隔离性。一个事务写操作对另一个事务写操作的影响：锁机制保证隔离性一个事务写操作对另一个事务读操作的影响：MVCC 保证隔离性  原子性：使用 undo log ，从而达到回滚 持久性：使用 redo log，从而达到故障后恢复 隔离性：使用锁">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-10-07T13:04:27.715Z">
+<meta property="og:updated_time" content="2020-05-25T05:50:59.788Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="mysql常见问题">
-<meta name="twitter:description" content="mysql原理事务ACID如何实现？1234567redo log重做日志其实保障的是事务的持久性和一致性，而undo log撤销日志则保障了事务的原子性，锁保证隔离性。(一个事务)写操作对(另一个事务)写操作的影响：锁机制保证隔离性(一个事务)写操作对(另一个事务)读操作的影响：MVCC保证隔离性原子性：使用 undo log ，从而达到回滚持久性：使用 redo log，从而达到故障后恢复隔离">
+<meta name="twitter:description" content="mysql 原理事务 ACID 如何实现redo log 重做日志其实保障的是事务的持久性和一致性，而 undo log 撤销日志则保障了事务的原子性，锁保证隔离性。一个事务写操作对另一个事务写操作的影响：锁机制保证隔离性一个事务写操作对另一个事务读操作的影响：MVCC 保证隔离性  原子性：使用 undo log ，从而达到回滚 持久性：使用 redo log，从而达到故障后恢复 隔离性：使用锁">
 
 
 
@@ -372,17 +372,83 @@
       
 
       
-        <h1 id="mysql原理"><a href="#mysql原理" class="headerlink" title="mysql原理"></a>mysql原理</h1><h3 id="事务ACID如何实现？"><a href="#事务ACID如何实现？" class="headerlink" title="事务ACID如何实现？"></a>事务ACID如何实现？</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">redo log重做日志其实保障的是事务的持久性和一致性，而undo log撤销日志则保障了事务的原子性，锁保证隔离性。</span><br><span class="line">(一个事务)写操作对(另一个事务)写操作的影响：锁机制保证隔离性</span><br><span class="line">(一个事务)写操作对(另一个事务)读操作的影响：MVCC保证隔离性</span><br><span class="line">原子性：使用 undo log ，从而达到回滚</span><br><span class="line">持久性：使用 redo log，从而达到故障后恢复</span><br><span class="line">隔离性：使用锁以及MVCC,运用的优化思想有读写分离，读读并行，读写并行</span><br><span class="line">一致性：通过回滚，以及恢复，和在并发环境下的隔离做到一致性。</span><br></pre></td></tr></table></figure>
-<h3 id="索引如何存储？"><a href="#索引如何存储？" class="headerlink" title="索引如何存储？"></a>索引如何存储？</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">B+树，每一个节点为一页，IO次数约等于树高度</span><br></pre></td></tr></table></figure>
-<h3 id="mysql笔记"><a href="#mysql笔记" class="headerlink" title="mysql笔记"></a>mysql笔记</h3><ul>
-<li>uid使用bigint 长度20和primary key 和auto_increment</li>
-<li>create_time 使用timestamp默认值CURRENT_TIMESTAMP</li>
-<li>update_time使用timestamp默认值CURRENT_TIMESTAMP加on_update</li>
-<li>一般用varchar长度64，128，512最大65535</li>
-<li>超大用text</li>
+        <h2 id="mysql-原理"><a href="#mysql-原理" class="headerlink" title="mysql 原理"></a>mysql 原理</h2><h3 id="事务-ACID-如何实现"><a href="#事务-ACID-如何实现" class="headerlink" title="事务 ACID 如何实现"></a>事务 ACID 如何实现</h3><p>redo log 重做日志其实保障的是事务的持久性和一致性，而 undo log 撤销日志则保障了事务的原子性，锁保证隔离性。<br>一个事务写操作对另一个事务写操作的影响：锁机制保证隔离性<br>一个事务写操作对另一个事务读操作的影响：MVCC 保证隔离性</p>
+<ul>
+<li>原子性：使用 undo log ，从而达到回滚</li>
+<li>持久性：使用 redo log，从而达到故障后恢复</li>
+<li>隔离性：使用锁以及 MVCC,运用的优化思想有读写分离，读读并行，读写并行</li>
+<li>一致性：通过回滚，以及恢复，和在并发环境下的隔离做到一致性。</li>
 </ul>
-<h3 id="查询数据库磁盘占用"><a href="#查询数据库磁盘占用" class="headerlink" title="查询数据库磁盘占用"></a>查询数据库磁盘占用</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> TABLE_SCHEMA, <span class="keyword">concat</span>(<span class="keyword">truncate</span>(<span class="keyword">sum</span>(data_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">' MB'</span>) <span class="keyword">as</span> data_size,</span><br><span class="line"><span class="keyword">concat</span>(<span class="keyword">truncate</span>(<span class="keyword">sum</span>(index_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">as</span> index_size</span><br><span class="line"><span class="keyword">from</span> information_schema.tables</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> TABLE_SCHEMA</span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> data_length <span class="keyword">desc</span>;</span><br></pre></td></tr></table></figure>
-<h3 id="查询某个数据库每个表磁盘占用"><a href="#查询某个数据库每个表磁盘占用" class="headerlink" title="查询某个数据库每个表磁盘占用"></a>查询某个数据库每个表磁盘占用</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> TABLE_NAME, <span class="keyword">concat</span>(<span class="keyword">truncate</span>(data_length/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">' MB'</span>) <span class="keyword">as</span> data_size,</span><br><span class="line"><span class="keyword">concat</span>(<span class="keyword">truncate</span>(index_length/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">' MB'</span>) <span class="keyword">as</span> index_size</span><br><span class="line"><span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA = <span class="string">'red_packet'</span></span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> TABLE_NAME</span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> data_length <span class="keyword">desc</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="索引如何存储"><a href="#索引如何存储" class="headerlink" title="索引如何存储"></a>索引如何存储</h3><p>B+树，每一个节点为一页，IO 次数约等于树高度</p>
+<h3 id="mysql-笔记"><a href="#mysql-笔记" class="headerlink" title="mysql 笔记"></a>mysql 笔记</h3><ul>
+<li>uid 使用 bigint 长度 20 和 primary key 和 auto_increment</li>
+<li>create_time 使用 timestamp 默认值 CURRENT_TIMESTAMP</li>
+<li>update_time 使用 timestamp 默认值 CURRENT_TIMESTAMP 加 on_update</li>
+<li>一般用 varchar 长度 64，128，512 最大 65535</li>
+<li>超大用 text</li>
+</ul>
+<h3 id="总结点"><a href="#总结点" class="headerlink" title="总结点"></a>总结点</h3><p>mysql</p>
+<ul>
+<li>索引<ul>
+<li>B+树</li>
+<li>查找页+二分查找</li>
+</ul>
+</li>
+<li>锁<ul>
+<li>分类：SX 读写锁</li>
+<li>算法<ul>
+<li>record lock 记录锁</li>
+<li>gap lock 间隙锁</li>
+<li>next-key lock 记录间隙锁</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>事务<ul>
+<li>A 原子性<ul>
+<li>redo、undo</li>
+</ul>
+</li>
+<li>C 一致性<ul>
+<li>redo、undo、记录间隙锁+MVCC</li>
+</ul>
+</li>
+<li>I 隔离性<ul>
+<li>记录间隙锁+MVCC</li>
+</ul>
+</li>
+<li>D 持久性<ul>
+<li>redo、undo</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>隔离级别<ul>
+<li>未提交读</li>
+<li>提交读</li>
+<li>重复读<ul>
+<li>解决重复数据读取不一致</li>
+</ul>
+</li>
+<li>串行化<ul>
+<li>解决幻读（两次读 出现数据增多 insert 进来的数据）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>性能调优<ul>
+<li>表结构优化</li>
+<li>索引优化</li>
+<li>查询语句优化</li>
+<li>配置文件优化</li>
+<li>机器优化</li>
+</ul>
+</li>
+</ul>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>查询数据库磁盘占用</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> TABLE_SCHEMA, <span class="keyword">concat</span>(<span class="keyword">truncate</span>(<span class="keyword">sum</span>(data_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">' MB'</span>) <span class="keyword">as</span> data_size,</span><br><span class="line"><span class="keyword">concat</span>(<span class="keyword">truncate</span>(<span class="keyword">sum</span>(index_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">as</span> index_size</span><br><span class="line"><span class="keyword">from</span> information_schema.tables</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> TABLE_SCHEMA</span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> data_length <span class="keyword">desc</span>;</span><br></pre></td></tr></table></figure>
+<p>查询某个数据库每个表磁盘占用</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> TABLE_NAME, <span class="keyword">concat</span>(<span class="keyword">truncate</span>(data_length/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">' MB'</span>) <span class="keyword">as</span> data_size,</span><br><span class="line"><span class="keyword">concat</span>(<span class="keyword">truncate</span>(index_length/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">' MB'</span>) <span class="keyword">as</span> index_size</span><br><span class="line"><span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA = <span class="string">'red_packet'</span></span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> TABLE_NAME</span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> data_length <span class="keyword">desc</span>;</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -500,7 +566,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-count">42</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -511,7 +577,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-count">27</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -522,7 +588,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">58</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -570,7 +636,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#mysql原理"><span class="nav-number">1.</span> <span class="nav-text">mysql原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#事务ACID如何实现？"><span class="nav-number">1.0.1.</span> <span class="nav-text">事务ACID如何实现？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引如何存储？"><span class="nav-number">1.0.2.</span> <span class="nav-text">索引如何存储？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mysql笔记"><span class="nav-number">1.0.3.</span> <span class="nav-text">mysql笔记</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查询数据库磁盘占用"><span class="nav-number">1.0.4.</span> <span class="nav-text">查询数据库磁盘占用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查询某个数据库每个表磁盘占用"><span class="nav-number">1.0.5.</span> <span class="nav-text">查询某个数据库每个表磁盘占用</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#mysql-原理"><span class="nav-number">1.</span> <span class="nav-text">mysql 原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#事务-ACID-如何实现"><span class="nav-number">1.1.</span> <span class="nav-text">事务 ACID 如何实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引如何存储"><span class="nav-number">1.2.</span> <span class="nav-text">索引如何存储</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mysql-笔记"><span class="nav-number">1.3.</span> <span class="nav-text">mysql 笔记</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结点"><span class="nav-number">1.4.</span> <span class="nav-text">总结点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他"><span class="nav-number">1.5.</span> <span class="nav-text">其他</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -593,7 +659,7 @@
         <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

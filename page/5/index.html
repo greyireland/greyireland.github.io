@@ -280,7 +280,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/19/javascript/es6/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/21/z-summary/每周计划/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="greyireland">
@@ -299,7 +299,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/12/19/javascript/es6/" itemprop="url">es6</a></h1>
+                <a class="post-title-link" href="/2018/07/21/z-summary/每周计划/" itemprop="url">0x 定一个目标</a></h1>
         
 
         <div class="post-meta">
@@ -311,8 +311,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-19T16:13:42+08:00">
-                2018-12-19
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-21T21:04:44+08:00">
+                2018-07-21
               </time>
             
 
@@ -334,8 +334,8 @@
               
               
                 <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/front-end/" itemprop="url" rel="index">
-                    <span itemprop="name">front-end</span>
+                  <a href="/categories/idea/" itemprop="url" rel="index">
+                    <span itemprop="name">idea</span>
                   </a>
                 </span>
 
@@ -373,44 +373,17 @@
       
         
           
-            <h1 id="ES6"><a href="#ES6" class="headerlink" title="ES6"></a>ES6</h1><h3 id="Babel是一个广泛使用的-ES6-转码器，可以将-ES6-代码转为-ES5-代码"><a href="#Babel是一个广泛使用的-ES6-转码器，可以将-ES6-代码转为-ES5-代码" class="headerlink" title="Babel是一个广泛使用的 ES6 转码器，可以将 ES6 代码转为 ES5 代码"></a>Babel是一个广泛使用的 ES6 转码器，可以将 ES6 代码转为 ES5 代码</h3><p>Babel 的配置文件是<code>.babelrc</code>，存放在项目的根目录下。使用 Babel 的第一步，就是配置这个文件。Babel 使用<code>babel-cli</code>工具，用于命令行转码。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 转码前</span><br><span class="line">input.map(item =&gt; item + 1);</span><br><span class="line"></span><br><span class="line">// 转码后</span><br><span class="line">input.map(function (item) &#123;</span><br><span class="line">  return item + 1;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h3 id="let和const"><a href="#let和const" class="headerlink" title="let和const"></a>let和const</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">let 局部作用域，var全局作用域，const静态变量</span><br><span class="line">直接使用未声明，输出为：undefined</span><br></pre></td></tr></table></figure>
-<h3 id="变量解析"><a href="#变量解析" class="headerlink" title="变量解析"></a>变量解析</h3><p>变量的解构赋值用途很多。</p>
-<p><strong>（1）交换变量的值</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let x = 1;</span><br><span class="line">let y = 2;</span><br><span class="line"></span><br><span class="line">[x, y] = [y, x];</span><br></pre></td></tr></table></figure>
-<p>上面代码交换变量<code>x</code>和<code>y</code>的值，这样的写法不仅简洁，而且易读，语义非常清晰。</p>
-<p><strong>（2）从函数返回多个值</strong></p>
-<p>函数只能返回一个值，如果要返回多个值，只能将它们放在数组或对象里返回。有了解构赋值，取出这些值就非常方便。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// 返回一个数组</span><br><span class="line"></span><br><span class="line">function example() &#123;</span><br><span class="line">  return [1, 2, 3];</span><br><span class="line">&#125;</span><br><span class="line">let [a, b, c] = example();</span><br><span class="line"></span><br><span class="line">// 返回一个对象</span><br><span class="line"></span><br><span class="line">function example() &#123;</span><br><span class="line">  return &#123;</span><br><span class="line">    foo: 1,</span><br><span class="line">    bar: 2</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line">let &#123; foo, bar &#125; = example();</span><br></pre></td></tr></table></figure>
-<p><strong>（3）函数参数的定义</strong></p>
-<p>解构赋值可以方便地将一组参数与变量名对应起来。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 参数是一组有次序的值</span><br><span class="line">function f([x, y, z]) &#123; ... &#125;</span><br><span class="line">f([1, 2, 3]);</span><br><span class="line"></span><br><span class="line">// 参数是一组无次序的值</span><br><span class="line">function f(&#123;x, y, z&#125;) &#123; ... &#125;</span><br><span class="line">f(&#123;z: 3, y: 2, x: 1&#125;);</span><br></pre></td></tr></table></figure>
-<p><strong>（4）提取 JSON 数据</strong></p>
-<p>解构赋值对提取 JSON 对象中的数据，尤其有用。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">let jsonData = &#123;</span><br><span class="line">  id: 42,</span><br><span class="line">  status: &quot;OK&quot;,</span><br><span class="line">  data: [867, 5309]</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">let &#123; id, status, data: number &#125; = jsonData;</span><br><span class="line"></span><br><span class="line">console.log(id, status, number);</span><br><span class="line">// 42, &quot;OK&quot;, [867, 5309]</span><br></pre></td></tr></table></figure>
-<p>上面代码可以快速提取 JSON 数据的值。</p>
-<p><strong>（5）函数参数的默认值</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">jQuery.ajax = function (url, &#123;</span><br><span class="line">  async = true,</span><br><span class="line">  beforeSend = function () &#123;&#125;,</span><br><span class="line">  cache = true,</span><br><span class="line">  complete = function () &#123;&#125;,</span><br><span class="line">  crossDomain = false,</span><br><span class="line">  global = true,</span><br><span class="line">  // ... more config</span><br><span class="line">&#125; = &#123;&#125;) &#123;</span><br><span class="line">  // ... do stuff</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>指定参数的默认值，就避免了在函数体内部再写<code>var foo = config.foo || &#39;default foo&#39;;</code>这样的语句。</p>
-<p><strong>（6）遍历 Map 结构</strong></p>
-<p>任何部署了 Iterator 接口的对象，都可以用<code>for...of</code>循环遍历。Map 结构原生支持 Iterator 接口，配合变量的解构赋值，获取键名和键值就非常方便。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">const map = new Map();</span><br><span class="line">map.set(&apos;first&apos;, &apos;hello&apos;);</span><br><span class="line">map.set(&apos;second&apos;, &apos;world&apos;);</span><br><span class="line"></span><br><span class="line">for (let [key, value] of map) &#123;</span><br><span class="line">  console.log(key + &quot; is &quot; + value);</span><br><span class="line">&#125;</span><br><span class="line">// first is hello</span><br><span class="line">// second is world</span><br></pre></td></tr></table></figure>
-<p>如果只想获取键名，或者只想获取键值，可以写成下面这样。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// 获取键名</span><br><span class="line">for (let [key] of map) &#123;</span><br><span class="line">  // ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 获取键值</span><br><span class="line">for (let [,value] of map) &#123;</span><br><span class="line">  // ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>（7）输入模块的指定方法</strong></p>
-<p>加载模块时，往往需要指定输入哪些方法。解构赋值使得输入语句非常清晰。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">const &#123; SourceMapConsumer, SourceNode &#125; = require(&quot;source-map&quot;);</span><br></pre></td></tr></table></figure>
-<h3 id="字符串使用"><a href="#字符串使用" class="headerlink" title="字符串使用"></a>字符串使用</h3><h5 id="Unicode表示"><a href="#Unicode表示" class="headerlink" title="Unicode表示"></a>Unicode表示</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&apos;\z&apos; === &apos;z&apos;  // true</span><br><span class="line">&apos;\172&apos; === &apos;z&apos; // true</span><br><span class="line">&apos;\x7A&apos; === &apos;z&apos; // true</span><br><span class="line">&apos;\u007A&apos; === &apos;z&apos; // true</span><br><span class="line">&apos;\u&#123;7A&#125;&apos; === &apos;z&apos; // true</span><br></pre></td></tr></table></figure>
-<h5 id="codePointAt"><a href="#codePointAt" class="headerlink" title="codePointAt()"></a>codePointAt()</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">var s = &quot;𠮷&quot;;</span><br><span class="line"></span><br><span class="line">s.length // 2</span><br><span class="line">s.charAt(0) // &apos;&apos;</span><br><span class="line">s.charAt(1) // &apos;&apos;</span><br><span class="line">s.charCodeAt(0) // 55362</span><br><span class="line">s.charCodeAt(1) // 57271</span><br></pre></td></tr></table></figure>
-<h5 id="String-fromCodePoint"><a href="#String-fromCodePoint" class="headerlink" title="String.fromCodePoint()"></a>String.fromCodePoint()</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">String.fromCodePoint(0x20BB7)</span><br><span class="line">// &quot;𠮷&quot;</span><br><span class="line">String.fromCodePoint(0x78, 0x1f680, 0x79) === &apos;x\uD83D\uDE80y&apos;</span><br><span class="line">// true</span><br></pre></td></tr></table></figure>
-<h5 id="遍历-for-let-i-of-x"><a href="#遍历-for-let-i-of-x" class="headerlink" title="遍历 for let i of x"></a>遍历 for let i of x</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for (let codePoint of &apos;foo&apos;) &#123;</span><br><span class="line">  console.log(codePoint)</span><br><span class="line">&#125;</span><br><span class="line">// &quot;f&quot;</span><br><span class="line">// &quot;o&quot;</span><br><span class="line">// &quot;o&quot;</span><br></pre></td></tr></table></figure>
-<h5 id="字符串常用函数"><a href="#字符串常用函数" class="headerlink" title="字符串常用函数"></a>字符串常用函数</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">includes()</span><br><span class="line">startsWitch()</span><br><span class="line">endsWith()</span><br><span class="line">repeat()</span><br><span class="line">matchAll()</span><br><span class="line">match()、replace()、search()、split()</span><br></pre></td></tr></table></figure>
-<h4 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">//默认值</span><br><span class="line">function log(x, y = &apos;World&apos;) &#123;</span><br><span class="line">  console.log(x, y);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">log(&apos;Hello&apos;) // Hello World</span><br><span class="line">log(&apos;Hello&apos;, &apos;China&apos;) // Hello China</span><br><span class="line">log(&apos;Hello&apos;, &apos;&apos;) // Hello</span><br><span class="line"></span><br><span class="line">//...函数[和golang差不多]</span><br><span class="line">function add(...values) &#123;</span><br><span class="line">  let sum = 0;</span><br><span class="line"></span><br><span class="line">  for (var val of values) &#123;</span><br><span class="line">    sum += val;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  return sum;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">add(2, 5, 3) // 10</span><br><span class="line">add(...numbers) </span><br><span class="line"></span><br><span class="line">//lamda表达式</span><br><span class="line">var sum = (num1, num2) =&gt; &#123; return num1 + num2; &#125;</span><br><span class="line">var sum = (num1, num2) =&gt; num1 + num2;</span><br><span class="line">// 等同于</span><br><span class="line">var sum = function(num1, num2) &#123;</span><br><span class="line">  return num1 + num2;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">//Array.from()</span><br><span class="line">let arrayLike = &#123;</span><br><span class="line">    &apos;0&apos;: &apos;a&apos;,</span><br><span class="line">    &apos;1&apos;: &apos;b&apos;,</span><br><span class="line">    &apos;2&apos;: &apos;c&apos;,</span><br><span class="line">    length: 3</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">// ES6的写法</span><br><span class="line">let arr2 = Array.from(arrayLike); // [&apos;a&apos;, &apos;b&apos;, &apos;c&apos;]</span><br><span class="line">//Array.of()</span><br><span class="line">Array.of(3, 11, 8) // [3,11,8]</span><br><span class="line"></span><br><span class="line">//遍历数组</span><br><span class="line">for (let [index, elem] of [&apos;a&apos;, &apos;b&apos;].entries()) &#123;</span><br><span class="line">  console.log(index, elem);</span><br><span class="line">&#125;</span><br><span class="line">// 0 &quot;a&quot;</span><br><span class="line">// 1 &quot;b&quot;</span><br></pre></td></tr></table></figure>
-<h3 id="SET"><a href="#SET" class="headerlink" title="SET"></a>SET</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 例一</span><br><span class="line">const set = new Set([1, 2, 3, 4, 4]);</span><br><span class="line">[...set]</span><br><span class="line">// [1, 2, 3, 4]</span><br><span class="line"></span><br><span class="line">// 例二</span><br><span class="line">const items = new Set([1, 2, 3, 4, 5, 5, 5, 5]);</span><br><span class="line">items.size // 5</span><br></pre></td></tr></table></figure>
-<h3 id="class"><a href="#class" class="headerlink" title="class"></a>class</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">class Point &#123;</span><br><span class="line">  constructor(x, y) &#123;</span><br><span class="line">    this.x = x;</span><br><span class="line">    this.y = y;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  toString() &#123;</span><br><span class="line">    return &apos;(&apos; + this.x + &apos;, &apos; + this.y + &apos;)&apos;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="模块加载"><a href="#模块加载" class="headerlink" title="模块加载"></a>模块加载</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// ES6 模块不是对象，而是通过export命令显式指定输出的代码，再通过import命令输入。</span><br><span class="line">export var firstName = &apos;Michael&apos;;</span><br><span class="line">export var lastName = &apos;Jackson&apos;;</span><br><span class="line">export var year = 1958;</span><br><span class="line">import &#123; stat, exists, readFile &#125; from &apos;fs&apos;;</span><br><span class="line">export &#123; area as circleArea &#125; from &apos;circle&apos;;</span><br></pre></td></tr></table></figure>
+            <h2 id="计划"><a href="#计划" class="headerlink" title="计划"></a>计划</h2><p>ARTS 是由左耳朵耗子陈皓发起的一个每周学习打卡计划。</p>
+<ul>
+<li><p>Algorithm：至少做一个 LeetCode 的算法题。主要为了编程训练和学习。</p>
+</li>
+<li><p>Review ：阅读并点评至少一篇英文技术文章。主要为了学习英文，如果你英文不行，很难成为技术高手。</p>
+</li>
+<li><p>Tip：学习至少一个技术技巧。主要是为了总结和归纳你日常工作中所遇到的知识点。</p>
+</li>
+<li><p>Share：分享一篇有观点和思考的技术文章。主要为了输出你的影响力，能够输出你的价值观。</p>
+</li>
+</ul>
 
           
         
@@ -459,7 +432,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/09/golang/golang-dep/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/10/07/golang/golang入门笔记/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="greyireland">
@@ -478,7 +451,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/12/09/golang/golang-dep/" itemprop="url">golang-dep</a></h1>
+                <a class="post-title-link" href="/2017/10/07/golang/golang入门笔记/" itemprop="url">golang入门笔记</a></h1>
         
 
         <div class="post-meta">
@@ -490,8 +463,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-09T15:48:45+08:00">
-                2018-12-09
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-07T21:10:08+08:00">
+                2017-10-07
               </time>
             
 
@@ -513,8 +486,8 @@
               
               
                 <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/categories/" itemprop="url" rel="index">
-                    <span itemprop="name">categories</span>
+                  <a href="/categories/go/" itemprop="url" rel="index">
+                    <span itemprop="name">go</span>
                   </a>
                 </span>
 
@@ -552,1279 +525,76 @@
       
         
           
-            <h1 id="go-dep"><a href="#go-dep" class="headerlink" title="go dep"></a>go dep</h1><h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//优先使用本地包初始化【本地获取较快,-v查看安装过程】</span><br><span class="line">dep init -gopath -v</span><br><span class="line"></span><br><span class="line">//保证同步</span><br><span class="line">dep ensure</span><br><span class="line"></span><br><span class="line">//查看状态【mac】</span><br><span class="line">brew install graphviz</span><br><span class="line">dep status -dot | dot -T png | open -f -a /Applications/Preview.app</span><br></pre></td></tr></table></figure>
-<h3 id="文件说明"><a href="#文件说明" class="headerlink" title="文件说明"></a>文件说明</h3><p><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fy0k6wfvtpj20pq0ao0tg.jpg" alt=""></p>
+            <h2 id="GO-笔记"><a href="#GO-笔记" class="headerlink" title="GO 笔记"></a>GO 笔记</h2><h3 id="基本库和概念"><a href="#基本库和概念" class="headerlink" title="基本库和概念"></a>基本库和概念</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//*T 可以传给值接收，也可以传给指针接收，所以传入尽量*T,接收也尽量用*T呗</span></span><br><span class="line"><span class="comment">//使用接口：1.定义接口 2.定义类 3.类实现接口</span></span><br><span class="line"><span class="comment">//a:=[2]byte&#123;'a','1',2&#125;//byte ascii 1 2等这些是显示不出来的，他和'1','2'不一样，后面ascii码：31 32</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//传入的所有参数都是interface&#123;&#125;，传出的所有参数也是interface&#123;&#125; 所以出来的时候必须要转为所需要的类型</span></span><br></pre></td></tr></table></figure>
+<h3 id="模块-类概念"><a href="#模块-类概念" class="headerlink" title="模块 类概念"></a>模块 类概念</h3><p>go 的包和文件夹名是一样的（跟文件名关系不大）</p>
 <blockquote>
-<p><code>dep ensure</code> means: Hey dep, please make sure that my project is in sync: that Gopkg.lock satisfies all the imports in my project, and all the rules in Gopkg.toml, and that vendor/ contains exactly what Gopkg.lock says it should.”</p>
+<p>java:com.alibaba.dubbo.xxx</p>
+<p>c++:namespace std</p>
+<p>go: package 包</p>
 </blockquote>
-<h3 id="什么时候使用-dep-ensure"><a href="#什么时候使用-dep-ensure" class="headerlink" title="什么时候使用 dep ensure"></a>什么时候使用 <code>dep ensure</code></h3><p>Using dep ensure<br>There are four times when you’ll run dep ensure:</p>
-<ul>
-<li>To add a new dependency<br><code>dep ensure -add github.com/pkg/errors</code></li>
-<li>To update an existing dependency<br><code>dep ensure -update</code></li>
-<li>To catch up after importing a package for the first time in your project, or removing the last import of a package in your project</li>
-<li>To catch up to a change to a rule in Gopkg.toml</li>
+<h3 id="类"><a href="#类" class="headerlink" title="类"></a>类</h3><p>继承、封装、多态</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Person <span class="keyword">struct</span>&#123;</span><br><span class="line">  Book <span class="comment">//==组合继承</span></span><br><span class="line">  name <span class="keyword">string</span></span><br><span class="line">  age <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//构造函数-一般自己创建构造函数</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewPerson</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> &amp;Person&#123;Book&#123;&#125;,name:<span class="string">"jack"</span>,age:<span class="number">19</span>&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//类函数外置</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *Person)</span><span class="title">say</span><span class="params">()</span></span>&#123;<span class="comment">//小写函数 包内访问==封装</span></span><br><span class="line">  p.name=<span class="string">"jack ma"</span><span class="comment">//指针(引用)接受者和普通</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//==多态</span></span><br><span class="line"><span class="keyword">type</span> Flyable <span class="keyword">interface</span> &#123;</span><br><span class="line">	Fly()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Duck <span class="keyword">struct</span>&#123;</span><br><span class="line">	Flyable<span class="comment">//隐式继承接口</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> Cat <span class="keyword">struct</span> &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *Duck)</span><span class="title">Fly</span><span class="params">()</span></span>  &#123;</span><br><span class="line">	fmt.Println(<span class="string">"duck flying"</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *Cat)</span><span class="title">Fly</span><span class="params">()</span></span>  &#123;<span class="comment">//隐式继承接口</span></span><br><span class="line">	fmt.Println(<span class="string">"cat flying"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="嵌入类型"><a href="#嵌入类型" class="headerlink" title="嵌入类型"></a>嵌入类型</h3><p>包含嵌入类型所有的财产（你是我的，你所有东西都是我的）</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">类型</span><br><span class="line"><span class="keyword">type</span> 类型名字 底层类型</span><br><span class="line"><span class="number">1.</span>代表类型别名，附带新方法</span><br><span class="line"><span class="number">2.</span>代表新类型</span><br><span class="line"></span><br><span class="line">方法</span><br><span class="line">包方法-静态方法</span><br><span class="line">类型方法-实例方法</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>  &#123;</span><br><span class="line">	a:=&amp;A&#123;&#125;</span><br><span class="line">	fmt.Println(a,)</span><br><span class="line">	fmt.Println(a.Age)</span><br><span class="line">	fmt.Println(a.Dd.Birth)<span class="comment">//初始化为空对象</span></span><br><span class="line">	<span class="comment">//fmt.Println(a.Ee.Gender)//初始化为空指针，拿不到实例的熟悉，所以报错</span></span><br><span class="line">	a.Ee.Efunc() <span class="comment">//空指针可以调用方法</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> A <span class="keyword">struct</span>&#123;<span class="comment">//</span></span><br><span class="line">	B <span class="comment">//嵌入B类型所有财产</span></span><br><span class="line">	*C <span class="comment">//这里和嵌入C类型区别是，指针类型不能调用其属性</span></span><br><span class="line">	Dd D <span class="comment">//嵌入D类型的实例，有实例了什么都可以干(嵌入实例和嵌入指针比较多一些)</span></span><br><span class="line">	Ee *E <span class="comment">//嵌入E类型的指针，有了指针天下无敌(嵌入实例和嵌入指针比较多一些)</span></span><br><span class="line">	Name <span class="keyword">string</span> <span class="comment">//本身自带的财产，自己的属性(属性一般是大写，大写导出和c一样私有字段set()get())</span></span><br><span class="line">  	CheckArg <span class="function"><span class="keyword">func</span><span class="params">(*context.Context)</span> <span class="title">error</span> //属性的类型的是一个<span class="title">func</span>，可以直接调用<span class="title">a</span>.<span class="title">CheckArg</span><span class="params">()</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function"><span class="title">type</span> <span class="title">B</span> <span class="title">struct</span></span>&#123;</span><br><span class="line">	Age <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> C <span class="keyword">struct</span>&#123;</span><br><span class="line">	Email <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(*C)</span><span class="title">Cfunc</span><span class="params">()</span></span>  &#123;</span><br><span class="line">	fmt.Println(<span class="string">"c func"</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> D <span class="keyword">struct</span>&#123;</span><br><span class="line">	Birth <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> E <span class="keyword">struct</span>&#123;</span><br><span class="line">	Gender <span class="keyword">bool</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(*E)</span><span class="title">Efunc</span><span class="params">()</span></span>  &#123;</span><br><span class="line">	fmt.Println(<span class="string">"e func"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="可变参数"><a href="#可变参数" class="headerlink" title="可变参数"></a>可变参数</h3><p>…interface{}，传入的当做[]interface{}切片</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Println</span><span class="params">(vals ...<span class="keyword">interface</span>&#123;&#125;)</span></span>&#123;</span><br><span class="line">  fmt.Println(vals)</span><br><span class="line">&#125;</span><br><span class="line">类似：</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Println</span><span class="params">(vals []<span class="keyword">interface</span>&#123;&#125;)</span></span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="http-Request-请求"><a href="#http-Request-请求" class="headerlink" title="http.Request 请求"></a>http.Request 请求</h3><p>服务端需要 Request,和 Response 往里面写数据</p>
+<p>包括：</p>
+<p>1.第一行</p>
+<p>2.请求头</p>
+<p>3.请求体（一般 post 才有）</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">resp:=DefaultTransport.send(req)<span class="comment">//创建一个连接，然后通过这条连接发送req数据，服务端通过这条连接读取req然后构建resp，（也通过resp可以拿到连接的标识，去某个地方获取到这条连接），然后通过连接把resp发送回去</span></span><br></pre></td></tr></table></figure>
+<h3 id="http-Response-响应"><a href="#http-Response-响应" class="headerlink" title="http.Response 响应"></a>http.Response 响应</h3><p>客户端需要 Response 从里面读数据，读完了就关闭</p>
+<p>包括：</p>
+<p>1.第一行数据</p>
+<p>2.返回头</p>
+<p>3.返回 body</p>
+<p>4.请求实例 http.Request</p>
+<p>可拿到底层连接 net.Conn(可读可写)</p>
+<h3 id="读写锁"><a href="#读写锁" class="headerlink" title="读写锁"></a>读写锁</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(rw *RWMutex)</span> <span class="title">Lock</span><span class="params">()</span>　　写锁，如果在添加写锁之前已经有其他的读锁和写锁，则<span class="title">lock</span>就会阻塞直到该锁可用，为确保该锁最终可用，已阻塞的 <span class="title">Lock</span> 调用会从获得的锁中排除新的读取器，即写锁权限高于读锁，有写锁时优先进行写锁定</span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(rw *RWMutex)</span> <span class="title">Unlock</span><span class="params">()</span>　写锁解锁，如果没有进行写锁定，则就会引起一个运行时错误</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(rw *RWMutex)</span> <span class="title">RLock</span><span class="params">()</span> 读锁，当有写锁时，无法加载读锁，当只有读锁或者没有锁时，可以加载读锁，读锁可以加载多个，所以适用于＂读多写少＂的场景</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(rw *RWMutex)</span><span class="title">RUnlock</span><span class="params">()</span>　读锁解锁，<span class="title">RUnlock</span> 撤销单次<span class="title">RLock</span> 调用，它对于其它同时存在的读取器则没有效果。若 <span class="title">rw</span> 并没有为读取而锁定，调用 <span class="title">RUnlock</span> 就会引发一个运行时错误<span class="params">(注：这种说法在go1.3版本中是不对的，例如下面这个例子)</span>。</span></span><br></pre></td></tr></table></figure>
+<h3 id="context"><a href="#context" class="headerlink" title="context"></a>context</h3><p>三种 ctx</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">timerCtx:超时的ctx，超过某个时间就<span class="built_in">close</span>(<span class="keyword">chan</span>)</span><br><span class="line">cancelCtx:可取消的ctx，使用<span class="built_in">close</span>(<span class="keyword">chan</span>)</span><br><span class="line">valueCtx:保存键值的ctx</span><br></pre></td></tr></table></figure>
+<h3 id="并发、channel、select、sync"><a href="#并发、channel、select、sync" class="headerlink" title="并发、channel、select、sync"></a>并发、channel、select、sync</h3><p>超时控制</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">taskdone:=<span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">struct</span>&#123;&#125;,<span class="number">1</span>)</span><br><span class="line"><span class="comment">//1.任务异步做，做完发一个taskdone消息</span></span><br><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">  <span class="comment">//dosomething</span></span><br><span class="line">  time.Sleep(time.Second)</span><br><span class="line">  taskdone&lt;- <span class="keyword">struct</span> &#123;&#125;&#123;&#125;</span><br><span class="line">&#125;()</span><br><span class="line"><span class="comment">//2.等待taskdone 或者等待超时</span></span><br><span class="line"><span class="keyword">select</span> &#123;</span><br><span class="line"><span class="keyword">case</span> &lt;-taskdone:</span><br><span class="line">	fmt.Println(<span class="string">"task done"</span>)</span><br><span class="line"><span class="keyword">case</span> &lt;-time.After(time.Millisecond*<span class="number">5000</span>):</span><br><span class="line">	fmt.Println(<span class="string">"task timeout"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="scanf-扫描"><a href="#scanf-扫描" class="headerlink" title="scanf 扫描"></a>scanf 扫描</h3><p>一行一行读取数据嘛，或者一个个字符的读取</p>
+<p>读完之后就丢弃掉数据</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">buf:=bytes.NewBuffer(sli)<span class="comment">//buffer读完之后就丢弃掉数据</span></span><br><span class="line">data0,_,_:=buf.ReadRune()</span><br><span class="line">fmt.Println(<span class="keyword">string</span>(data0),buf.String())</span><br></pre></td></tr></table></figure>
+<h3 id="go-time"><a href="#go-time" class="headerlink" title="go time"></a>go time</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">转为ts:t.unix()</span><br><span class="line">转为str:t.Format(layout,val)</span><br><span class="line">转为Time:time.parse(str,layout)</span><br></pre></td></tr></table></figure>
+<h3 id="json-xml-gob"><a href="#json-xml-gob" class="headerlink" title="json,xml,gob"></a>json,xml,gob</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> network bytes.Buffer</span><br><span class="line">enc:=gob.NewEncoder(&amp;network)<span class="comment">//编码到什么地方去</span></span><br><span class="line">enc.Encode(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>&#123;<span class="string">"k1"</span>: <span class="string">"v1"</span>&#125;)<span class="comment">//编码什么东西</span></span><br><span class="line">fmt.Println(network.Bytes())</span><br><span class="line"></span><br><span class="line">dec:=gob.NewDecoder(&amp;network)<span class="comment">//从什么地方解码</span></span><br><span class="line"><span class="keyword">var</span> m <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span></span><br><span class="line">dec.Decode(&amp;m)<span class="comment">//解码到哪里</span></span><br><span class="line">fmt.Println(m)</span><br></pre></td></tr></table></figure>
+<h3 id="字符串拼接"><a href="#字符串拼接" class="headerlink" title="字符串拼接"></a>字符串拼接</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">a+=<span class="string">"hello"</span></span><br><span class="line"><span class="keyword">var</span> b bytes.Buffer</span><br><span class="line"><span class="keyword">for</span> condition &#123;</span><br><span class="line">    b.WriteString(str) <span class="comment">// 将字符串str写入缓存buffer</span></span><br><span class="line">&#125;</span><br><span class="line">    <span class="keyword">return</span> b.String()</span><br></pre></td></tr></table></figure>
+<h3 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h3><p><strong>永远不要使用一个指针指向一个接口类型，因为它已经是一个指针。</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">write(w io.Writer)<span class="comment">//没有w *io.Writer这种</span></span><br></pre></td></tr></table></figure>
+<h3 id="包管理"><a href="#包管理" class="headerlink" title="包管理"></a>包管理</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">自己clone</span><br><span class="line">mkdir -p github.com/user</span><br><span class="line">git clone repo</span><br><span class="line">cd github.com/user/repo</span><br><span class="line"><span class="keyword">go</span> build xxx<span class="comment">//缺啥去下载啥</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">golang.org/x/net ，其实镜像托管在在 github.com/golang/net</span><br><span class="line">你可以用 <span class="keyword">go</span> get github.com/golang/net 之后，到 GOPATH/src 中</span><br><span class="line">mv github.com/golang/net golang.org/x/net</span><br><span class="line"></span><br><span class="line">golang.org/x/text</span><br><span class="line"><span class="keyword">go</span> get github.com/golang/text</span><br><span class="line">mv github.com/golang/text golang.org/x/text</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p $GOPATH/src/golang.org/x/</span><br><span class="line">cd !$</span><br><span class="line">git clone https:<span class="comment">//github.com/golang/net.git</span></span><br><span class="line">git clone https:<span class="comment">//github.com/golang/sys.git</span></span><br><span class="line">git clone https:<span class="comment">//github.com/golang/tools.git</span></span><br></pre></td></tr></table></figure>
+<h3 id="http-参数解析"><a href="#http-参数解析" class="headerlink" title="http 参数解析"></a>http 参数解析</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">r.ParseForm()</span><br><span class="line">uid :=r.Form.Get(<span class="string">"uid"</span>)<span class="comment">//get post/form-data</span></span><br><span class="line">fmt.Println(uid)</span><br><span class="line">body,_:=ioutil.ReadAll(r.Body)<span class="comment">//json post</span></span><br><span class="line">fmt.Println(<span class="keyword">string</span>(body))</span><br></pre></td></tr></table></figure>
+<h3 id="error-错误处理"><a href="#error-错误处理" class="headerlink" title="error 错误处理"></a>error 错误处理</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//1.最普通</span></span><br><span class="line"><span class="keyword">if</span> err!=<span class="literal">nil</span>&#123;</span><br><span class="line">  <span class="keyword">return</span> result,err</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//2.recover() panic()</span></span><br><span class="line"><span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="keyword">if</span> err:=<span class="built_in">recover</span>();err!=<span class="literal">nil</span>&#123;</span><br><span class="line">    <span class="comment">//dosomething()</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">panic</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment">//有些错误可以处理，有些选择处理</span></span><br></pre></td></tr></table></figure>
+<h3 id="默认值和-nil"><a href="#默认值和-nil" class="headerlink" title="默认值和 nil"></a>默认值和 nil</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">bool</span>      -&gt; <span class="literal">false</span></span><br><span class="line">numbers -&gt; <span class="number">0</span></span><br><span class="line"><span class="keyword">string</span>    -&gt; <span class="string">""</span></span><br><span class="line"></span><br><span class="line">pointers -&gt; <span class="literal">nil</span></span><br><span class="line">slices -&gt; <span class="literal">nil</span></span><br><span class="line">maps -&gt; <span class="literal">nil</span></span><br><span class="line">channels -&gt; <span class="literal">nil</span></span><br><span class="line">functions -&gt; <span class="literal">nil</span></span><br><span class="line">interfaces -&gt; <span class="literal">nil</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//可以使用len(slice)==0</span></span><br></pre></td></tr></table></figure>
+<h3 id="TCP-和-UDP"><a href="#TCP-和-UDP" class="headerlink" title="TCP 和 UDP"></a>TCP 和 UDP</h3><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//tcp</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ResolveTCPAddr</span><span class="params">(net, addr <span class="keyword">string</span>)</span> <span class="params">(*TCPAddr, os.Error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">ListenTCP</span><span class="params">(net <span class="keyword">string</span>, laddr *TCPAddr)</span> <span class="params">(l *TCPListener, err os.Error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">DialTCP</span><span class="params">(net <span class="keyword">string</span>, laddr, raddr *TCPAddr)</span> <span class="params">(c *TCPConn, err os.Error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(l *TCPListener)</span> <span class="title">Accept</span><span class="params">()</span> <span class="params">(c Conn, err os.Error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(c *TCPConn)</span> <span class="title">Write</span><span class="params">(b []<span class="keyword">byte</span>)</span> <span class="params">(n <span class="keyword">int</span>, err os.Error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(c *TCPConn)</span> <span class="title">Read</span><span class="params">(b []<span class="keyword">byte</span>)</span> <span class="params">(n <span class="keyword">int</span>, err os.Error)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">//<span class="title">udp</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">ResolveUDPAddr</span><span class="params">(net, addr <span class="keyword">string</span>)</span> <span class="params">(*UDPAddr, os.Error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">DialUDP</span><span class="params">(net <span class="keyword">string</span>, laddr, raddr *UDPAddr)</span> <span class="params">(c *UDPConn, err os.Error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">ListenUDP</span><span class="params">(net <span class="keyword">string</span>, laddr *UDPAddr)</span> <span class="params">(c *UDPConn, err os.Error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(c *UDPConn)</span> <span class="title">ReadFromUDP</span><span class="params">(b []<span class="keyword">byte</span>)</span> <span class="params">(n <span class="keyword">int</span>, addr *UDPAddr, err os.Error</span></span></span><br><span class="line"><span class="function"><span class="params"><span class="keyword">func</span> (c *UDPConn)</span> <span class="title">WriteToUDP</span><span class="params">(b []<span class="keyword">byte</span>, addr *UDPAddr)</span> <span class="params">(n <span class="keyword">int</span>, err os.Error)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">//通用<span class="title">Conn</span>, <span class="title">PacketConn</span> <span class="title">and</span> <span class="title">Listener</span></span></span><br><span class="line">net.Dial("tcp",addr)</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">  encoder := json.NewEncoder(conn)</span><br><span class="line">  decoder := json.NewDecoder(conn)</span><br><span class="line">  <span class="keyword">for</span> n := <span class="number">0</span>; n &lt; <span class="number">10</span>; n++ &#123;</span><br><span class="line">    encoder.Encode(person)<span class="comment">//类似于write</span></span><br><span class="line">    <span class="keyword">var</span> newPerson Person</span><br><span class="line">    decoder.Decode(&amp;newPerson)<span class="comment">//类似于read</span></span><br><span class="line">    fmt.Println(newPerson.String())</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* Base64</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"bytes"</span></span><br><span class="line">	<span class="string">"encoding/base64"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	eightBitData := []<span class="keyword">byte</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>&#125;</span><br><span class="line">	bb := &amp;bytes.Buffer&#123;&#125;</span><br><span class="line">	encoder := base64.NewEncoder(base64.StdEncoding, bb)<span class="comment">//转为base64字符串</span></span><br><span class="line">	encoder.Write(eightBitData)</span><br><span class="line">	encoder.Close()</span><br><span class="line">	fmt.Println(bb)</span><br><span class="line">	dbuf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">12</span>)</span><br><span class="line">	decoder := base64.NewDecoder(base64.StdEncoding, bb)</span><br><span class="line">	decoder.Read(dbuf)</span><br><span class="line">	<span class="keyword">for</span> _, ch := <span class="keyword">range</span> dbuf &#123;</span><br><span class="line">		fmt.Print(ch)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="细节点"><a href="#细节点" class="headerlink" title="细节点"></a>细节点</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span>&#123;&#125;<span class="comment">//阻塞</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SERVE_HTTP=<span class="string">":3030"</span> <span class="keyword">go</span> run <span class="number">43.</span><span class="keyword">go</span></span><br><span class="line">address = os.Getenv(<span class="string">"SERVE_HTTP"</span>)<span class="comment">//直接从上面拿</span></span><br></pre></td></tr></table></figure>
+<p>默认类型</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="literal">nil</span> 是 <span class="keyword">interface</span>、function、pointer、<span class="keyword">map</span>、slice 和 channel 类型变量的默认初始值</span><br></pre></td></tr></table></figure>
+<p>go 修改值全部用指针</p>
+<p>切片，map 先 make，再取地址比较好</p>
+<p>问题代码</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//下面是一个坑</span></span><br><span class="line"><span class="comment">//for _, v := range *userInfos &#123;</span></span><br><span class="line"><span class="comment">//	userInfoTempMap[v.User.ID] = &amp;v</span></span><br><span class="line"><span class="comment">//&#125;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">fillUserInfo</span><span class="params">(queryUids *[]<span class="keyword">int64</span>, userInfoTempMap <span class="keyword">map</span>[<span class="keyword">int64</span>]*model.RUserInfo, selfU <span class="keyword">int64</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> queryUids == <span class="literal">nil</span> || <span class="built_in">len</span>(*queryUids) == <span class="number">0</span> &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//获取用户信息</span></span><br><span class="line">	userInfos, err := manager.MGetUserInfo(queryUids, selfU)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> || userInfos == <span class="literal">nil</span> &#123;</span><br><span class="line">		log.Errorf(<span class="string">"get user info error:|%#v|"</span>, err)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//创建临时map给后面直接使用</span></span><br><span class="line">	<span class="keyword">for</span> i:=<span class="number">0</span>;i&lt;<span class="built_in">len</span>(*userInfos);i++&#123;</span><br><span class="line">		userInfoTempMap[(*userInfos)[i].User.ID] = &amp;(*userInfos)[i]</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> _, v := <span class="keyword">range</span> *userInfos &#123;</span><br><span class="line">		userInfoTempMap[v.User.ID] = &amp;v</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(userInfoTempMap)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="需要掌握的点"><a href="#需要掌握的点" class="headerlink" title="需要掌握的点"></a>需要掌握的点</h2><ul>
+<li>http 请求</li>
+<li>http 服务</li>
+<li>json 解析</li>
+<li>日志</li>
+<li>mysql 库</li>
+<li>redis 库</li>
+<li>list 和 map 使用</li>
+<li>goroutine 使用</li>
+<li>网络框架使用</li>
 </ul>
-<h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><p><a href="https://studygolang.com/articles/10589" target="_blank" rel="noopener">https://studygolang.com/articles/10589</a></p>
-<p><a href="https://golang.github.io/dep/docs/daily-dep.html" target="_blank" rel="noopener">https://golang.github.io/dep/docs/daily-dep.html</a></p>
 
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/20/mysql/深入mysql一条查询SQL语句的执行流程/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/11/20/mysql/深入mysql一条查询SQL语句的执行流程/" itemprop="url">一条查询语句的执行流程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-20T20:06:15+08:00">
-                2018-11-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/mysql/" itemprop="url" rel="index">
-                    <span itemprop="name">mysql</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="一条查询语句的执行流程"><a href="#一条查询语句的执行流程" class="headerlink" title="一条查询语句的执行流程"></a>一条查询语句的执行流程</h1><p>我们经常说，看一个事儿千万不要直接陷入细节里，你应该先鸟瞰其全貌，这样能够帮助你从高维度理解问题。同样，对于 MySQL 的学习也是这样。平时我们使用数据库，看到的通常都是一个整体。比如，你有个最简单的表，表里只有一个 ID 字段，在执行下面这个查询语句时：<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from T where ID=10；</span><br></pre></td></tr></table></figure></p>
-<p>我们看到的只是输入一条语句，返回一个结果，却不知道这条语句在 MySQL 内部的执行过程。</p>
-<p>所以今天我想和你一起把 MySQL 拆解一下，看看里面都有哪些“零件”，希望借由这个拆解过程，让你对 MySQL 有更深入的理解。这样当我们碰到 MySQL 的一些异常或者问题时，就能够直戳本质，更为快速地定位并解决问题。</p>
-<p>下面我给出的是 MySQL 的基本架构示意图，从中你可以清楚地看到 SQL 语句在 MySQL 的各个功能模块中的执行过程。<br><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fxesclk4l6j21hc140wv4.jpg" alt="MySQL 的逻辑架构图"></p>
-<p>大体来说，MySQL 可以分为 Server 层和存储引擎层两部分。<br>Server 层包括连接器、查询缓存、分析器、优化器、执行器等，涵盖 MySQL 的大多数核心服务功能，以及所有的内置函数（如日期、时间、数学和加密函数等），所有跨存储引擎的功能都在这一层实现，比如存储过程、触发器、视图等。</p>
-<p>而存储引擎层负责数据的存储和提取。其架构模式是插件式的，支持 InnoDB、MyISAM、Memory 等多个存储引擎。现在最常用的存储引擎是 InnoDB，它从 MySQL 5.5.5 版本开始成为了默认存储引擎。</p>
-<p>也就是说，你执行 create table 建表的时候，如果不指定引擎类型，默认使用的就是 InnoDB。不过，你也可以通过指定存储引擎的类型来选择别的引擎，比如在 create table 语句中使用 engine=memory, 来指定使用内存引擎创建表。不同存储引擎的表数据存取方式不同，支持的功能也不同，在后面的文章中，我们会讨论到引擎的选择。</p>
-<p>从图中不难看出，不同的存储引擎共用一个Server 层，也就是从连接器到执行器的部分。你可以先对每个组件的名字有个印象，接下来我会结合开头提到的那条 SQL 语句，带你走一遍整个执行流程，依次看下每个组件的作用。</p>
-<h3 id="1-连接器"><a href="#1-连接器" class="headerlink" title="1. 连接器"></a>1. 连接器</h3><p>第一步，你会先连接到这个数据库上，这时候接待你的就是连接器。连接器负责跟客户端建立连接、获取权限、维持和管理连接。连接命令一般是这么写的：</p>
-<p><code>mysql -h$ip -P$port -u$user -p</code></p>
-<p>输完命令之后，你就需要在交互对话里面输入密码。虽然密码也可以直接跟在 -p 后面写在命令行中，但这样可能会导致你的密码泄露。如果你连的是生产服务器，强烈建议你不要这么做。</p>
-<p>连接命令中的 mysql 是客户端工具，用来跟服务端建立连接。在完成经典的 TCP 握手后，连接器就要开始认证你的身份，这个时候用的就是你输入的用户名和密码。</p>
-<ul>
-<li>如果用户名或密码不对，你就会收到一个”Access denied for user”的错误，然后客户端程序结束执行。</li>
-<li>如果用户名密码认证通过，连接器会到权限表里面查出你拥有的权限。之后，这个连接里面的权限判断逻辑，都将依赖于此时读到的权限。</li>
-</ul>
-<p>这就意味着，一个用户成功建立连接后，即使你用管理员账号对这个用户的权限做了修改，也不会影响已经存在连接的权限。修改完成后，只有再新建的连接才会使用新的权限设置。</p>
-<p>连接完成后，如果你没有后续的动作，这个连接就处于空闲状态，你可以在 show processlist 命令中看到它。文本中这个图是 show processlist 的结果，其中的 Command 列显示为“Sleep”的这一行，就表示现在系统里面有一个空闲连接。</p>
-<p>客户端如果太长时间没动静，连接器就会自动将它断开。这个时间是由参数 wait_timeout 控制的，默认值是 8 小时。</p>
-<p>如果在连接被断开之后，客户端再次发送请求的话，就会收到一个错误提醒： Lost connection to MySQL server during query。这时候如果你要继续，就需要重连，然后再执行请求了。</p>
-<p>数据库里面，长连接是指连接成功后，如果客户端持续有请求，则一直使用同一个连接。短连接则是指每次执行完很少的几次查询就断开连接，下次查询再重新建立一个。</p>
-<p>建立连接的过程通常是比较复杂的，所以我建议你在使用中要尽量减少建立连接的动作，也就是尽量使用长连接。</p>
-<p>但是全部使用长连接后，你可能会发现，有些时候 MySQL 占用内存涨得特别快，这是因为 MySQL 在执行过程中临时使用的内存是管理在连接对象里面的。这些资源会在连接断开的时候才释放。所以如果长连接累积下来，可能导致内存占用太大，被系统强行杀掉（OOM），从现象看就是 MySQL 异常重启了。</p>
-<p>怎么解决这个问题呢？你可以考虑以下两种方案。</p>
-<ol>
-<li>定期断开长连接。使用一段时间，或者程序里面判断执行过一个占用内存的大查询后，断开连接，之后要查询再重连。</li>
-<li>如果你用的是 MySQL 5.7 或更新版本，可以在每次执行一个比较大的操作后，通过执行 mysql_reset_connection 来重新初始化连接资源。这个过程不需要重连和重新做权限验证，但是会将连接恢复到刚刚创建完时的状态。</li>
-</ol>
-<h3 id="2-查询缓存"><a href="#2-查询缓存" class="headerlink" title="2. 查询缓存"></a>2. 查询缓存</h3><p>连接建立完成后，你就可以执行 select 语句了。执行逻辑就会来到第二步：查询缓存。<br>MySQL 拿到一个查询请求后，会先到查询缓存看看，之前是不是执行过这条语句。之前执行过的语句及其结果可能会以 key-value 对的形式，被直接缓存在内存中。key 是查询的语句，value 是查询的结果。如果你的查询能够直接在这个缓存中找到 key，那么这个 value 就会被直接返回给客户端。<br>如果语句不在查询缓存中，就会继续后面的执行阶段。执行完成后，执行结果会被存入查询缓存中。你可以看到，如果查询命中缓存，MySQL 不需要执行后面的复杂操作，就可以直接返回结果，这个效率会很高。</p>
-<p>但是大多数情况下我会建议你不要使用查询缓存，为什么呢？因为查询缓存往往弊大于利。</p>
-<p>查询缓存的失效非常频繁，只要有对一个表的更新，这个表上所有的查询缓存都会被清空。因此很可能你费劲地把结果存起来，还没使用呢，就被一个更新全清空了。对于更新压力大的数据库来说，查询缓存的命中率会非常低。除非你的业务就是有一张静态表，很长时间才会更新一次。比如，一个系统配置表，那这张表上的查询才适合使用查询缓存。</p>
-<p>好在 MySQL 也提供了这种“按需使用”的方式。你可以将参数 query_cache_type 设置成 DEMAND，这样对于默认的 SQL 语句都不使用查询缓存。而对于你确定要使用查询缓存的语句，可以用 SQL_CACHE 显式指定，像下面这个语句一样：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select SQL_CACHE * from T where ID=10；</span><br></pre></td></tr></table></figure>
-<p>需要注意的是，MySQL 8.0 版本直接将查询缓存的整块功能删掉了，也就是说 8.0 开始彻底没有这个功能了。</p>
-<h3 id="3-分析器"><a href="#3-分析器" class="headerlink" title="3. 分析器"></a>3. 分析器</h3><p>如果没有命中查询缓存，就要开始真正执行语句了。首先，MySQL 需要知道你要做什么，因此需要对 SQL 语句做解析。<br>分析器先会做“词法分析”。你输入的是由多个字符串和空格组成的一条 SQL 语句，MySQL 需要识别出里面的字符串分别是什么，代表什么。</p>
-<p>MySQL 从你输入的”select”这个关键字识别出来，这是一个查询语句。它也要把字符串“T”识别成“表名 T”，把字符串“ID”识别成“列 ID”。</p>
-<p>做完了这些识别以后，就要做“语法分析”。根据词法分析的结果，语法分析器会根据语法规则，判断你输入的这个 SQL 语句是否满足 MySQL 语法。</p>
-<p>如果你的语句不对，就会收到“You have an error in your SQL syntax”的错误提醒，比如下面这个语句 select 少打了开头的字母“s”。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; elect * from t where ID=1;</span><br><span class="line"></span><br><span class="line">ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &apos;elect * from t where ID=1&apos; at line 1</span><br></pre></td></tr></table></figure>
-<p>一般语法错误会提示第一个出现错误的位置，所以你要关注的是紧接“use near”的内容。</p>
-<h3 id="4-优化器"><a href="#4-优化器" class="headerlink" title="4. 优化器"></a>4. 优化器</h3><p>经过了分析器，MySQL 就知道你要做什么了。在开始执行之前，还要先经过优化器的处理。<br>优化器是在表里面有多个索引的时候，决定使用哪个索引；或者在一个语句有多表关联（join）的时候，决定各个表的连接顺序。比如你执行下面这样的语句，这个语句是执行两个表的 join：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from t1 join t2 using(ID)  where t1.c=10 and t2.d=20;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>既可以先从表 t1 里面取出 c=10 的记录的 ID 值，再根据 ID 值关联到表 t2，再判断 t2 里面 d 的值是否等于 20。</li>
-<li>也可以先从表 t2 里面取出 d=20 的记录的 ID 值，再根据 ID 值关联到 t1，再判断 t1 里面 c 的值是否等于 10。<br>这两种执行方法的逻辑结果是一样的，但是执行的效率会有不同，而优化器的作用就是决定选择使用哪一个方案。<br>优化器阶段完成后，这个语句的执行方案就确定下来了，然后进入执行器阶段。如果你还有一些疑问，比如优化器是怎么选择索引的，有没有可能选择错等等，没关系，我会在后面的文章中单独展开说明优化器的内容。</li>
-</ul>
-<h3 id="5-执行器"><a href="#5-执行器" class="headerlink" title="5. 执行器"></a>5. 执行器</h3><p>MySQL 通过分析器知道了你要做什么，通过优化器知道了该怎么做，于是就进入了执行器阶段，开始执行语句。<br>开始执行的时候，要先判断一下你对这个表 T 有没有执行查询的权限，如果没有，就会返回没有权限的错误，如下所示。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from T where ID=10;</span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">ERROR 1142 (42000): SELECT command denied to user &apos;b&apos;@&apos;localhost&apos; for table &apos;T&apos;</span><br></pre></td></tr></table></figure>
-<p>如果有权限，就打开表继续执行。打开表的时候，执行器就会根据表的引擎定义，去使用这个引擎提供的接口。<br>比如我们这个例子中的表 T 中，ID 字段没有索引，那么执行器的执行流程是这样的：</p>
-<ol>
-<li>调用 InnoDB 引擎接口取这个表的第一行，判断 ID 值是不是 10，如果不是则跳过，如果是则将这行存在结果集中；</li>
-<li>调用引擎接口取“下一行”，重复相同的判断逻辑，直到取到这个表的最后一行。</li>
-<li>执行器将上述遍历过程中所有满足条件的行组成的记录集作为结果集返回给客户端。</li>
-</ol>
-<p>至此，这个语句就执行完成了。</p>
-<p>对于有索引的表，执行的逻辑也差不多。第一次调用的是“取满足条件的第一行”这个接口，之后循环取“满足条件的下一行”这个接口，这些接口都是引擎中已经定义好的。</p>
-<p>你会在数据库的慢查询日志中看到一个 rows_examined 的字段，表示这个语句执行过程中扫描了多少行。这个值就是在执行器每次调用引擎获取数据行的时候累加的。</p>
-<p>在有些场景下，执行器调用一次，在引擎内部则扫描了多行，因此引擎扫描行数跟 rows_examined 并不是完全相同的。我们后面会专门有一篇文章来讲存储引擎的内部机制，里面会有详细的说明。</p>
-<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>今天我给你介绍了 MySQL 的逻辑架构，希望你对一个 SQL 语句完整执行流程的各个阶段有了一个初步的印象。由于篇幅的限制，我只是用一个查询的例子将各个环节过了一遍。如果你还对每个环节的展开细节存有疑问，也不用担心，后续在实战章节中我还会再提到它们。</p>
-<p>我给你留一个问题吧，如果表 T 中没有字段 k，而你执行了这个语句 select * from T where k=1, 那肯定是会报“不存在这个列”的错误： “Unknown column ‘k’ in ‘where clause’”。你觉得这个错误是在我们上面提到的哪个阶段报出来的呢？</p>
-<blockquote>
-<p>答案：分析器</p>
-</blockquote>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/12/cs/loadbalance/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/10/12/cs/loadbalance/" itemprop="url">loadbalance</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-12T16:56:16+08:00">
-                2018-10-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/分类/" itemprop="url" rel="index">
-                    <span itemprop="name">分类</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h1><p>当一台服务器的承受能力达到上限时，那么就需要多台服务器来组成集群，提升应用整体的吞吐量，那么这个时候就涉及到如何合理分配客户端请求到集群中不同的机器，这个过程就叫做负载均衡，当然这也是负载均衡要解决的问题。</p>
-<h3 id="实现："><a href="#实现：" class="headerlink" title="实现："></a>实现：</h3><p>模拟Ip列表：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">1</span> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">IpMap</span></span></span><br><span class="line"><span class="class"> 2 </span>&#123;</span><br><span class="line"> <span class="number">3</span>     <span class="comment">// 待路由的Ip列表，Key代表Ip，Value代表该Ip的权重</span></span><br><span class="line"> <span class="number">4</span>     <span class="keyword">public</span> <span class="keyword">static</span> HashMap&lt;String, Integer&gt; serverWeightMap = </span><br><span class="line"> <span class="number">5</span>             <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line"> <span class="number">6</span>     </span><br><span class="line"> <span class="number">7</span>     <span class="keyword">static</span></span><br><span class="line"> <span class="number">8</span>     &#123;</span><br><span class="line"> <span class="number">9</span>         serverWeightMap.put(<span class="string">"192.168.1.100"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">10</span>         serverWeightMap.put(<span class="string">"192.168.1.101"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">11</span>         <span class="comment">// 权重为4</span></span><br><span class="line"><span class="number">12</span>         serverWeightMap.put(<span class="string">"192.168.1.102"</span>, <span class="number">4</span>);</span><br><span class="line"><span class="number">13</span>         serverWeightMap.put(<span class="string">"192.168.1.103"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">14</span>         serverWeightMap.put(<span class="string">"192.168.1.104"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">15</span>         <span class="comment">// 权重为3</span></span><br><span class="line"><span class="number">16</span>         serverWeightMap.put(<span class="string">"192.168.1.105"</span>, <span class="number">3</span>);</span><br><span class="line"><span class="number">17</span>         serverWeightMap.put(<span class="string">"192.168.1.106"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">18</span>         <span class="comment">// 权重为2</span></span><br><span class="line"><span class="number">19</span>         serverWeightMap.put(<span class="string">"192.168.1.107"</span>, <span class="number">2</span>);</span><br><span class="line"><span class="number">20</span>         serverWeightMap.put(<span class="string">"192.168.1.108"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">21</span>         serverWeightMap.put(<span class="string">"192.168.1.109"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">22</span>         serverWeightMap.put(<span class="string">"192.168.1.110"</span>, <span class="number">1</span>);</span><br><span class="line"><span class="number">23</span>     &#125;</span><br><span class="line"><span class="number">24</span> &#125;</span><br></pre></td></tr></table></figure></p>
-<p>轮询（Round Robin）法<br>轮询法即Round Robin法，其代码实现大致如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">1</span> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RoundRobin</span></span></span><br><span class="line"><span class="class"> 2 </span>&#123;</span><br><span class="line"> <span class="number">3</span>     <span class="keyword">private</span> <span class="keyword">static</span> Integer pos = <span class="number">0</span>;</span><br><span class="line"> <span class="number">4</span>     </span><br><span class="line"> <span class="number">5</span>     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getServer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> 6     </span>&#123;</span><br><span class="line"> <span class="number">7</span>         <span class="comment">// 重建一个Map，避免服务器的上下线导致的并发问题</span></span><br><span class="line"> <span class="number">8</span>         Map&lt;String, Integer&gt; serverMap = </span><br><span class="line"> <span class="number">9</span>                 <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line"><span class="number">10</span>         serverMap.putAll(IpMap.serverWeightMap);</span><br><span class="line"><span class="number">11</span>         </span><br><span class="line"><span class="number">12</span>         <span class="comment">// 取得Ip地址List</span></span><br><span class="line"><span class="number">13</span>         Set&lt;String&gt; keySet = serverMap.keySet();</span><br><span class="line"><span class="number">14</span>         ArrayList&lt;String&gt; keyList = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"><span class="number">15</span>         keyList.addAll(keySet);</span><br><span class="line"><span class="number">16</span>         </span><br><span class="line"><span class="number">17</span>         String server = <span class="keyword">null</span>;</span><br><span class="line"><span class="number">18</span>         <span class="keyword">synchronized</span> (pos)</span><br><span class="line"><span class="number">19</span>         &#123;</span><br><span class="line"><span class="number">20</span>             <span class="keyword">if</span> (pos &gt;= keySet.size())</span><br><span class="line"><span class="number">21</span>                 pos = <span class="number">0</span>;</span><br><span class="line"><span class="number">22</span>             server = keyList.get(pos);</span><br><span class="line"><span class="number">23</span>             pos ++;</span><br><span class="line"><span class="number">24</span>         &#125;</span><br><span class="line"><span class="number">25</span>         </span><br><span class="line"><span class="number">26</span>         <span class="keyword">return</span> server;</span><br><span class="line"><span class="number">27</span>     &#125;</span><br><span class="line"><span class="number">28</span> &#125;</span><br></pre></td></tr></table></figure></p>
-<p>由于serverWeightMap中的地址列表是动态的，随时可能有机器上线、下线或者宕机，因此为了避免可能出现的并发问题，方法内部要新建局部变量serverMap，现将serverMap中的内容复制到线程本地，以避免被多个线程修改。这样可能会引入新的问题，复制以后serverWeightMap的修改无法反映给serverMap，也就是说这一轮选择服务器的过程中，新增服务器或者下线服务器，负载均衡算法将无法获知。新增无所谓，如果有服务器下线或者宕机，那么可能会访问到不存在的地址。因此，服务调用端需要有相应的容错处理，比如重新发起一次server选择并调用。<br>对于当前轮询的位置变量pos，为了保证服务器选择的顺序性，需要在操作时对其加锁，使得同一时刻只能有一个线程可以修改pos的值，否则当pos变量被并发修改，则无法保证服务器选择的顺序性，甚至有可能导致keyList数组越界。<br>轮询法的优点在于：试图做到请求转移的绝对均衡。<br>轮询法的缺点在于：为了做到请求转移的绝对均衡，必须付出相当大的代价，因为为了保证pos变量修改的互斥性，需要引入重量级的悲观锁synchronized，这将会导致该段轮询代码的并发吞吐量发生明显的下降。</p>
-<p>随机（Random）法<br>通过系统随机函数，根据后端服务器列表的大小值来随机选择其中一台进行访问。由概率统计理论可以得知，随着调用量的增大，其实际效果越来越接近于平均分配流量到每一台后端服务器，也就是轮询的效果。<br>随机法的代码实现大致如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">1</span> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Random</span></span></span><br><span class="line"><span class="class"> 2 </span>&#123;</span><br><span class="line"> <span class="number">3</span>     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getServer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> 4     </span>&#123;</span><br><span class="line"> <span class="number">5</span>         <span class="comment">// 重建一个Map，避免服务器的上下线导致的并发问题</span></span><br><span class="line"> <span class="number">6</span>         Map&lt;String, Integer&gt; serverMap = </span><br><span class="line"> <span class="number">7</span>                 <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line"> <span class="number">8</span>         serverMap.putAll(IpMap.serverWeightMap);</span><br><span class="line"> <span class="number">9</span>         </span><br><span class="line"><span class="number">10</span>         <span class="comment">// 取得Ip地址List</span></span><br><span class="line"><span class="number">11</span>         Set&lt;String&gt; keySet = serverMap.keySet();</span><br><span class="line"><span class="number">12</span>         ArrayList&lt;String&gt; keyList = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"><span class="number">13</span>         keyList.addAll(keySet);</span><br><span class="line"><span class="number">14</span>         </span><br><span class="line"><span class="number">15</span>         java.util.Random random = <span class="keyword">new</span> java.util.Random();</span><br><span class="line"><span class="number">16</span>         <span class="keyword">int</span> randomPos = random.nextInt(keyList.size());</span><br><span class="line"><span class="number">17</span>         </span><br><span class="line"><span class="number">18</span>         <span class="keyword">return</span> keyList.get(randomPos);</span><br><span class="line"><span class="number">19</span>     &#125;</span><br><span class="line"><span class="number">20</span> &#125;</span><br></pre></td></tr></table></figure></p>
-<p>整体代码思路和轮询法一致，先重建serverMap，再获取到server列表。在选取server的时候，通过Random的nextInt方法取0~keyList.size()区间的一个随机值，从而从服务器列表中随机获取到一台服务器地址进行返回。基于概率统计的理论，吞吐量越大，随机算法的效果越接近于轮询算法的效果。</p>
-<p>源地址哈希（Hash）法<br>源地址哈希的思想是获取客户端访问的IP地址值，通过哈希函数计算得到一个数值，用该数值对服务器列表的大小进行取模运算，得到的结果便是要访问的服务器的序号。源地址哈希算法的代码实现大致如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">1</span> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Hash</span></span></span><br><span class="line"><span class="class"> 2 </span>&#123;</span><br><span class="line"> <span class="number">3</span>     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getServer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> 4     </span>&#123;</span><br><span class="line"> <span class="number">5</span>         <span class="comment">// 重建一个Map，避免服务器的上下线导致的并发问题</span></span><br><span class="line"> <span class="number">6</span>         Map&lt;String, Integer&gt; serverMap = </span><br><span class="line"> <span class="number">7</span>                 <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line"> <span class="number">8</span>         serverMap.putAll(IpMap.serverWeightMap);</span><br><span class="line"> <span class="number">9</span>         </span><br><span class="line"><span class="number">10</span>         <span class="comment">// 取得Ip地址List</span></span><br><span class="line"><span class="number">11</span>         Set&lt;String&gt; keySet = serverMap.keySet();</span><br><span class="line"><span class="number">12</span>         ArrayList&lt;String&gt; keyList = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"><span class="number">13</span>         keyList.addAll(keySet);</span><br><span class="line"><span class="number">14</span>         </span><br><span class="line"><span class="number">15</span>         <span class="comment">// 在Web应用中可通过HttpServlet的getRemoteIp方法获取</span></span><br><span class="line"><span class="number">16</span>         String remoteIp = <span class="string">"127.0.0.1"</span>;</span><br><span class="line"><span class="number">17</span>         <span class="keyword">int</span> hashCode = remoteIp.hashCode();</span><br><span class="line"><span class="number">18</span>         <span class="keyword">int</span> serverListSize = keyList.size();</span><br><span class="line"><span class="number">19</span>         <span class="keyword">int</span> serverPos = hashCode % serverListSize;</span><br><span class="line"><span class="number">20</span>         </span><br><span class="line"><span class="number">21</span>         <span class="keyword">return</span> keyList.get(serverPos);</span><br><span class="line"><span class="number">22</span>     &#125;</span><br><span class="line"><span class="number">23</span> &#125;</span><br></pre></td></tr></table></figure></p>
-<p>前两部分和轮询法、随机法一样就不说了，差别在于路由选择部分。通过客户端的ip也就是remoteIp，取得它的Hash值，对服务器列表的大小取模，结果便是选用的服务器在服务器列表中的索引值。<br>源地址哈希法的优点在于：保证了相同客户端IP地址将会被哈希到同一台后端服务器，直到后端服务器列表变更。根据此特性可以在服务消费者与服务提供者之间建立有状态的session会话。<br>源地址哈希算法的缺点在于：除非集群中服务器的非常稳定，基本不会上下线，否则一旦有服务器上线、下线，那么通过源地址哈希算法路由到的服务器是服务器上线、下线前路由到的服务器的概率非常低，如果是session则取不到session，如果是缓存则可能引发”雪崩”。如果这么解释不适合明白，可以看我之前的一篇文章MemCache超详细解读，一致性Hash算法部分。</p>
-<p>加权轮询（Weight Round Robin）法<br>不同的服务器可能机器配置和当前系统的负载并不相同，因此它们的抗压能力也不尽相同，给配置高、负载低的机器配置更高的权重，让其处理更多的请求，而低配置、高负载的机器，则给其分配较低的权重，降低其系统负载。加权轮询法可以很好地处理这一问题，并将请求顺序按照权重分配到后端。加权轮询法的代码实现大致如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">1</span> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeightRoundRobin</span></span></span><br><span class="line"><span class="class"> 2 </span>&#123;</span><br><span class="line"> <span class="number">3</span>     <span class="keyword">private</span> <span class="keyword">static</span> Integer pos;</span><br><span class="line"> <span class="number">4</span>     </span><br><span class="line"> <span class="number">5</span>     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getServer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> 6     </span>&#123;</span><br><span class="line"> <span class="number">7</span>         <span class="comment">// 重建一个Map，避免服务器的上下线导致的并发问题</span></span><br><span class="line"> <span class="number">8</span>         Map&lt;String, Integer&gt; serverMap = </span><br><span class="line"> <span class="number">9</span>                 <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line"><span class="number">10</span>         serverMap.putAll(IpMap.serverWeightMap);</span><br><span class="line"><span class="number">11</span>         </span><br><span class="line"><span class="number">12</span>         <span class="comment">// 取得Ip地址List</span></span><br><span class="line"><span class="number">13</span>         Set&lt;String&gt; keySet = serverMap.keySet();</span><br><span class="line"><span class="number">14</span>         Iterator&lt;String&gt; iterator = keySet.iterator();</span><br><span class="line"><span class="number">15</span>         </span><br><span class="line"><span class="number">16</span>         List&lt;String&gt; serverList = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"><span class="number">17</span>         <span class="keyword">while</span> (iterator.hasNext())</span><br><span class="line"><span class="number">18</span>         &#123;</span><br><span class="line"><span class="number">19</span>             String server = iterator.next();</span><br><span class="line"><span class="number">20</span>             <span class="keyword">int</span> weight = serverMap.get(server);</span><br><span class="line"><span class="number">21</span>             <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; weight; i++)</span><br><span class="line"><span class="number">22</span>                 serverList.add(server);</span><br><span class="line"><span class="number">23</span>         &#125;</span><br><span class="line"><span class="number">24</span>         </span><br><span class="line"><span class="number">25</span>         String server = <span class="keyword">null</span>;</span><br><span class="line"><span class="number">26</span>         <span class="keyword">synchronized</span> (pos)</span><br><span class="line"><span class="number">27</span>         &#123;</span><br><span class="line"><span class="number">28</span>             <span class="keyword">if</span> (pos &gt; keySet.size())</span><br><span class="line"><span class="number">29</span>                 pos = <span class="number">0</span>;</span><br><span class="line"><span class="number">30</span>             server = serverList.get(pos);</span><br><span class="line"><span class="number">31</span>             pos ++;</span><br><span class="line"><span class="number">32</span>         &#125;</span><br><span class="line"><span class="number">33</span>         </span><br><span class="line"><span class="number">34</span>         <span class="keyword">return</span> server;</span><br><span class="line"><span class="number">35</span>     &#125;</span><br><span class="line"><span class="number">36</span> &#125;</span><br></pre></td></tr></table></figure></p>
-<p>与轮询法类似，只是在获取服务器地址之前增加了一段权重计算的代码，根据权重的大小，将地址重复地增加到服务器地址列表中，权重越大，该服务器每轮所获得的请求数量越多。</p>
-<p>加权随机（Weight Random）法<br>与加权轮询法类似，加权随机法也是根据后端服务器不同的配置和负载情况来配置不同的权重。不同的是，它是按照权重来随机选择服务器的，而不是顺序。加权随机法的代码实现如下：<br> <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeightRandom</span></span></span><br><span class="line"><span class="class"> 2 </span>&#123;</span><br><span class="line"> <span class="number">3</span>     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getServer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> 4     </span>&#123;</span><br><span class="line"> <span class="number">5</span>         <span class="comment">// 重建一个Map，避免服务器的上下线导致的并发问题</span></span><br><span class="line"> <span class="number">6</span>         Map&lt;String, Integer&gt; serverMap = </span><br><span class="line"> <span class="number">7</span>                 <span class="keyword">new</span> HashMap&lt;String, Integer&gt;();</span><br><span class="line"> <span class="number">8</span>         serverMap.putAll(IpMap.serverWeightMap);</span><br><span class="line"> <span class="number">9</span>         </span><br><span class="line"><span class="number">10</span>         <span class="comment">// 取得Ip地址List</span></span><br><span class="line"><span class="number">11</span>         Set&lt;String&gt; keySet = serverMap.keySet();</span><br><span class="line"><span class="number">12</span>         Iterator&lt;String&gt; iterator = keySet.iterator();</span><br><span class="line"><span class="number">13</span>         </span><br><span class="line"><span class="number">14</span>         List&lt;String&gt; serverList = <span class="keyword">new</span> ArrayList&lt;String&gt;();</span><br><span class="line"><span class="number">15</span>         <span class="keyword">while</span> (iterator.hasNext())</span><br><span class="line"><span class="number">16</span>         &#123;</span><br><span class="line"><span class="number">17</span>             String server = iterator.next();</span><br><span class="line"><span class="number">18</span>             <span class="keyword">int</span> weight = serverMap.get(server);</span><br><span class="line"><span class="number">19</span>             <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; weight; i++)</span><br><span class="line"><span class="number">20</span>                 serverList.add(server);</span><br><span class="line"><span class="number">21</span>         &#125;</span><br><span class="line"><span class="number">22</span>         </span><br><span class="line"><span class="number">23</span>         java.util.Random random = <span class="keyword">new</span> java.util.Random();</span><br><span class="line"><span class="number">24</span>         <span class="keyword">int</span> randomPos = random.nextInt(serverList.size());</span><br><span class="line"><span class="number">25</span>         </span><br><span class="line"><span class="number">26</span>         <span class="keyword">return</span> serverList.get(randomPos);</span><br><span class="line"><span class="number">27</span>     &#125;</span><br><span class="line"><span class="number">28</span> &#125;</span><br></pre></td></tr></table></figure></p>
-<p>这段代码相当于是随机法和加权轮询法的结合，比较好理解，就不解释了。</p>
-<p>最小连接数（Least Connections）法<br>前面几种方法费尽心思来实现服务消费者请求次数分配的均衡，当然这么做是没错的，可以为后端的多台服务器平均分配工作量，最大程度地提高服务器的利用率，但是实际情况是否真的如此？实际情况中，请求次数的均衡真的能代表负载的均衡吗？这是一个值得思考的问题。<br>上面的问题，再换一个角度来说就是：以后端服务器的视角来观察系统的负载，而非请求发起方来观察。最小连接数法便属于此类。<br>最小连接数算法比较灵活和智能，由于后端服务器的配置不尽相同，对于请求的处理有快有慢，它正是根据后端服务器当前的连接情况，动态地选取其中当前积压连接数最少的一台服务器来处理当前请求，尽可能地提高后端服务器的利用效率，将负载合理地分流到每一台机器。由于最小连接数设计服务器连接数的汇总和感知，设计与实现较为繁琐，此处就不说它的实现了。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/26/golang/go-standard-library-intro/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/26/golang/go-standard-library-intro/" itemprop="url">go-standard-library-intro</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-26T20:00:02+08:00">
-                2018-09-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/go/" itemprop="url" rel="index">
-                    <span itemprop="name">go</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="简图"><a href="#简图" class="headerlink" title="简图"></a>简图</h1><p><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fvn6xqiuk6j21b80undos.jpg" alt=""></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/20/distributed/mapreduce-intro/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/20/distributed/mapreduce-intro/" itemprop="url">mapreduce-intro</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-20T20:50:28+08:00">
-                2018-09-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/分布式/" itemprop="url" rel="index">
-                    <span itemprop="name">分布式</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="1-什么是MapReduce？"><a href="#1-什么是MapReduce？" class="headerlink" title="1 什么是MapReduce？"></a>1 什么是MapReduce？</h1><p>　　Map本意可以理解为地图，映射（面向对象语言都有Map集合），这里我们可以理解为从现实世界获得或产生映射。Reduce本意是减少的意思，这里我们可以理解为归并前面Map产生的映射。</p>
-<h1 id="2-MapReduce的编程模型"><a href="#2-MapReduce的编程模型" class="headerlink" title="2 MapReduce的编程模型"></a>2 MapReduce的编程模型</h1><p>　　按照google的MapReduce论文所说的，MapReduce的编程模型的原理是：利用一个输入key/value对集合来产生一个输出的key/value对集合。MapReduce库的用户用两个函数表达这个计算：Map和Reduce。用户自定义的Map函数接受一个输入的key/value对值，然后产生一个中间key/value对值的集合。MapReduce库把所有具有相同中间key值的中间value值集合在一起后传递给Reduce函数。用户自定义的Reduce函数接受一个中间key的值和相关的一个value值的集合。Reduce函数合并这些value值，形成一个较小的value值的集合。</p>
-<h1 id="3-MapReduce实现"><a href="#3-MapReduce实现" class="headerlink" title="3 MapReduce实现"></a>3 MapReduce实现</h1><p>　　通过将Map调用的输入数据自动分割为M个数据片段的集合，Map调用被分布到多台机器上执行。输入的数据片段能够在不同的机器上并行处理。使用分区函数将Map调用产生的中间key值分成R个不同分区（例如，hash(key) mod R），Reduce调用也被分布到多台机器上执行。分区数量（R）和分区函数由用户来指定。</p>
-<p>　　MapReduce实现的大概过程如下：</p>
-<p>　　1.用户程序首先调用的MapReduce库将输入文件分成M个数据片度，每个数据片段的大小一般从16MB到64MB(可以通过可选的参数来控制每个数据片段的大小)。然后用户程序在集群中创建大量的程序副本。</p>
-<p>　　2.这些程序副本中的有一个特殊的程序master。副本中其它的程序都是worker程序，由master分配任务。有M个Map任务和R个Reduce任务将被分配，master将一个Map任务或Reduce任务分配给一个空闲的worker。 </p>
-<p>　　3.被分配了map任务的worker程序读取相关的输入数据片段，从输入的数据片段中解析出key/value对，然后把key/value对传递给用户自定义的Map函数，由Map函数生成并输出的中间key/value对，并缓存在内存中。 </p>
-<p>　　4.缓存中的key/value对通过分区函数分成R个区域，之后周期性的写入到本地磁盘上，会产生R个临时文件。缓存的key/value对在本地磁盘上的存储位置将被回传给master，由master负责把这些存储位置再传送给Reduce worker。 </p>
-<p>　　5.当Reduce worker程序接收到master程序发来的数据存储位置信息后，使用RPC从Map worker所在主机的磁盘上读取这些缓存数据。当Reduce worker读取了所有的中间数据（这个时候所有的Map任务都执行完了）后，通过对key进行排序后使得具有相同key值的数据聚合在一起。由于许多不同的key值会映射到相同的Reduce任务上，因此必须进行排序。如果中间数据太大无法在内存中完成排序，那么就要在外部进行排序。 </p>
-<p>　　6.Reduce worker程序遍历排序后的中间数据，对于每一个唯一的中间key值，Reduce worker程序将这个key值和它相关的中间value值的集合（这个集合是由Reduce worker产生的，它存放的是同一个key对应的value值）传递给用户自定义的Reduce函数。Reduce函数的输出被追加到所属分区的输出文件。 </p>
-<p>　　上面过程中的排序很容易理解，关键是分区，这一步最终决定该键值对未来会交给哪个reduce任务，如统计单词出现的次数可以用前面说的hash(key) mod R来分区，如果是对数据进行排序则应该根据key的分布进行分区。</p>
-<p>图1 MapReduce过程<br><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fvgargrvu2j20cs0k7dgf.jpg" alt=""></p>
-<h1 id="4-例子"><a href="#4-例子" class="headerlink" title="4 例子"></a>4 例子</h1><p>　　假设我们需要处理一批有关天气的数据，其格式如下： 按照ASCII码存储，每行一条记录，每一行字符从0开始计数，第15个到第18个字符为年，第25个到第29个字符为温度，其中第25位是符号+/-，现在需要统计出每年的最高温度。</p>
-<p>　　0067011990999991950051507+0000+<br>　　0043011990999991950051512+0022+<br>　　0043011990999991950051518-0011+<br>　　0043012650999991949032412+0111+<br>　　0043012650999991949032418+0078+<br>　　0067011990999991937051507+0001+<br>　　0043011990999991937051512-0002+<br>　　0043011990999991945051518+0001+<br>　　0043012650999991945032412+0002+<br>　　0043012650999991945032418+0078+ </p>
-<p>　　MapReduce主要包括两个步骤：Map和Reduce 每一步都有key/value对作为输入和输出： </p>
-<p>　　Map阶段的key/value对的格式是由输入的格式所决定的，如果是默认的TextInputFormat，则每行作为一个记录进程处理，其中key为此行的开头相对于文件的起始位置，value就是此行的字符文本，Map阶段的输出的key/value对的格式必须同Reduce阶段的输入key/value对的格式相对应</p>
-<p>　　对于上面的例子，在map过程，输入的key-value对如下：<br>　　(0 ,0067011990999991950051507+0000+)<br>　　(1 ,0043011990999991950051512+0022+)<br>　　(2 ,0043011990999991950051518-0011+)<br>　　(3 ,0043012650999991949032412+0111+)<br>　　(4 ,0043012650999991949032418+0078+)<br>　　(5 ,0067011990999991937051507+0001+)<br>　　(6 ,0043011990999991937051512-0002+)<br>　　(7 ,0043011990999991945051518+0001+)<br>　　(8 ,0043012650999991945032412+0002+)<br>　　(9 ,0043012650999991945032418+0078+) </p>
-<p>　　将上面的数据作为用户编写的map函数的输入，通过对每一行字符串的解析，得到年/温度的key/value对作为输出：<br>　　(1950, 0)<br>　　(1950, 22)<br>　　(1950, -11)<br>　　(1949, 111)<br>　　(1949, 78)<br>　　(1937, 1)<br>　　(1937, -2)<br>　　(1945, 1)<br>　　(1945, 2)<br>　　(1945, 78) </p>
-<p>　　在Reduce过程，将map过程中的输出，按照相同的key将value放到同一个列表中作为用户写的reduce函数的输入<br>　　(1950, [0, 22, –11])<br>　　(1949, [111, 78])<br>　　(1937, [1, -2])<br>　　(1945, [1, 2, 78]) </p>
-<p>　　在Reduce过程中，在列表中选择出最大的温度，将年/最大温度的key/value作为输出：<br>　　(1950, 22)<br>　　(1949, 111)<br>　　(1937, 1)<br>　　(1945, 78) </p>
-<p>　　其逻辑过程可用如下图表示：<br><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fvgarwkdo0j20hw03zjt4.jpg" alt=""></p>
-<p> 参考：</p>
-<p><a href="http://desert3.iteye.com/blog/865243" target="_blank" rel="noopener">http://desert3.iteye.com/blog/865243</a></p>
-<p><a href="http://www.cnblogs.com/duguguiyu/archive/2009/02/28/1400278.html" target="_blank" rel="noopener">http://www.cnblogs.com/duguguiyu/archive/2009/02/28/1400278.html</a></p>
-<p><a href="http://www.cnblogs.com/MitiskySean/p/3320451.html" target="_blank" rel="noopener">http://www.cnblogs.com/MitiskySean/p/3320451.html</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/19/tool/git-cheatcheet/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/19/tool/git-cheatcheet/" itemprop="url">git cheatcheet</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-19T16:12:32+08:00">
-                2018-09-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/tool/" itemprop="url" rel="index">
-                    <span itemprop="name">tool</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="简图"><a href="#简图" class="headerlink" title="简图"></a>简图</h1><p><img src="https://ws1.sinaimg.cn/large/e5320b2aly1fwy5q46d3lj215k10nabc.jpg" alt=""></p>
-<h1 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">git add . //ga</span><br><span class="line">git status //gs</span><br><span class="line">git diff //gd</span><br><span class="line">git commit -m &quot;desc&quot; //gcm</span><br><span class="line">git push //gp</span><br><span class="line">git checkout -b feature/comment //gcb</span><br><span class="line">git pull origin master //gpom</span><br></pre></td></tr></table></figure>
-<h2 id="偶尔用到"><a href="#偶尔用到" class="headerlink" title="偶尔用到"></a>偶尔用到</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git push --set-upstream origin dev_2 </span><br><span class="line">git stash</span><br><span class="line">git log</span><br><span class="line">git cherry-pick xxx</span><br><span class="line">git init</span><br><span class="line">git clone</span><br></pre></td></tr></table></figure>
-<h3 id="很少用到"><a href="#很少用到" class="headerlink" title="很少用到"></a>很少用到</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name &quot;muName&quot;</span><br><span class="line">git config --global user.email &quot;myEmail&quot;</span><br></pre></td></tr></table></figure>
-<h3 id="GET-NEW-THING"><a href="#GET-NEW-THING" class="headerlink" title="GET NEW THING"></a>GET NEW THING</h3><h4 id="比对-diff"><a href="#比对-diff" class="headerlink" title="比对 diff"></a>比对 diff</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># 显示暂存区和工作区的代码差异</span><br><span class="line">$ git diff</span><br><span class="line"></span><br><span class="line"># 显示暂存区和上一个commit的差异</span><br><span class="line">$ git diff --cached [file]</span><br><span class="line"></span><br><span class="line"># 显示工作区与当前分支最新commit之间的差异</span><br><span class="line">$ git diff HEAD</span><br><span class="line">git diff HEAD^ 比对当前内容和倒数第二次提交。</span><br><span class="line"></span><br><span class="line"># 显示两次提交之间的差异</span><br><span class="line">$ git diff [first-branch]...[second-branch]</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 从暂存区移除一个文件</span><br><span class="line">git rm file</span><br><span class="line"># 从暂存区移除所有文件</span><br><span class="line">git reset .</span><br></pre></td></tr></table></figure>
-<h4 id="rebase-变基【为了提交好看】"><a href="#rebase-变基【为了提交好看】" class="headerlink" title="rebase 变基【为了提交好看】"></a>rebase 变基【为了提交好看】</h4><h4 id="gitnore"><a href="#gitnore" class="headerlink" title="gitnore"></a>gitnore</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">filename  //递归 忽略当前目录下所有包含此文件名的文件</span><br><span class="line">dir/      //递归 忽略目录和子目录 </span><br><span class="line">!filename //递归 不忽略文件名</span><br></pre></td></tr></table></figure>
-<h3 id="存储"><a href="#存储" class="headerlink" title="存储"></a>存储</h3><p><img src="https://ws1.sinaimg.cn/large/e5320b2aly1g210qd00udj20l20h6do5.jpg" alt=""></p>
-<ul>
-<li>commit</li>
-<li>tree</li>
-<li>blob</li>
-</ul>
-<p>差异存储，后面的可以引用前面的blob和tree</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/19/golang/go-bytes-Buffer/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/19/golang/go-bytes-Buffer/" itemprop="url">go-bytes.Buffer</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-19T15:46:07+08:00">
-                2018-09-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/go/" itemprop="url" rel="index">
-                    <span itemprop="name">go</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="bytes-Buffer"><a href="#bytes-Buffer" class="headerlink" title="bytes.Buffer"></a>bytes.Buffer</h1><h2 id="java-StringBuilder"><a href="#java-StringBuilder" class="headerlink" title="java StringBuilder"></a>java StringBuilder</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">StringBuilder sb = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">sb.append(<span class="string">"hello"</span>);</span><br><span class="line">sb.append(<span class="string">",world"</span>);</span><br><span class="line">System.out.println(sb.toString());</span><br></pre></td></tr></table></figure>
-<h2 id="go-bytes-Buffer"><a href="#go-bytes-Buffer" class="headerlink" title="go bytes.Buffer"></a>go bytes.Buffer</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> bb bytes.Buffer</span><br><span class="line">bb.WriteString(<span class="string">"["</span>)</span><br><span class="line">bb.WriteString(<span class="string">"]"</span>)</span><br><span class="line">fmt.Println(bb.String())</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/19/tool/vscode使用/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/19/tool/vscode使用/" itemprop="url">常用工具使用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-19T14:29:54+08:00">
-                2018-09-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/tool/" itemprop="url" rel="index">
-                    <span itemprop="name">tool</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><ul>
-<li>轻量</li>
-<li>可以直接打开文件夹&amp;文件</li>
-<li>可以安装各种插件</li>
-</ul>
-<h2 id="主题"><a href="#主题" class="headerlink" title="主题"></a>主题</h2><p>atom one dark</p>
-<h2 id="文件图标"><a href="#文件图标" class="headerlink" title="文件图标"></a>文件图标</h2><p>vscode icons/nomo dark icon theme</p>
-<h2 id="插件"><a href="#插件" class="headerlink" title="插件"></a>插件</h2><p>intellij idea keybindings 插件<br>markdownlint 检查markdown语法</p>
-<h2 id="原始快捷键"><a href="#原始快捷键" class="headerlink" title="原始快捷键"></a>原始快捷键</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">alt shift 下  向下复制一行</span><br><span class="line">cmd enter 强行下一行</span><br><span class="line">alt shift F 格式化代码</span><br><span class="line">cmd F 查找/替换</span><br><span class="line">cmd + 放大</span><br><span class="line">F12 转到定义</span><br><span class="line">ctrl 斜点 打开控制台</span><br><span class="line">ctrl - 回退</span><br><span class="line">ctrl+shift+-前进</span><br><span class="line">alt+shift+选择 竖行选择</span><br></pre></td></tr></table></figure>
-<h2 id="goland配置"><a href="#goland配置" class="headerlink" title="goland配置"></a>goland配置</h2><p>Colorful Dracula 主题<br>consolas 16 字体</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/09/19/golang/go-踩坑点/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/19/golang/go-踩坑点/" itemprop="url">go-踩坑点</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-19T10:53:27+08:00">
-                2018-09-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/go/" itemprop="url" rel="index">
-                    <span itemprop="name">go</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="go遇到的一些问题"><a href="#go遇到的一些问题" class="headerlink" title="go遇到的一些问题"></a>go遇到的一些问题</h1><h3 id="chan关闭之后，还可以读写吗？"><a href="#chan关闭之后，还可以读写吗？" class="headerlink" title="chan关闭之后，还可以读写吗？"></a>chan关闭之后，还可以读写吗？</h3><blockquote>
-<p>不能写，但可以读<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">	&quot;fmt&quot;</span><br><span class="line">	&quot;sync&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	var ret = make(chan []int, 1000)</span><br><span class="line">	var wg = sync.WaitGroup&#123;&#125;</span><br><span class="line">	wg.Add(3)</span><br><span class="line">	go func() &#123;</span><br><span class="line">		defer wg.Done()</span><br><span class="line">		var result = make([]int, 0)</span><br><span class="line">		for i := 0; i &lt; 10; i++ &#123;</span><br><span class="line">			result = append(result, i)</span><br><span class="line">		&#125;</span><br><span class="line">		ret &lt;- result</span><br><span class="line">	&#125;()</span><br><span class="line">	go func() &#123;</span><br><span class="line">		defer wg.Done()</span><br><span class="line">		var result = make([]int, 0)</span><br><span class="line">		for i := 10; i &lt; 20; i++ &#123;</span><br><span class="line">			result = append(result, i)</span><br><span class="line">		&#125;</span><br><span class="line">		ret &lt;- result</span><br><span class="line">	&#125;()</span><br><span class="line">	go func() &#123;</span><br><span class="line">		defer wg.Done()</span><br><span class="line">		var result = make([]int, 0)</span><br><span class="line">		for i := 20; i &lt; 30; i++ &#123;</span><br><span class="line">			result = append(result, i)</span><br><span class="line">		&#125;</span><br><span class="line">		ret &lt;- result</span><br><span class="line">	&#125;()</span><br><span class="line">	wg.Wait()</span><br><span class="line">	//go func() &#123;</span><br><span class="line">	//	for &#123;</span><br><span class="line">	//		ret &lt;- []int&#123;1&#125;</span><br><span class="line">	//		time.Sleep(time.Second)</span><br><span class="line">	//	&#125;</span><br><span class="line">	//&#125;()</span><br><span class="line">	//close(ret)</span><br><span class="line">	for v := range ret &#123; //0 range if v==0 break ,or panic</span><br><span class="line">		for _, v := range v &#123;</span><br><span class="line">			fmt.Println(v)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-</blockquote>
-<h3 id="并发获取数据，常见问题"><a href="#并发获取数据，常见问题" class="headerlink" title="并发获取数据，常见问题"></a>并发获取数据，常见问题</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">for _,v:=range uids&#123;</span><br><span class="line">	go func()&#123;</span><br><span class="line">    	fmt.Println(v)//v的值是一样的！</span><br><span class="line">    &#125;()</span><br><span class="line">&#125;</span><br><span class="line">==》</span><br><span class="line">for _,v:=range uids&#123;</span><br><span class="line">	go func(v int)&#123;</span><br><span class="line">    	fmt.Println(v)//v的值正常</span><br><span class="line">    &#125;(v)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           
         
       
@@ -1863,7 +633,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span>
   </nav>
 
 
@@ -1907,7 +677,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-count">42</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1918,7 +688,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-count">27</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -1929,7 +699,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">58</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -1984,7 +754,7 @@
         <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

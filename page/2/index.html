@@ -373,7 +373,49 @@
       
         
           
-            <h1 id="redis注意点"><a href="#redis注意点" class="headerlink" title="redis注意点"></a>redis注意点</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//这个max在前面</span><br><span class="line">ZREVRANGEBYSCORE key max min WITHSCORES </span><br><span class="line">//这个max在后面</span><br><span class="line">ZRANGEBYSCORE key min max WITHSCORES</span><br></pre></td></tr></table></figure>
+            <h2 id="redis-关键点"><a href="#redis-关键点" class="headerlink" title="redis 关键点"></a>redis 关键点</h2><p>核心点</p>
+<ul>
+<li>数据类型实现<ul>
+<li>跳跃表<ul>
+<li>层级高度</li>
+<li>插入、删除过程</li>
+</ul>
+</li>
+<li>hash 表<ul>
+<li>rehash 过程</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>持久化<ul>
+<li>RDB<ul>
+<li>BGSAVE</li>
+</ul>
+</li>
+<li>AOF<ul>
+<li>BGREWRITEAOF</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>多机<ul>
+<li>主从模式<ul>
+<li>psync 指令</li>
+</ul>
+</li>
+<li>sentinel 主从故障转移<ul>
+<li>订阅同一个通道</li>
+<li>心跳保活</li>
+</ul>
+</li>
+<li>redis-cluster 集群<ul>
+<li>槽 slot 动态分配</li>
+<li>MOVE、ASK 指令转移</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 
           
         
@@ -515,30 +557,26 @@
       
         
           
-            <h1 id="thrift笔记"><a href="#thrift笔记" class="headerlink" title="thrift笔记"></a>thrift笔记</h1><blockquote>
-<p>Thrift实际上是实现了C/S模式，通过代码生成工具将接口定义文件生成服务器端和客户端代码（可以为不同语言），从而实现服务端和客户端跨语言的支持。用户在Thirft描述文件中声明自己的服务，这些服务经过编译后会生成相应语言的代码文件，然后用户实现服务（客户端调用服务，服务器端提服务）便可以了。其中protocol（协议层, 定义数据传输格式，可以为二进制或者XML等）和transport（传输层，定义数据传输方式，可以为TCP/IP传输，内存共享或者文件共享等）被用作运行时库。</p>
+            <h2 id="thrift-笔记"><a href="#thrift-笔记" class="headerlink" title="thrift 笔记"></a>thrift 笔记</h2><blockquote>
+<p>Thrift 实际上是实现了 C/S 模式，通过代码生成工具将接口定义文件生成服务器端和客户端代码（可以为不同语言），从而实现服务端和客户端跨语言的支持。用户在 Thirft 描述文件中声明自己的服务，这些服务经过编译后会生成相应语言的代码文件，然后用户实现服务（客户端调用服务，服务器端提服务）便可以了。其中 protocol（协议层, 定义数据传输格式，可以为二进制或者 XML 等）和 transport（传输层，定义数据传输方式，可以为 TCP/IP 传输，内存共享或者文件共享等）被用作运行时库。</p>
 </blockquote>
-<p>Thrift的网络栈如下所示：</p>
-<p><img src="https://raw.githubusercontent.com/greyireland/images/master/img/20191007203916.png" alt=""></p>
-<p><strong>3.1   Transport</strong></p>
-<p>Transport层提供了一个简单的网络读写抽象层。这使得thrift底层的transport从系统其它部分（如：序列化/反序列化）解耦。以下是一些Transport接口提供的方法：</p>
-<p>除了以上几个接口，Thrift使用ServerTransport接口接受或者创建原始transport对象。正如名字暗示的那样，ServerTransport用在server端，为到来的连接创建Transport对象。</p>
-<p><strong>3.2   Protocol</strong></p>
-<p>Protocol抽象层定义了一种将内存中数据结构映射成可传输格式的机制。换句话说，Protocol定义了datatype怎样使用底层的Transport对自己进行编解码。因此，Protocol的实现要给出编码机制并负责对数据进行序列化。</p>
-<p>Protocol接口的定义如下：</p>
-<p>下面是一些对大部分thrift支持的语言均可用的protocol：</p>
-<p>(1)     binary：简单的二进制编码</p>
-<p>(2)     Compact：具体见THRIFT-11</p>
-<p>(3)     Json</p>
-<p><strong>3.3   Processor</strong></p>
-<p>Processor封装了从输入数据流中读数据和向数据数据流中写数据的操作。读写数据流用Protocol对象表示。Processor的结构体非常简单:</p>
-<p>与服务相关的processor实现由编译器产生。Processor主要工作流程如下：从连接中读取数据（使用输入protocol），将处理授权给handler（由用户实现），最后将结果写到连接上（使用输出protocol）。</p>
-<p><strong>3.4   Server</strong></p>
-<p>Server将以上所有特性集成在一起：</p>
-<p>（1）  创建一个transport对象</p>
-<p>（2）  为transport对象创建输入输出protocol</p>
-<p>（3）  基于输入输出protocol创建processor</p>
-<p>（4）  等待连接请求并将之交给processor处理</p>
+<p>Thrift 的网络栈如下所示：</p>
+<p><img src="../../images/thrit-network.png" alt="网络栈"></p>
+<h3 id="Transport"><a href="#Transport" class="headerlink" title="Transport"></a>Transport</h3><p>Transport 层提供了一个简单的网络读写抽象层。这使得 thrift 底层的 transport 从系统其它部分（如：序列化/反序列化）解耦。以下是一些 Transport 接口提供的方法：</p>
+<p>除了以上几个接口，Thrift 使用 ServerTransport 接口接受或者创建原始 transport 对象。正如名字暗示的那样，ServerTransport 用在 server 端，为到来的连接创建 Transport 对象。</p>
+<h3 id="Protocol"><a href="#Protocol" class="headerlink" title="Protocol"></a>Protocol</h3><p>Protocol 抽象层定义了一种将内存中数据结构映射成可传输格式的机制。换句话说，Protocol 定义了 datatype 怎样使用底层的 Transport 对自己进行编解码。因此，Protocol 的实现要给出编码机制并负责对数据进行序列化。</p>
+<p>Protocol 接口的定义如下：</p>
+<p>下面是一些对大部分 thrift 支持的语言均可用的 protocol：</p>
+<p>(1) binary：简单的二进制编码</p>
+<p>(2) Compact：具体见 THRIFT-11</p>
+<p>(3) Json</p>
+<h3 id="Processor"><a href="#Processor" class="headerlink" title="Processor"></a>Processor</h3><p>Processor 封装了从输入数据流中读数据和向数据数据流中写数据的操作。读写数据流用 Protocol 对象表示。Processor 的结构体非常简单:</p>
+<p>与服务相关的 processor 实现由编译器产生。Processor 主要工作流程如下：从连接中读取数据（使用输入 protocol），将处理授权给 handler（由用户实现），最后将结果写到连接上（使用输出 protocol）。</p>
+<h3 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h3><p>Server 将以上所有特性集成在一起：</p>
+<p>（1） 创建一个 transport 对象</p>
+<p>（2） 为 transport 对象创建输入输出 protocol</p>
+<p>（3） 基于输入输出 protocol 创建 processor</p>
+<p>（4） 等待连接请求并将之交给 processor 处理</p>
 
           
         
@@ -680,14 +718,14 @@
       
         
           
-            <h1 id="signal信号"><a href="#signal信号" class="headerlink" title="signal信号"></a>signal信号</h1><p>1.信号的处理方式？</p>
+            <h2 id="signal-信号"><a href="#signal-信号" class="headerlink" title="signal 信号"></a>signal 信号</h2><p>1.信号的处理方式？</p>
 <blockquote>
 <p>信号（signal）– 进程之间通讯的方式，是一种软件中断。一个进程一旦接收到信号就会打断原来的程序执行流程来处理信号。</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">singnal.signal(signalnum, handler)#</span><br><span class="line"></span><br><span class="line">import signal</span><br><span class="line">import time</span><br><span class="line">def myHandler(signum, frame):</span><br><span class="line">    print(&apos;I received: &apos;, signum)</span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line">    signal.signal(signal.SIGALRM, myHandler)//信号注册</span><br><span class="line">    while True:</span><br><span class="line">        signal.alarm(1)//发送信号</span><br><span class="line">        time.sleep(1)</span><br></pre></td></tr></table></figure>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">singnal.signal(signalnum, handler)<span class="comment">#</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> signal</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">myHandler</span><span class="params">(signum, frame)</span>:</span></span><br><span class="line">    print(<span class="string">'I received: '</span>, signum)</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    signal.signal(signal.SIGALRM, myHandler)//信号注册</span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        signal.alarm(<span class="number">1</span>)//发送信号</span><br><span class="line">        time.sleep(<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
 <p>2.进程与线程的区别?</p>
 <blockquote>
-<p> 进程独享进程空间fork全部复制一份，线程共享进程空间，栈上的东西独享</p>
+<p>进程独享进程空间 fork 全部复制一份，线程共享进程空间，栈上的东西独享</p>
 </blockquote>
 
           
@@ -830,10 +868,10 @@
       
         
           
-            <h1 id="mongodb"><a href="#mongodb" class="headerlink" title="mongodb"></a>mongodb</h1><h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># 对比</span><br><span class="line">mysql  MongoDB</span><br><span class="line">数据库	数据库Db</span><br><span class="line">表	   集合Collection</span><br><span class="line">行	   文档Document</span><br><span class="line">列	   字段Key</span><br><span class="line">表     集合[&#123;&quot;k1&quot;:&quot;v1&quot;,&quot;k2&quot;:&quot;v2&quot;&#125;,&#123;&#125;]</span><br><span class="line"></span><br><span class="line"># 常见API</span><br><span class="line">db.collection.insert(doc)</span><br></pre></td></tr></table></figure>
+            <h2 id="mongodb"><a href="#mongodb" class="headerlink" title="mongodb"></a>mongodb</h2><h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 对比</span></span><br><span class="line">mysql  MongoDB</span><br><span class="line">数据库	数据库Db</span><br><span class="line">表	   集合Collection</span><br><span class="line">行	   文档Document</span><br><span class="line">列	   字段Key</span><br><span class="line">表     集合[&#123;<span class="string">"k1"</span>:<span class="string">"v1"</span>,<span class="string">"k2"</span>:<span class="string">"v2"</span>&#125;,&#123;&#125;]</span><br></pre></td></tr></table></figure>
 <h3 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h3><ul>
-<li>格式不固定JSON</li>
-<li>MapReduce复杂的聚合查询</li>
+<li>格式不固定 JSON</li>
+<li>MapReduce 复杂的聚合查询</li>
 <li>支持全文索引</li>
 <li>支持分片分布式存储</li>
 </ul>
@@ -982,13 +1020,27 @@
       
         
           
-            <h1 id="epoll"><a href="#epoll" class="headerlink" title="epoll"></a>epoll</h1><h3 id="epoll如何实现百万连接"><a href="#epoll如何实现百万连接" class="headerlink" title="epoll如何实现百万连接"></a>epoll如何实现百万连接</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">int epoll_create(int size);//size fd数量,创建了红黑树和就绪链表</span><br><span class="line">int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);//添加回调函数到红黑树，事件来临时将回调函数写到就绪链表</span><br><span class="line">int epoll_wait(int epfd, struct epoll_event *events,int maxevents, int timeout);//取出就绪链表数据</span><br></pre></td></tr></table></figure>
-<h4 id="VS-select-amp-poll"><a href="#VS-select-amp-poll" class="headerlink" title="VS select &amp; poll"></a>VS select &amp; poll</h4><p>轮询实现效率低，poll去除fd限制，实际问题未解决</p>
-<h3 id="网络IO模型"><a href="#网络IO模型" class="headerlink" title="网络IO模型"></a>网络IO模型</h3><p><img src="https://raw.githubusercontent.com/greyireland/images/master/img/20190628165226.png" alt=""></p>
-<p>参考：</p>
-<p><a href="https://zhuanlan.zhihu.com/p/21378825" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/21378825</a></p>
-<p><a href="https://www.zhihu.com/question/20831000" target="_blank" rel="noopener">https://www.zhihu.com/question/20831000</a></p>
-<p><a href="https://www.jianshu.com/p/55eb83d60ab1" target="_blank" rel="noopener">https://www.jianshu.com/p/55eb83d60ab1</a></p>
+            <h2 id="epoll"><a href="#epoll" class="headerlink" title="epoll"></a>epoll</h2><h3 id="epoll-如何实现百万连接"><a href="#epoll-如何实现百万连接" class="headerlink" title="epoll 如何实现百万连接"></a>epoll 如何实现百万连接</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_create</span><span class="params">(<span class="keyword">int</span> size)</span></span>;<span class="comment">//size fd数量,创建了红黑树和就绪链表</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_ctl</span><span class="params">(<span class="keyword">int</span> epfd, <span class="keyword">int</span> op, <span class="keyword">int</span> fd, struct epoll_event *event)</span></span>;<span class="comment">//添加回调函数到红黑树，事件来临时将回调函数写到就绪链表</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_wait</span><span class="params">(<span class="keyword">int</span> epfd, struct epoll_event *events,<span class="keyword">int</span> maxevents, <span class="keyword">int</span> timeout)</span></span>;<span class="comment">//取出就绪链表数据</span></span><br></pre></td></tr></table></figure>
+<h3 id="epoll-VS-select-amp-poll"><a href="#epoll-VS-select-amp-poll" class="headerlink" title="epoll VS select &amp; poll"></a>epoll VS select &amp; poll</h3><ul>
+<li>select 轮询实现效率低，有 fd 限制</li>
+<li>poll 去除 fd 限制，实际问题未解决</li>
+<li>epoll 没有采用回调形式，可接入百万 fd</li>
+</ul>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>为什么使用红黑树</p>
+<blockquote>
+<p>新添加 fd 时会查询是否已经存在 fd 的监听事件，如果没有则添加<br>所以插入和删除性能比较好，时间复杂度 log(N)</p>
+</blockquote>
+<p>为什么比较快</p>
+<blockquote>
+<p>因为只需要监听就绪链表中是否有数据即可(时间复杂度 O(1))，不需要复制全部的 fd 的用户态</p>
+</blockquote>
+<p>LT 和 ET 区别</p>
+<blockquote>
+<p>LT：水平触发，效率会低于 ET 触发，尤其在大并发，大流量的情况下。但是 LT 对代码编写要求比较低，不容易出现问题。LT 模式服务编写上的表现是：只要有数据没有被获取，内核就不断通知你，因此不用担心事件丢失的情况。</p>
+<p>ET：边缘触发，效率非常高，在并发，大流量的情况下，会比 LT 少很多 epoll 的系统调用，因此效率高。但是对编程要求高，需要细致的处理每个请求，否则容易发生丢失事件的情况。</p>
+</blockquote>
+<p>从本质上讲：与 LT 相比，ET 模型是通过减少系统调用来达到提高并行效率的。</p>
+<h3 id="网络-IO-模型"><a href="#网络-IO-模型" class="headerlink" title="网络 IO 模型"></a>网络 IO 模型</h3><p><img src="../../images/io-model.png" alt="网络IO模型"></p>
 
           
         
@@ -1130,9 +1182,10 @@
       
         
           
-            <h1 id="linux进程守护"><a href="#linux进程守护" class="headerlink" title="linux进程守护"></a>linux进程守护</h1><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install supervisor</span><br><span class="line">supervisord -v</span><br></pre></td></tr></table></figure>
-<h3 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">1.配置路径</span><br><span class="line">mkdir -p /etc/supervisor</span><br><span class="line"></span><br><span class="line">2.完整配置示例</span><br><span class="line">echo_supervisord_conf &gt; /etc/supervisor/supervisord.conf</span><br><span class="line"></span><br><span class="line">3.修改配置</span><br><span class="line">vim /etc/supervisor/supervisord.conf</span><br><span class="line">添加如下</span><br><span class="line">[include]</span><br><span class="line">files=/etc/supervisor/conf.d/*.conf</span><br><span class="line"></span><br><span class="line">4.添加如下配置</span><br><span class="line">mkdir -p /etc/supervisor/conf.d/</span><br><span class="line">vim /etc/supervisor/conf.d/xmysql.conf</span><br><span class="line"></span><br><span class="line">[program:myxmysql]</span><br><span class="line">command=xmysql -h localhost -u username -p username -d music -r 0.0.0.0 ; 运行程序的命令</span><br><span class="line">directory=/home/xiaodong/node-v10.15.3-linux-x64/bin/ ; 执行前要不要先cd到</span><br><span class="line">目录去，一般不用</span><br><span class="line">autorestart = true   ; 程序异常退出后自动重启</span><br><span class="line">autostart=true       ; 随着supervisord的启动而启动</span><br><span class="line">startretries = 10     ; 启动失败自动重试次数，默认是 3</span><br><span class="line">numprocs=1           ; 启动几个进程</span><br><span class="line">stderr_logfile=/var/log/myxmysql.err.log ; 错误日志文件</span><br><span class="line">stdout_logfile=/var/log/myxmysql.out.log ; 输出日志文件</span><br><span class="line">environment=A=B ; 进程环境变量</span><br><span class="line">user=root ; 进程执行的用户身份</span><br><span class="line">stopsignal=KILL ; 用来杀死进程的</span><br><span class="line">stopsignal=INT</span><br><span class="line"></span><br><span class="line">5.启动</span><br><span class="line">supervisord -c /etc/supervisor/supervisord.conf</span><br><span class="line">或者重新加载配置</span><br><span class="line">supervisorctl reload</span><br></pre></td></tr></table></figure>
-<h3 id="额外"><a href="#额外" class="headerlink" title="额外"></a>额外</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">把配置文件中 inet_http_server 前面的分号去掉 在Supervisor中 ;是注释的格式 默认是不开启web界面的</span><br><span class="line"></span><br><span class="line">[inet_http_server]         ; inet (TCP) server disabled by default</span><br><span class="line">port=*:9001        ; (ip_address:port specifier, *:port for all iface)</span><br><span class="line">username=user              ; (default is no username (open server))</span><br><span class="line">password=123</span><br></pre></td></tr></table></figure>
+            <h2 id="linux-进程守护"><a href="#linux-进程守护" class="headerlink" title="linux 进程守护"></a>linux 进程守护</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install supervisor</span><br><span class="line">supervisord -v</span><br></pre></td></tr></table></figure>
+<h3 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">1.配置路径</span><br><span class="line">mkdir -p /etc/supervisor</span><br><span class="line"></span><br><span class="line">2.完整配置示例</span><br><span class="line">echo_supervisord_conf &gt; /etc/supervisor/supervisord.conf</span><br><span class="line"></span><br><span class="line">3.修改配置</span><br><span class="line">vim /etc/supervisor/supervisord.conf</span><br><span class="line">添加如下</span><br><span class="line">[include]</span><br><span class="line">files=/etc/supervisor/conf.d/*.conf</span><br><span class="line"></span><br><span class="line">4.添加如下配置</span><br><span class="line">mkdir -p /etc/supervisor/conf.d/</span><br><span class="line">vim /etc/supervisor/conf.d/xmysql.conf</span><br><span class="line"></span><br><span class="line">[program:myxmysql]</span><br><span class="line"><span class="built_in">command</span>=xmysql -h localhost -u username -p username -d music -r 0.0.0.0 ; 运行程序的命令</span><br><span class="line">directory=/home/xiaodong/node-v10.15.3-linux-x64/bin/ ; 执行前要不要先<span class="built_in">cd</span>到</span><br><span class="line">目录去，一般不用</span><br><span class="line">autorestart = <span class="literal">true</span>   ; 程序异常退出后自动重启</span><br><span class="line">autostart=<span class="literal">true</span>       ; 随着supervisord的启动而启动</span><br><span class="line">startretries = 10     ; 启动失败自动重试次数，默认是 3</span><br><span class="line">numprocs=1           ; 启动几个进程</span><br><span class="line">stderr_logfile=/var/<span class="built_in">log</span>/myxmysql.err.log ; 错误日志文件</span><br><span class="line">stdout_logfile=/var/<span class="built_in">log</span>/myxmysql.out.log ; 输出日志文件</span><br><span class="line">environment=A=B ; 进程环境变量</span><br><span class="line">user=root ; 进程执行的用户身份</span><br><span class="line">stopsignal=KILL ; 用来杀死进程的</span><br><span class="line">stopsignal=INT</span><br><span class="line"></span><br><span class="line">5.启动</span><br><span class="line">supervisord -c /etc/supervisor/supervisord.conf</span><br><span class="line">或者重新加载配置</span><br><span class="line">supervisorctl reload</span><br></pre></td></tr></table></figure>
+<h3 id="额外"><a href="#额外" class="headerlink" title="额外"></a>额外</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">把配置文件中 inet_http_server 前面的分号去掉 在Supervisor中 ;是注释的格式 默认是不开启web界面的</span><br><span class="line"></span><br><span class="line">[inet_http_server]         ; inet (TCP) server disabled by default</span><br><span class="line">port=*:9001        ; (ip_address:port specifier, *:port <span class="keyword">for</span> all iface)</span><br><span class="line">username=user              ; (default is no username (open server))</span><br><span class="line">password=123</span><br></pre></td></tr></table></figure>
+
           
         
       
@@ -1273,203 +1326,62 @@
       
         
           
-            <h1 id="golang-boltdb的学习和实践"><a href="#golang-boltdb的学习和实践" class="headerlink" title="golang boltdb的学习和实践"></a>golang boltdb的学习和实践</h1><h2 id="1-安装"><a href="#1-安装" class="headerlink" title="1. 安装"></a>1. 安装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go get github.com/boltdb/bolt</span><br></pre></td></tr></table></figure>
-<h2 id="2-创建和启动数据库"><a href="#2-创建和启动数据库" class="headerlink" title="2.创建和启动数据库"></a>2.创建和启动数据库</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db, err := bolt.Open(&quot;my.db&quot;, 0600, nil)</span><br></pre></td></tr></table></figure>
-<p>其中<code>open</code>的第一个参数为路径,如果数据库不存在则会创建名为my.db的数据库， 第二个为文件操作，第三个参数是可选参数， 内部可以配置只读和超时时间等，<br>特别需要注意的地方就是因为boltdb是文件操作类型的数据库，所以只能单点写入和读取，如果多个同时操作的话后者会被挂起直到前者关闭操作为止， boltdb一次只允许一个读写事务，但一次允许多个只读事务。所以数据具有较强的一致性。</p>
-<p>因此单个事务和从它们创建的所有对象（例如桶、键）都不是线程安全的。与数据在多个概念你必须为每一个或使用锁机制来保证只有一个goroutine里操作改变数据。<br>只读事务和读写事物通常不应该在同一个goroutine里同时打开。由于读写事务需要周期性地重新映射数据文件，这可能导致死锁。</p>
-<h2 id="3-读写事务"><a href="#3-读写事务" class="headerlink" title="3.读写事务"></a>3.读写事务</h2><p>boltdb的读写事务操作我们可以使用<code>DB.Update()</code>来完成形如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">err := db.Update(func(tx *bolt.Tx) error &#123;</span><br><span class="line">    ...</span><br><span class="line">    return nil</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<p>在闭包fun中,在结束时返回nil来提交事务。您还可以通过返回一个错误在任何点回滚事务。所有数据库操作都允许在读写事务中进行。<br>始终要关注err返回，因为它将报告导致您的事务不能完成的所有磁盘故障。</p>
+            <h2 id="golang-boltdb-的学习和实践"><a href="#golang-boltdb-的学习和实践" class="headerlink" title="golang boltdb 的学习和实践"></a>golang boltdb 的学习和实践</h2><h2 id="1-安装"><a href="#1-安装" class="headerlink" title="1. 安装"></a>1. 安装</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">go</span> get github.com/boltdb/bolt</span><br></pre></td></tr></table></figure>
+<h2 id="2-创建和启动数据库"><a href="#2-创建和启动数据库" class="headerlink" title="2.创建和启动数据库"></a>2.创建和启动数据库</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db, err := bolt.Open(<span class="string">"my.db"</span>, <span class="number">0600</span>, <span class="literal">nil</span>)</span><br></pre></td></tr></table></figure>
+<p>其中<code>open</code>的第一个参数为路径,如果数据库不存在则会创建名为 my.db 的数据库， 第二个为文件操作，第三个参数是可选参数， 内部可以配置只读和超时时间等，<br>特别需要注意的地方就是因为 boltdb 是文件操作类型的数据库，所以只能单点写入和读取，如果多个同时操作的话后者会被挂起直到前者关闭操作为止， boltdb 一次只允许一个读写事务，但一次允许多个只读事务。所以数据具有较强的一致性。</p>
+<p>因此单个事务和从它们创建的所有对象（例如桶、键）都不是线程安全的。与数据在多个概念你必须为每一个或使用锁机制来保证只有一个 goroutine 里操作改变数据。<br>只读事务和读写事物通常不应该在同一个 goroutine 里同时打开。由于读写事务需要周期性地重新映射数据文件，这可能导致死锁。</p>
+<h2 id="3-读写事务"><a href="#3-读写事务" class="headerlink" title="3.读写事务"></a>3.读写事务</h2><p>boltdb 的读写事务操作我们可以使用<code>DB.Update()</code>来完成形如：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">err := db.Update(<span class="function"><span class="keyword">func</span><span class="params">(tx *bolt.Tx)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>在闭包 fun 中,在结束时返回 nil 来提交事务。您还可以通过返回一个错误在任何点回滚事务。所有数据库操作都允许在读写事务中进行。<br>始终要关注 err 返回，因为它将报告导致您的事务不能完成的所有磁盘故障。</p>
 <h2 id="4-批量读写事物"><a href="#4-批量读写事物" class="headerlink" title="4.批量读写事物"></a>4.批量读写事物</h2><p>每一次新的事物都需要等待上一次事物的结束，这种开销我们可以通过<code>DB.Batch()</code>批处理来完成</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">err := db.Batch(func(tx *bolt.Tx) error &#123;</span><br><span class="line">    ...</span><br><span class="line">    return nil</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">err := db.Batch(<span class="function"><span class="keyword">func</span><span class="params">(tx *bolt.Tx)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 <p>在批处理过程中如果某个事务失败了,批处理会多次调用这个函数函数返回成功则成功。如果中途失败了，则整个事务会回滚。</p>
 <h2 id="5-只读事务"><a href="#5-只读事务" class="headerlink" title="5.只读事务"></a>5.只读事务</h2><p>只读事务可以使用<code>DB.View()</code>来完成</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">err := db.View(func(tx *bolt.Tx) error &#123;</span><br><span class="line">    ...</span><br><span class="line">    return nil</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">err := db.View(<span class="function"><span class="keyword">func</span><span class="params">(tx *bolt.Tx)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 <p>不改变数据的操作都可以通过只读事务来完成， 您只能检索桶、检索值，或在只读事务中复制数据库。</p>
-<h2 id="6-启动事务"><a href="#6-启动事务" class="headerlink" title="6.启动事务"></a>6.启动事务</h2><p><code>DB.Begin()</code>启动函数包含在db.update和db.batch中,该函数启动事务开始执行事务并返回结果关闭事务，这是boltdb推荐的方式，有时候你可能需要手动启动事物你可以使用<code>Tx.Begin()</code>来开始，切记不要忘记关闭事务。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">// Start a writable transaction.</span><br><span class="line">tx, err := db.Begin(true)</span><br><span class="line">if err != nil &#123;</span><br><span class="line">    return err</span><br><span class="line">&#125;</span><br><span class="line">defer tx.Rollback()</span><br><span class="line"></span><br><span class="line">// Use the transaction...</span><br><span class="line">_, err := tx.CreateBucket([]byte(&quot;MyBucket&quot;))</span><br><span class="line">if err != nil &#123;</span><br><span class="line">    return err</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Commit the transaction and check for error.</span><br><span class="line">if err := tx.Commit(); err != nil &#123;</span><br><span class="line">    return err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="6-启动事务"><a href="#6-启动事务" class="headerlink" title="6.启动事务"></a>6.启动事务</h2><p><code>DB.Begin()</code>启动函数包含在 db.update 和 db.batch 中,该函数启动事务开始执行事务并返回结果关闭事务，这是 boltdb 推荐的方式，有时候你可能需要手动启动事物你可以使用<code>Tx.Begin()</code>来开始，切记不要忘记关闭事务。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Start a writable transaction.</span></span><br><span class="line">tx, err := db.Begin(<span class="literal">true</span>)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">defer</span> tx.Rollback()</span><br><span class="line"></span><br><span class="line"><span class="comment">// Use the transaction...</span></span><br><span class="line">_, err := tx.CreateBucket([]<span class="keyword">byte</span>(<span class="string">"MyBucket"</span>))</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Commit the transaction and check for error.</span></span><br><span class="line"><span class="keyword">if</span> err := tx.Commit(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="7-使用桶"><a href="#7-使用桶" class="headerlink" title="7.使用桶"></a>7.使用桶</h2><p>桶是数据库中键/值对的集合。桶中的所有键必须是唯一的。您可以使用<code>DB.CreateBucket()</code>创建一个桶：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">db.Update(func(tx *bolt.Tx) error &#123;</span><br><span class="line">    b, err := tx.CreateBucket([]byte(&quot;MyBucket&quot;))</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        return fmt.Errorf(&quot;create bucket: %s&quot;, err)</span><br><span class="line">    &#125;</span><br><span class="line">    return nil</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">db.Update(<span class="function"><span class="keyword">func</span><span class="params">(tx *bolt.Tx)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    b, err := tx.CreateBucket([]<span class="keyword">byte</span>(<span class="string">"MyBucket"</span>))</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> fmt.Errorf(<span class="string">"create bucket: %s"</span>, err)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 <p>你也可以是实用<code>Tx.CreateBucketIfNotExists()</code>来创建桶，该函数会先判断是否已经存在该桶不存在即创建， 删除桶可以使用<code>Tx.DeleteBucket()</code>来完成</p>
-<h2 id="8-使用k-v对"><a href="#8-使用k-v对" class="headerlink" title="8.使用k-v对"></a>8.使用k-v对</h2><p>存储键值对到桶里可以使用<code>Bucket.Put()</code>来完成：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">db.Update(func(tx *bolt.Tx) error &#123;</span><br><span class="line">    b := tx.Bucket([]byte(&quot;MyFriendsBucket&quot;))</span><br><span class="line">    err := b.Put([]byte(&quot;one&quot;), []byte(&quot;zhangsan&quot;))</span><br><span class="line">    return err</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="8-使用-k-v-对"><a href="#8-使用-k-v-对" class="headerlink" title="8.使用 k-v 对"></a>8.使用 k-v 对</h2><p>存储键值对到桶里可以使用<code>Bucket.Put()</code>来完成：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">db.Update(<span class="function"><span class="keyword">func</span><span class="params">(tx *bolt.Tx)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    b := tx.Bucket([]<span class="keyword">byte</span>(<span class="string">"MyFriendsBucket"</span>))</span><br><span class="line">    err := b.Put([]<span class="keyword">byte</span>(<span class="string">"one"</span>), []<span class="keyword">byte</span>(<span class="string">"zhangsan"</span>))</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 <p>获取键值<code>Bucket.Get()</code>：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">db.View(func(tx *bolt.Tx) error &#123;</span><br><span class="line">    b := tx.Bucket([]byte(&quot;MyFriendsBucket&quot;))</span><br><span class="line">    v := b.Get([]byte(&quot;one&quot;))</span><br><span class="line">    fmt.Printf(&quot;The answer is: %s\n&quot;, v)</span><br><span class="line">    return nil</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<p><code>get()</code>函数不返回一个错误，因为它的运行是保证工作（除非有某种系统故障）。如果键存在，那么它将返回它的值。如果它不存在，那么它将返回nil。<br>还需要注意的是当事务打开都get返回的值时唯一有效的，如果你需要将该值用于其他事务，你可以通过<code>copy</code>拷贝到其他的byte slice中</p>
-<h2 id="9-桶的自增"><a href="#9-桶的自增" class="headerlink" title="9.桶的自增"></a>9.桶的自增</h2><p>利用<code>nextsequence()</code>功能，你可以让boltdb生成序列作为你键值对的唯一标识。见下面的示例。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">func (s *Store) CreateUser(u *User) error &#123;</span><br><span class="line">    return s.db.Update(func(tx *bolt.Tx) error &#123;</span><br><span class="line">        // 创建users桶</span><br><span class="line">        b := tx.Bucket([]byte(&quot;users&quot;))</span><br><span class="line"></span><br><span class="line">        // 生成自增序列</span><br><span class="line">        id, _ = b.NextSequence()</span><br><span class="line">        u.ID = int(id)</span><br><span class="line"></span><br><span class="line">        // Marshal user data into bytes.</span><br><span class="line">        buf, err := json.Marshal(u)</span><br><span class="line">        if err != nil &#123;</span><br><span class="line">            return err</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        // Persist bytes to users bucket.</span><br><span class="line">        return b.Put(itob(u.ID), buf)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// itob returns an 8-byte big endian representation of v.</span><br><span class="line">func itob(v int) []byte &#123;</span><br><span class="line">    b := make([]byte, 8)</span><br><span class="line">    binary.BigEndian.PutUint64(b, uint64(v))</span><br><span class="line">    return b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type User struct &#123;</span><br><span class="line">    ID int</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="10-迭代键"><a href="#10-迭代键" class="headerlink" title="10. 迭代键"></a>10. 迭代键</h2><p>boltdb以桶中的字节排序顺序存储键。这使得在这些键上的顺序迭代非常快。要遍历键，我们将使用游标<code>Cursor()</code>：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">db.View(func(tx *bolt.Tx) error &#123;</span><br><span class="line">    // Assume bucket exists and has keys</span><br><span class="line">    b := tx.Bucket([]byte(&quot;MyBucket&quot;))</span><br><span class="line"></span><br><span class="line">    c := b.Cursor()</span><br><span class="line"></span><br><span class="line">    for k, v := c.First(); k != nil; k, v = c.Next() &#123;</span><br><span class="line">        fmt.Printf(&quot;key=%s, value=%s\n&quot;, k, v)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return nil</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">db.View(<span class="function"><span class="keyword">func</span><span class="params">(tx *bolt.Tx)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    b := tx.Bucket([]<span class="keyword">byte</span>(<span class="string">"MyFriendsBucket"</span>))</span><br><span class="line">    v := b.Get([]<span class="keyword">byte</span>(<span class="string">"one"</span>))</span><br><span class="line">    fmt.Printf(<span class="string">"The answer is: %s\n"</span>, v)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p><code>get()</code>函数不返回一个错误，因为它的运行是保证工作（除非有某种系统故障）。如果键存在，那么它将返回它的值。如果它不存在，那么它将返回 nil。<br>还需要注意的是当事务打开都 get 返回的值时唯一有效的，如果你需要将该值用于其他事务，你可以通过<code>copy</code>拷贝到其他的 byte slice 中</p>
+<h2 id="9-桶的自增"><a href="#9-桶的自增" class="headerlink" title="9.桶的自增"></a>9.桶的自增</h2><p>利用<code>nextsequence()</code>功能，你可以让 boltdb 生成序列作为你键值对的唯一标识。见下面的示例。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *Store)</span> <span class="title">CreateUser</span><span class="params">(u *User)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> s.db.Update(<span class="function"><span class="keyword">func</span><span class="params">(tx *bolt.Tx)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">        <span class="comment">// 创建users桶</span></span><br><span class="line">        b := tx.Bucket([]<span class="keyword">byte</span>(<span class="string">"users"</span>))</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 生成自增序列</span></span><br><span class="line">        id, _ = b.NextSequence()</span><br><span class="line">        u.ID = <span class="keyword">int</span>(id)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Marshal user data into bytes.</span></span><br><span class="line">        buf, err := json.Marshal(u)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> err</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Persist bytes to users bucket.</span></span><br><span class="line">        <span class="keyword">return</span> b.Put(itob(u.ID), buf)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// itob returns an 8-byte big endian representation of v.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">itob</span><span class="params">(v <span class="keyword">int</span>)</span> []<span class="title">byte</span></span> &#123;</span><br><span class="line">    b := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">8</span>)</span><br><span class="line">    binary.BigEndian.PutUint64(b, <span class="keyword">uint64</span>(v))</span><br><span class="line">    <span class="keyword">return</span> b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> User <span class="keyword">struct</span> &#123;</span><br><span class="line">    ID <span class="keyword">int</span></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="10-迭代键"><a href="#10-迭代键" class="headerlink" title="10. 迭代键"></a>10. 迭代键</h2><p>boltdb 以桶中的字节排序顺序存储键。这使得在这些键上的顺序迭代非常快。要遍历键，我们将使用游标<code>Cursor()</code>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">db.View(<span class="function"><span class="keyword">func</span><span class="params">(tx *bolt.Tx)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="comment">// Assume bucket exists and has keys</span></span><br><span class="line">    b := tx.Bucket([]<span class="keyword">byte</span>(<span class="string">"MyBucket"</span>))</span><br><span class="line"></span><br><span class="line">    c := b.Cursor()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> k, v := c.First(); k != <span class="literal">nil</span>; k, v = c.Next() &#123;</span><br><span class="line">        fmt.Printf(<span class="string">"key=%s, value=%s\n"</span>, k, v)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 <p>游标<code>Cursor()</code>允许您移动到键列表中的特定点，并一次一个地通过操作键前进或后退。<br>光标上有以下函数：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">First()  移动到第一个健.</span><br><span class="line">Last()   移动到最后一个健.</span><br><span class="line">Seek()   移动到特定的一个健.</span><br><span class="line">Next()   移动到下一个健.</span><br><span class="line">Prev()   移动到上一个健.</span><br></pre></td></tr></table></figure>
-<p>这些函数中的每一个都返回一个包含(key []byte, value []byte)的签名。当你有光标迭代结束，next()将返回一个nil。在调用next()或prev()之前，你必须寻求一个位置使用first()，last()，或seek()。如果您不寻求位置，则这些函数将返回一个nil键。<br>在迭代过程中，如果键为非零，但值为0，则意味着键指向一个桶而不是一个值。用桶.bucket()访问子桶。</p>
-<h2 id="11-前缀扫描"><a href="#11-前缀扫描" class="headerlink" title="11.前缀扫描"></a>11.前缀扫描</h2><p>遍历一个key的前缀，你可以结合<code>seek()</code>和<code>bytes.hasprefix()</code>：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">db.View(func(tx *bolt.Tx) error &#123;</span><br><span class="line">    // Assume bucket exists and has keys</span><br><span class="line">    c := tx.Bucket([]byte(&quot;MyBucket&quot;)).Cursor()</span><br><span class="line"></span><br><span class="line">    prefix := []byte(&quot;1234&quot;)</span><br><span class="line">    for k, v := c.Seek(prefix); bytes.HasPrefix(k, prefix); k, v = c.Next() &#123;</span><br><span class="line">        fmt.Printf(&quot;key=%s, value=%s\n&quot;, k, v)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return nil</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-<h2 id="12-范围扫描"><a href="#12-范围扫描" class="headerlink" title="12.范围扫描"></a>12.范围扫描</h2><p>另一个常见的用例是扫描范围，例如时间范围。如果你使用一个合适的时间编码，如rfc3339然后可以查询特定日期范围的数据：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">db.View(func(tx *bolt.Tx) error &#123;</span><br><span class="line">    // Assume our events bucket exists and has RFC3339 encoded time keys.</span><br><span class="line">    c := tx.Bucket([]byte(&quot;Events&quot;)).Cursor()</span><br><span class="line"></span><br><span class="line">    // Our time range spans the 90&apos;s decade.</span><br><span class="line">    min := []byte(&quot;1990-01-01T00:00:00Z&quot;)</span><br><span class="line">    max := []byte(&quot;2000-01-01T00:00:00Z&quot;)</span><br><span class="line"></span><br><span class="line">    // Iterate over the 90&apos;s.</span><br><span class="line">    for k, v := c.Seek(min); k != nil &amp;&amp; bytes.Compare(k, max) &lt;= 0; k, v = c.Next() &#123;</span><br><span class="line">        fmt.Printf(&quot;%s: %s\n&quot;, k, v)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return nil</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">First()  移动到第一个健.</span><br><span class="line">Last()   移动到最后一个健.</span><br><span class="line">Seek()   移动到特定的一个健.</span><br><span class="line">Next()   移动到下一个健.</span><br><span class="line">Prev()   移动到上一个健.</span><br></pre></td></tr></table></figure>
+<p>这些函数中的每一个都返回一个包含(key []byte, value []byte)的签名。当你有光标迭代结束，next()将返回一个 nil。在调用 next()或 prev()之前，你必须寻求一个位置使用 first()，last()，或 seek()。如果您不寻求位置，则这些函数将返回一个 nil 键。<br>在迭代过程中，如果键为非零，但值为 0，则意味着键指向一个桶而不是一个值。用桶.bucket()访问子桶。</p>
+<h2 id="11-前缀扫描"><a href="#11-前缀扫描" class="headerlink" title="11.前缀扫描"></a>11.前缀扫描</h2><p>遍历一个 key 的前缀，你可以结合<code>seek()</code>和<code>bytes.hasprefix()</code>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">db.View(<span class="function"><span class="keyword">func</span><span class="params">(tx *bolt.Tx)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="comment">// Assume bucket exists and has keys</span></span><br><span class="line">    c := tx.Bucket([]<span class="keyword">byte</span>(<span class="string">"MyBucket"</span>)).Cursor()</span><br><span class="line"></span><br><span class="line">    prefix := []<span class="keyword">byte</span>(<span class="string">"1234"</span>)</span><br><span class="line">    <span class="keyword">for</span> k, v := c.Seek(prefix); bytes.HasPrefix(k, prefix); k, v = c.Next() &#123;</span><br><span class="line">        fmt.Printf(<span class="string">"key=%s, value=%s\n"</span>, k, v)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="12-范围扫描"><a href="#12-范围扫描" class="headerlink" title="12.范围扫描"></a>12.范围扫描</h2><p>另一个常见的用例是扫描范围，例如时间范围。如果你使用一个合适的时间编码，如 rfc3339 然后可以查询特定日期范围的数据：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">db.View(<span class="function"><span class="keyword">func</span><span class="params">(tx *bolt.Tx)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="comment">// Assume our events bucket exists and has RFC3339 encoded time keys.</span></span><br><span class="line">    c := tx.Bucket([]<span class="keyword">byte</span>(<span class="string">"Events"</span>)).Cursor()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Our time range spans the 90's decade.</span></span><br><span class="line">    min := []<span class="keyword">byte</span>(<span class="string">"1990-01-01T00:00:00Z"</span>)</span><br><span class="line">    max := []<span class="keyword">byte</span>(<span class="string">"2000-01-01T00:00:00Z"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Iterate over the 90's.</span></span><br><span class="line">    <span class="keyword">for</span> k, v := c.Seek(min); k != <span class="literal">nil</span> &amp;&amp; bytes.Compare(k, max) &lt;= <span class="number">0</span>; k, v = c.Next() &#123;</span><br><span class="line">        fmt.Printf(<span class="string">"%s: %s\n"</span>, k, v)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 <h2 id="13-循环遍历每一个"><a href="#13-循环遍历每一个" class="headerlink" title="13.循环遍历每一个"></a>13.循环遍历每一个</h2><p>如果你知道所在桶中拥有键，你也可以使用<code>ForEach()</code>来迭代：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">db.View(func(tx *bolt.Tx) error &#123;</span><br><span class="line">    // Assume bucket exists and has keys</span><br><span class="line">    b := tx.Bucket([]byte(&quot;MyBucket&quot;))</span><br><span class="line"></span><br><span class="line">    b.ForEach(func(k, v []byte) error &#123;</span><br><span class="line">        fmt.Printf(&quot;key=%s, value=%s\n&quot;, k, v)</span><br><span class="line">        return nil</span><br><span class="line">    &#125;)</span><br><span class="line">    return nil</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">db.View(<span class="function"><span class="keyword">func</span><span class="params">(tx *bolt.Tx)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="comment">// Assume bucket exists and has keys</span></span><br><span class="line">    b := tx.Bucket([]<span class="keyword">byte</span>(<span class="string">"MyBucket"</span>))</span><br><span class="line"></span><br><span class="line">    b.ForEach(<span class="function"><span class="keyword">func</span><span class="params">(k, v []<span class="keyword">byte</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">        fmt.Printf(<span class="string">"key=%s, value=%s\n"</span>, k, v)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 <h2 id="14-嵌套桶"><a href="#14-嵌套桶" class="headerlink" title="14.嵌套桶"></a>14.嵌套桶</h2><p>还可以在一个键中存储一个桶，以创建嵌套的桶：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">func (*Bucket) CreateBucket(key []byte) (*Bucket, error)</span><br><span class="line">func (*Bucket) CreateBucketIfNotExists(key []byte) (*Bucket, error)</span><br><span class="line">func (*Bucket) DeleteBucket(key []byte) error</span><br></pre></td></tr></table></figure>
-<h2 id="15-数据库备份"><a href="#15-数据库备份" class="headerlink" title="15.数据库备份"></a>15.数据库备份</h2><p>boltdb是一个单一的文件，所以很容易备份。你可以使用<code>TX.writeto()</code>函数写一致的数据库。如果从只读事务调用这个函数，它将执行热备份，而不会阻塞其他数据库的读写操作。<br>默认情况下，它将使用一个常规文件句柄，该句柄将利用操作系统的页面缓存。有关优化大于RAM数据集的信息，请参见<code>Tx</code>文档。<br>一个常见的用例是在HTTP上进行备份，这样您就可以使用像<code>cURL</code>这样的工具来进行数据库备份：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">func BackupHandleFunc(w http.ResponseWriter, req *http.Request) &#123;</span><br><span class="line">    err := db.View(func(tx *bolt.Tx) error &#123;</span><br><span class="line">        w.Header().Set(&quot;Content-Type&quot;, &quot;application/octet-stream&quot;)</span><br><span class="line">        w.Header().Set(&quot;Content-Disposition&quot;, `attachment; filename=&quot;my.db&quot;`)</span><br><span class="line">        w.Header().Set(&quot;Content-Length&quot;, strconv.Itoa(int(tx.Size())))</span><br><span class="line">        _, err := tx.WriteTo(w)</span><br><span class="line">        return err</span><br><span class="line">    &#125;)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        http.Error(w, err.Error(), http.StatusInternalServerError)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(*Bucket)</span> <span class="title">CreateBucket</span><span class="params">(key []<span class="keyword">byte</span>)</span> <span class="params">(*Bucket, error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(*Bucket)</span> <span class="title">CreateBucketIfNotExists</span><span class="params">(key []<span class="keyword">byte</span>)</span> <span class="params">(*Bucket, error)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(*Bucket)</span> <span class="title">DeleteBucket</span><span class="params">(key []<span class="keyword">byte</span>)</span> <span class="title">error</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="15-数据库备份"><a href="#15-数据库备份" class="headerlink" title="15.数据库备份"></a>15.数据库备份</h2><p>boltdb 是一个单一的文件，所以很容易备份。你可以使用<code>TX.writeto()</code>函数写一致的数据库。如果从只读事务调用这个函数，它将执行热备份，而不会阻塞其他数据库的读写操作。<br>默认情况下，它将使用一个常规文件句柄，该句柄将利用操作系统的页面缓存。有关优化大于 RAM 数据集的信息，请参见<code>Tx</code>文档。<br>一个常见的用例是在 HTTP 上进行备份，这样您就可以使用像<code>cURL</code>这样的工具来进行数据库备份：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">BackupHandleFunc</span><span class="params">(w http.ResponseWriter, req *http.Request)</span></span> &#123;</span><br><span class="line">    err := db.View(<span class="function"><span class="keyword">func</span><span class="params">(tx *bolt.Tx)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">        w.Header().Set(<span class="string">"Content-Type"</span>, <span class="string">"application/octet-stream"</span>)</span><br><span class="line">        w.Header().Set(<span class="string">"Content-Disposition"</span>, <span class="string">`attachment; filename="my.db"`</span>)</span><br><span class="line">        w.Header().Set(<span class="string">"Content-Length"</span>, strconv.Itoa(<span class="keyword">int</span>(tx.Size())))</span><br><span class="line">        _, err := tx.WriteTo(w)</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        http.Error(w, err.Error(), http.StatusInternalServerError)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>然后您可以使用此命令进行备份：<br><code>$ curl http://localhost/backup &gt; my.db</code><br>或者你可以打开你的浏览器以<a href="http://localhost/backup" target="_blank" rel="noopener">http://localhost/backup</a>，它会自动下载。<br>如果你想备份到另一个文件，你可以使用<code>TX.copyfile()</code>辅助功能。</p>
-<h2 id="16-统计"><a href="#16-统计" class="headerlink" title="16.统计"></a>16.统计</h2><p>数据库对运行的许多内部操作保持一个运行计数，这样您就可以更好地了解发生了什么。通过捕捉这些数据的快照，我们可以看到在这个时间范围内执行了哪些操作。<br>例如，我们可以开始一个goroutine里记录统计每10秒：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">go func() &#123;</span><br><span class="line">    // Grab the initial stats.</span><br><span class="line">    prev := db.Stats()</span><br><span class="line"></span><br><span class="line">    for &#123;</span><br><span class="line">        // Wait for 10s.</span><br><span class="line">        time.Sleep(10 * time.Second)</span><br><span class="line"></span><br><span class="line">        // Grab the current stats and diff them.</span><br><span class="line">        stats := db.Stats()</span><br><span class="line">        diff := stats.Sub(&amp;prev)</span><br><span class="line"></span><br><span class="line">        // Encode stats to JSON and print to STDERR.</span><br><span class="line">        json.NewEncoder(os.Stderr).Encode(diff)</span><br><span class="line"></span><br><span class="line">        // Save stats for the next loop.</span><br><span class="line">        prev = stats</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<h2 id="17-只读模式"><a href="#17-只读模式" class="headerlink" title="17.只读模式"></a>17.只读模式</h2><p>有时创建一个共享的只读boltdb数据库是有用的。对此，设置options.readonly国旗打开数据库时。只读模式使用共享锁允许多个进程从数据库中读取，但它将阻塞任何以读写方式打开数据库的进程。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">db, err := bolt.Open(&quot;my.db&quot;, 0666, &amp;bolt.Options&#123;ReadOnly: true&#125;)</span><br><span class="line">if err != nil &#123;</span><br><span class="line">    log.Fatal(err)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="18-移动端支持（ios-android）"><a href="#18-移动端支持（ios-android）" class="headerlink" title="18.移动端支持（ios/android）"></a>18.移动端支持（ios/android）</h2><p>boltdb能够运行在移动设备上利用的工具结合特征GoMobile。创建一个结构体，包含您的数据库逻辑和参考一个bolt.db与初始化contstructor需要在文件路径，数据库文件将存储。使用这种方法，Android和iOS都不需要额外的权限或清理。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">func NewBoltDB(filepath string) *BoltDB &#123;</span><br><span class="line">    db, err := bolt.Open(filepath+&quot;/demo.db&quot;, 0600, nil)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        log.Fatal(err)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return &amp;BoltDB&#123;db&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type BoltDB struct &#123;</span><br><span class="line">    db *bolt.DB</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (b *BoltDB) Path() string &#123;</span><br><span class="line">    return b.db.Path()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (b *BoltDB) Close() &#123;</span><br><span class="line">    b.db.Close()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="16-统计"><a href="#16-统计" class="headerlink" title="16.统计"></a>16.统计</h2><p>数据库对运行的许多内部操作保持一个运行计数，这样您就可以更好地了解发生了什么。通过捕捉这些数据的快照，我们可以看到在这个时间范围内执行了哪些操作。<br>例如，我们可以开始一个 goroutine 里记录统计每 10 秒：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// Grab the initial stats.</span></span><br><span class="line">    prev := db.Stats()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        <span class="comment">// Wait for 10s.</span></span><br><span class="line">        time.Sleep(<span class="number">10</span> * time.Second)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Grab the current stats and diff them.</span></span><br><span class="line">        stats := db.Stats()</span><br><span class="line">        diff := stats.Sub(&amp;prev)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Encode stats to JSON and print to STDERR.</span></span><br><span class="line">        json.NewEncoder(os.Stderr).Encode(diff)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Save stats for the next loop.</span></span><br><span class="line">        prev = stats</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="17-只读模式"><a href="#17-只读模式" class="headerlink" title="17.只读模式"></a>17.只读模式</h2><p>有时创建一个共享的只读 boltdb 数据库是有用的。对此，设置 options.readonly 国旗打开数据库时。只读模式使用共享锁允许多个进程从数据库中读取，但它将阻塞任何以读写方式打开数据库的进程。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">db, err := bolt.Open(<span class="string">"my.db"</span>, <span class="number">0666</span>, &amp;bolt.Options&#123;ReadOnly: <span class="literal">true</span>&#125;)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    log.Fatal(err)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="18-移动端支持（ios-android）"><a href="#18-移动端支持（ios-android）" class="headerlink" title="18.移动端支持（ios/android）"></a>18.移动端支持（ios/android）</h2><p>boltdb 能够运行在移动设备上利用的工具结合特征 GoMobile。创建一个结构体，包含您的数据库逻辑和参考一个 bolt.db 与初始化 contstructor 需要在文件路径，数据库文件将存储。使用这种方法，Android 和 iOS 都不需要额外的权限或清理。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewBoltDB</span><span class="params">(filepath <span class="keyword">string</span>)</span> *<span class="title">BoltDB</span></span> &#123;</span><br><span class="line">    db, err := bolt.Open(filepath+<span class="string">"/demo.db"</span>, <span class="number">0600</span>, <span class="literal">nil</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        log.Fatal(err)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &amp;BoltDB&#123;db&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> BoltDB <span class="keyword">struct</span> &#123;</span><br><span class="line">    db *bolt.DB</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *BoltDB)</span> <span class="title">Path</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> b.db.Path()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *BoltDB)</span> <span class="title">Close</span><span class="params">()</span></span> &#123;</span><br><span class="line">    b.db.Close()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>数据库逻辑应定义为此包装器结构中的方法。<br>要从本机语言初始化此结构（两个平台现在都将本地存储与云同步）。这些片段禁用数据库文件的功能）：<br>Android</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">String path;</span><br><span class="line">if (android.os.Build.VERSION.SDK_INT &gt;=android.os.Build.VERSION_CODES.LOLLIPOP)&#123;</span><br><span class="line">    path = getNoBackupFilesDir().getAbsolutePath();</span><br><span class="line">&#125; else&#123;</span><br><span class="line">    path = getFilesDir().getAbsolutePath();</span><br><span class="line">&#125;</span><br><span class="line">Boltmobiledemo.BoltDB boltDB = Boltmobiledemo.NewBoltDB(path)</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">String path;</span><br><span class="line"><span class="keyword">if</span> (android.os.Build.VERSION.SDK_INT &gt;=android.os.Build.VERSION_CODES.LOLLIPOP)&#123;</span><br><span class="line">    path = getNoBackupFilesDir().getAbsolutePath();</span><br><span class="line">&#125; <span class="keyword">else</span>&#123;</span><br><span class="line">    path = getFilesDir().getAbsolutePath();</span><br><span class="line">&#125;</span><br><span class="line">Boltmobiledemo.BoltDB boltDB = Boltmobiledemo.NewBoltDB(path)</span><br></pre></td></tr></table></figure>
 <p>IOS</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">- (void)demo &#123;</span><br><span class="line">    NSString* path = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,</span><br><span class="line">                                                          NSUserDomainMask,</span><br><span class="line">                                                          YES) objectAtIndex:0];</span><br><span class="line">    GoBoltmobiledemoBoltDB * demo = GoBoltmobiledemoNewBoltDB(path);</span><br><span class="line">    [self addSkipBackupAttributeToItemAtPath:demo.path];</span><br><span class="line">    //Some DB Logic would go here</span><br><span class="line">    [demo close];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (BOOL)addSkipBackupAttributeToItemAtPath:(NSString *) filePathString</span><br><span class="line">&#123;</span><br><span class="line">    NSURL* URL= [NSURL fileURLWithPath: filePathString];</span><br><span class="line">    assert([[NSFileManager defaultManager] fileExistsAtPath: [URL path]]);</span><br><span class="line"></span><br><span class="line">    NSError *error = nil;</span><br><span class="line">    BOOL success = [URL setResourceValue: [NSNumber numberWithBool: YES]</span><br><span class="line">                                  forKey: NSURLIsExcludedFromBackupKey error: &amp;error];</span><br><span class="line">    if(!success)&#123;</span><br><span class="line">        NSLog(@&quot;Error excluding %@ from backup %@&quot;, [URL lastPathComponent], error);</span><br><span class="line">    &#125;</span><br><span class="line">    return success;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="19-查看工具"><a href="#19-查看工具" class="headerlink" title="19.查看工具"></a>19.查看工具</h2><p>1.下载工具<br><code>go get github.com/boltdb/boltd</code><br>然后编译cmd下的main文件生成可执行文件改名为boltd<br>拷贝boltd到 *.db同级目录，执行如下：<code>boltd my.db</code></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">- (void)demo &#123;</span><br><span class="line">    NSString* path = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,</span><br><span class="line">                                                          NSUserDomainMask,</span><br><span class="line">                                                          YES) objectAtIndex:<span class="number">0</span>];</span><br><span class="line">    GoBoltmobiledemoBoltDB * demo = GoBoltmobiledemoNewBoltDB(path);</span><br><span class="line">    [self addSkipBackupAttributeToItemAtPath:demo.path];</span><br><span class="line">    <span class="comment">//Some DB Logic would go here</span></span><br><span class="line">    [demo <span class="built_in">close</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (BOOL)addSkipBackupAttributeToItemAtPath:(NSString *) filePathString</span><br><span class="line">&#123;</span><br><span class="line">    NSURL* URL= [NSURL fileURLWithPath: filePathString];</span><br><span class="line">    assert([[NSFileManager defaultManager] fileExistsAtPath: [URL path]]);</span><br><span class="line"></span><br><span class="line">    NSError *error = <span class="literal">nil</span>;</span><br><span class="line">    BOOL success = [URL setResourceValue: [NSNumber numberWithBool: YES]</span><br><span class="line">                                  forKey: NSURLIsExcludedFromBackupKey error: &amp;error];</span><br><span class="line">    <span class="keyword">if</span>(!success)&#123;</span><br><span class="line">        NSLog(@<span class="string">"Error excluding %@ from backup %@"</span>, [URL lastPathComponent], error);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> success;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="19-查看工具"><a href="#19-查看工具" class="headerlink" title="19.查看工具"></a>19.查看工具</h2><p>1.下载工具<br><code>go get github.com/boltdb/boltd</code><br>然后编译 cmd 下的 main 文件生成可执行文件改名为 boltd<br>拷贝 boltd 到 *.db 同级目录，执行如下：<code>boltd my.db</code></p>
 <p>2.命令行工具<br><a href="https://github.com/hasit/bolter" target="_blank" rel="noopener">https://github.com/hasit/bolter</a></p>
 <p><code>bolter -f my.db</code></p>
-<p>boltdb源码解析TODO</p>
+<p>boltdb 源码解析 TODO</p>
 
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/19/algorithm/02_binary-tree/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/19/algorithm/02_binary-tree/" itemprop="url">02_binary-tree</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-19T00:06:03+08:00">
-                2019-04-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/categories/" itemprop="url" rel="index">
-                    <span itemprop="name">categories</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
           
         
       
@@ -1610,12 +1522,11 @@
       
         
           
-            <h1 id="hash算法"><a href="#hash算法" class="headerlink" title="hash算法"></a>hash算法</h1><blockquote>
-<p>简单来说：hash（散列、杂凑）函数，是将任意长度的数据映射到有限长度的域上。直观解释起来，就是对一串数据m进行杂糅，输出另一段固定长度的数据h，作为这段数据的特征（指纹）。<br>由于用途的不同，hash在数据结构中的含义【hashCode()】和密码学【md5,sha1,sha256】中的含义并不相同，所以在这两种不同的领域里，算法的设计侧重点也不同。</p>
-</blockquote>
-<h4 id="数据结构hash"><a href="#数据结构hash" class="headerlink" title="数据结构hash"></a>数据结构hash</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">string、int、bool、object hashCode()</span><br></pre></td></tr></table></figure>
-<h4 id="密码学hash"><a href="#密码学hash" class="headerlink" title="密码学hash"></a>密码学hash</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">| 算法   | bit位数 | 16进制字符串                                                 |</span><br><span class="line">| ------ | ------- | ------------------------------------------------------------ |</span><br><span class="line">| md5    | 128     | e10adc3949ba59abbe56e057f20f883e                             |</span><br><span class="line">| sha1   | 160     | 7c4a8d09ca3762af61e59520943dc26494f8941b                     |</span><br><span class="line">| sha256 | 256     | 8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92 |</span><br><span class="line">| crc32  | 32      | 70930f27                                                     |</span><br><span class="line">| fnv    | 32      | -                                                            |</span><br></pre></td></tr></table></figure>
-<h4 id="其他工具"><a href="#其他工具" class="headerlink" title="其他工具"></a>其他工具</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fnv：FNV能快速hash大量数据并保持较小的冲突率，它的高度分散使它适用于hash一些非常相近的字符串，比如URL，hostname，文件名，text，IP地址等。</span><br><span class="line">base64:编码后的数据比原始数据略长，为原来的4/3,用64个可见字符表示数据a-z A-Z 0-9 + / ,可序列化可反序列化</span><br><span class="line">urlencode:url中只有字母和数字[0-9a-zA-Z]、一些特殊符号&quot;$-_.+!*&apos;(),&quot;[不包括双引号]、以及某些保留字，才可以不经过编码直接用于URL。</span><br></pre></td></tr></table></figure>
+            <h2 id="hash-算法"><a href="#hash-算法" class="headerlink" title="hash 算法"></a>hash 算法</h2><p>简单来说：hash（散列、杂凑）函数，是将任意长度的数据映射到有限长度的域上。直观解释起来，就是对一串数据 m 进行杂糅，输出另一段固定长度的数据 h，作为这段数据的特征（指纹）。</p>
+<p>由于用途的不同，hash 在数据结构中的含义【hashCode()】和密码学【md5,sha1,sha256】中的含义并不相同，所以在这两种不同的领域里，算法的设计侧重点也不同。</p>
+<h3 id="数据结构-hash"><a href="#数据结构-hash" class="headerlink" title="数据结构 hash"></a>数据结构 hash</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">string、<span class="keyword">int</span>、bool、<span class="function">object <span class="title">hashCode</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="密码学-hash"><a href="#密码学-hash" class="headerlink" title="密码学 hash"></a>密码学 hash</h3><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">| 算法   | bit 位数 | 16 进制字符串                                |</span><br><span class="line">| ------ | -------- | -------------------------------------------- |</span><br><span class="line">| md5    | 128      | e10adc3949ba59abbe56e057f20f883e             |</span><br><span class="line">| sha1   | 160      | 7c4a8d09ca3762af61e59520943dc26494f8941b     |</span><br><span class="line">| sha256 | 256      | 8d969eef6ecad3c29a3a629280e686cf0c3f5d5a8... |</span><br><span class="line">| crc32  | 32       | 70930f27                                     |</span><br><span class="line">| fnv    | 32       | -                                            |</span><br></pre></td></tr></table></figure>
+<h3 id="其他工具"><a href="#其他工具" class="headerlink" title="其他工具"></a>其他工具</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fnv：FNV能快速hash大量数据并保持较小的冲突率，它的高度分散使它适用于hash一些非常相近的字符串，比如URL，hostname，文件名，text，IP地址等。</span><br><span class="line">base64:编码后的数据比原始数据略长，为原来的4/3,用64个可见字符表示数据a-z A-Z 0-9 + / ,可序列化可反序列化</span><br><span class="line">urlencode:url中只有字母和数字[0-9a-zA-Z]、一些特殊符号&quot;$-_.+!*&apos;(),&quot;[不包括双引号]、以及某些保留字，才可以不经过编码直接用于URL。</span><br></pre></td></tr></table></figure>
 
           
         
@@ -1757,10 +1668,156 @@
       
         
           
-            <h1 id="Gin框架概览"><a href="#Gin框架概览" class="headerlink" title="Gin框架概览"></a>Gin框架概览</h1><h3 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import &quot;github.com/gin-gonic/gin&quot;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	r := gin.Default()</span><br><span class="line">	r.GET(&quot;/ping&quot;, func(c *gin.Context) &#123;</span><br><span class="line">		c.JSON(200, gin.H&#123;</span><br><span class="line">			&quot;message&quot;: &quot;pong&quot;,</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line">	r.Run() // listen and serve on 0.0.0.0:8080</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="1-实现middleware"><a href="#1-实现middleware" class="headerlink" title="1.实现middleware"></a>1.实现middleware</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">//使用middleware</span><br><span class="line">r := gin.New()</span><br><span class="line">r.Use(gin.Recovery())</span><br><span class="line"></span><br><span class="line">//定义middleware</span><br><span class="line">func Recovery() HandlerFunc &#123;</span><br><span class="line">	return func(c *Context) &#123;</span><br><span class="line">		defer func() &#123;</span><br><span class="line">			if err := recover(); err != nil &#123;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;()</span><br><span class="line">		//fmt.Print(&quot;before&quot;)</span><br><span class="line">		c.Next()</span><br><span class="line">		//fmt.Print(&quot;after&quot;)</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//核心实现，调用下一个handler</span><br><span class="line">func (c *Context) Next() &#123;</span><br><span class="line">	c.index++</span><br><span class="line">	for c.index &lt; int8(len(c.handlers)) &#123;</span><br><span class="line">		c.handlers[c.index](c)</span><br><span class="line">		c.index++</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type RouterGroup struct &#123;</span><br><span class="line">	Handlers HandlersChain //添加middleware链条</span><br><span class="line">	basePath string //base路径</span><br><span class="line">	engine   *Engine //引用全局engine</span><br><span class="line">	root     bool //是否根</span><br><span class="line">&#125;</span><br><span class="line">r.Use(gin.Recovery()) //添加middleware到Handlers链条</span><br><span class="line">接入和handler一样</span><br><span class="line">type HandlerFunc func(*Context)</span><br></pre></td></tr></table></figure>
-<h4 id="2-路径分组实现"><a href="#2-路径分组实现" class="headerlink" title="2.路径分组实现"></a>2.路径分组实现</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">//使用方式</span><br><span class="line">mux = gin.New()</span><br><span class="line">api := mux.Group(&quot;/api/v1&quot;)</span><br><span class="line">&#123;</span><br><span class="line">	api.POST(&quot;/login&quot;, controller.Login)</span><br><span class="line">	api.DELETE(&quot;/logout&quot;, middleware.SessionCheck(), controller.Logout)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//实现</span><br><span class="line">func (group *RouterGroup) Group(relativePath string, handlers ...HandlerFunc) *RouterGroup &#123;</span><br><span class="line">	return &amp;RouterGroup&#123;</span><br><span class="line">		Handlers: group.combineHandlers(handlers),//全局的handlers+当前组的handlers</span><br><span class="line">		basePath: group.calculateAbsolutePath(relativePath),//计算相对/路径</span><br><span class="line">		engine:   group.engine,//全局的engine对象</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="3-入口"><a href="#3-入口" class="headerlink" title="3.入口"></a>3.入口</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) &#123;</span><br><span class="line">	c := engine.pool.Get().(*Context)//并发：多个context</span><br><span class="line">	c.writermem.reset(w) //resp</span><br><span class="line">	c.Request = req //req</span><br><span class="line">	c.reset() //重置gincontext</span><br><span class="line"></span><br><span class="line">	engine.handleHTTPRequest(c) //执行handler链条</span><br><span class="line"></span><br><span class="line">	engine.pool.Put(c)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            <h2 id="Gin-框架概览"><a href="#Gin-框架概览" class="headerlink" title="Gin 框架概览"></a>Gin 框架概览</h2><h3 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"github.com/gin-gonic/gin"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	r := gin.Default()</span><br><span class="line">	r.GET(<span class="string">"/ping"</span>, <span class="function"><span class="keyword">func</span><span class="params">(c *gin.Context)</span></span> &#123;</span><br><span class="line">		c.JSON(<span class="number">200</span>, gin.H&#123;</span><br><span class="line">			<span class="string">"message"</span>: <span class="string">"pong"</span>,</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line"> r.Run() <span class="comment">// listen and serve on 0.0.0.0:8080</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="实现-middleware"><a href="#实现-middleware" class="headerlink" title="实现 middleware"></a>实现 middleware</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//使用middleware</span></span><br><span class="line">r := gin.New()</span><br><span class="line">r.Use(gin.Recovery())</span><br><span class="line"></span><br><span class="line"><span class="comment">//定义middleware</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Recovery</span><span class="params">()</span> <span class="title">HandlerFunc</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">(c *Context)</span></span> &#123;</span><br><span class="line">		<span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">			<span class="keyword">if</span> err := <span class="built_in">recover</span>(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;()</span><br><span class="line">		<span class="comment">//fmt.Print("before")</span></span><br><span class="line">		c.Next()</span><br><span class="line">		<span class="comment">//fmt.Print("after")</span></span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//核心实现，调用下一个handler</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">Next</span><span class="params">()</span></span> &#123;</span><br><span class="line">	c.index++</span><br><span class="line">	<span class="keyword">for</span> c.index &lt; <span class="keyword">int8</span>(<span class="built_in">len</span>(c.handlers)) &#123;</span><br><span class="line">		c.handlers[c.index](c)</span><br><span class="line">		c.index++</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> RouterGroup <span class="keyword">struct</span> &#123;</span><br><span class="line">	Handlers HandlersChain <span class="comment">//添加middleware链条</span></span><br><span class="line">	basePath <span class="keyword">string</span> <span class="comment">//base路径</span></span><br><span class="line">	engine   *Engine <span class="comment">//引用全局engine</span></span><br><span class="line">	root     <span class="keyword">bool</span> <span class="comment">//是否根</span></span><br><span class="line">&#125;</span><br><span class="line">r.Use(gin.Recovery()) <span class="comment">//添加middleware到Handlers链条</span></span><br><span class="line">接入和handler一样</span><br><span class="line"><span class="keyword">type</span> HandlerFunc <span class="function"><span class="keyword">func</span><span class="params">(*Context)</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="路径分组实现"><a href="#路径分组实现" class="headerlink" title="路径分组实现"></a>路径分组实现</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//使用方式</span></span><br><span class="line">mux = gin.New()</span><br><span class="line">api := mux.Group(<span class="string">"/api/v1"</span>)</span><br><span class="line">&#123;</span><br><span class="line">	api.POST(<span class="string">"/login"</span>, controller.Login)</span><br><span class="line">	api.DELETE(<span class="string">"/logout"</span>, middleware.SessionCheck(), controller.Logout)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//实现</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(group *RouterGroup)</span> <span class="title">Group</span><span class="params">(relativePath <span class="keyword">string</span>, handlers ...HandlerFunc)</span> *<span class="title">RouterGroup</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;RouterGroup&#123;</span><br><span class="line">		Handlers: group.combineHandlers(handlers),<span class="comment">//全局的handlers+当前组的handlers</span></span><br><span class="line">		basePath: group.calculateAbsolutePath(relativePath),<span class="comment">//计算相对/路径</span></span><br><span class="line">		engine:   group.engine,<span class="comment">//全局的engine对象</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="入口"><a href="#入口" class="headerlink" title="入口"></a>入口</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(engine *Engine)</span> <span class="title">ServeHTTP</span><span class="params">(w http.ResponseWriter, req *http.Request)</span></span> &#123;</span><br><span class="line">	c := engine.pool.Get().(*Context)<span class="comment">//并发：多个context</span></span><br><span class="line">	c.writermem.reset(w) <span class="comment">//resp</span></span><br><span class="line">	c.Request = req <span class="comment">//req</span></span><br><span class="line">	c.reset() <span class="comment">//重置gincontext</span></span><br><span class="line"></span><br><span class="line">	engine.handleHTTPRequest(c) <span class="comment">//执行handler链条</span></span><br><span class="line"></span><br><span class="line">	engine.pool.Put(c)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/16/golang/golang闭包/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/16/golang/golang闭包/" itemprop="url">golang闭包</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-16T18:54:36+08:00">
+                2019-03-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/golang/" itemprop="url" rel="index">
+                    <span itemprop="name">golang</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h2><h3 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h3><ul>
+<li>闭包也是类，运行闭包等同于创建对象【类是数据附带行为，闭包是行为附带数据】</li>
+<li>区分全局变量和局部变量</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">add</span><span class="params">()</span> <span class="title">func</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	sum := <span class="number">1</span><span class="comment">//全局变量</span></span><br><span class="line">	<span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">		<span class="keyword">var</span> a = <span class="number">1</span><span class="comment">//局部变量</span></span><br><span class="line">		sum += a</span><br><span class="line">		<span class="keyword">return</span> sum</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	pos, neg := add(), add()</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">		fmt.Println(pos(), neg())</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
           
         
@@ -1800,7 +1857,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1844,7 +1901,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-count">42</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1855,7 +1912,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-count">27</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -1866,7 +1923,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">58</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -1921,7 +1978,7 @@
         <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

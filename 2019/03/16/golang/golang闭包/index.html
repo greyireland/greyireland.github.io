@@ -102,7 +102,7 @@
 <meta property="og:site_name" content="greyireland">
 <meta property="og:description" content="闭包关键点 闭包也是类，运行闭包等同于创建对象【类是数据附带行为，闭包是行为附带数据】 区分全局变量和局部变量  1234567891011121314151617181920package mainimport &quot;fmt&quot;func add() func() int &amp;#123;	sum := 1//全局变量	return func() int &amp;#123;		var a = 1//局部变量		s">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-03-16T10:58:33.610Z">
+<meta property="og:updated_time" content="2020-05-25T05:25:44.736Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="golang闭包">
 <meta name="twitter:description" content="闭包关键点 闭包也是类，运行闭包等同于创建对象【类是数据附带行为，闭包是行为附带数据】 区分全局变量和局部变量  1234567891011121314151617181920package mainimport &quot;fmt&quot;func add() func() int &amp;#123;	sum := 1//全局变量	return func() int &amp;#123;		var a = 1//局部变量		s">
@@ -372,11 +372,12 @@
       
 
       
-        <h1 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h1><h3 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h3><ul>
+        <h2 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h2><h3 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h3><ul>
 <li>闭包也是类，运行闭包等同于创建对象【类是数据附带行为，闭包是行为附带数据】</li>
 <li>区分全局变量和局部变量</li>
 </ul>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">add</span><span class="params">()</span> <span class="title">func</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	sum := <span class="number">1</span><span class="comment">//全局变量</span></span><br><span class="line">	<span class="keyword">return</span> <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">		<span class="keyword">var</span> a = <span class="number">1</span><span class="comment">//局部变量</span></span><br><span class="line">		sum += a</span><br><span class="line">		<span class="keyword">return</span> sum</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	pos, neg := add(), add()</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">		fmt.Println(pos(), neg())</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
       
     </div>
     
@@ -406,8 +407,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/03/14/z-summary/时间和金钱/" rel="next" title="时间和金钱">
-                <i class="fa fa-chevron-left"></i> 时间和金钱
+              <a href="/2019/03/14/z-summary/源码阅读顺序/" rel="next" title="源码阅读顺序">
+                <i class="fa fa-chevron-left"></i> 源码阅读顺序
               </a>
             
           </div>
@@ -416,8 +417,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/03/19/golang/golang代码规范/" rel="prev" title="golang代码规范">
-                golang代码规范 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/04/05/framework/gin概览/" rel="prev" title="gin概览">
+                gin概览 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -493,7 +494,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-count">42</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -504,7 +505,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-count">27</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -515,7 +516,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">58</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -563,7 +564,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#闭包"><span class="nav-number">1.</span> <span class="nav-text">闭包</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#关键点"><span class="nav-number">1.0.1.</span> <span class="nav-text">关键点</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#闭包"><span class="nav-number">1.</span> <span class="nav-text">闭包</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#关键点"><span class="nav-number">1.1.</span> <span class="nav-text">关键点</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -586,7 +587,7 @@
         <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

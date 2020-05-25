@@ -102,7 +102,7 @@
 <meta property="og:site_name" content="greyireland">
 <meta property="og:description" content="通道两种配合方式：  range select  range 方式1234//关闭之后会跳出循环for v:=range c&amp;#123;	//todo&amp;#125; select 方式123456for &amp;#123;	select &amp;#123;    	case val,ok:=&amp;lt;-c:        	if !ok&amp;#123;break&amp;#125;    &amp;#125;&amp;#125; Close">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-09-19T08:06:06.000Z">
+<meta property="og:updated_time" content="2020-05-25T04:57:13.748Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="go-通道channel">
 <meta name="twitter:description" content="通道两种配合方式：  range select  range 方式1234//关闭之后会跳出循环for v:=range c&amp;#123;	//todo&amp;#125; select 方式123456for &amp;#123;	select &amp;#123;    	case val,ok:=&amp;lt;-c:        	if !ok&amp;#123;break&amp;#125;    &amp;#125;&amp;#125; Close">
@@ -372,21 +372,22 @@
       
 
       
-        <h1 id="通道"><a href="#通道" class="headerlink" title="通道"></a>通道</h1><p>两种配合方式：</p>
+        <h2 id="通道"><a href="#通道" class="headerlink" title="通道"></a>通道</h2><p>两种配合方式：</p>
 <ul>
 <li>range</li>
 <li>select</li>
 </ul>
-<h3 id="range-方式"><a href="#range-方式" class="headerlink" title="range 方式"></a>range 方式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//关闭之后会跳出循环</span><br><span class="line">for v:=range c&#123;</span><br><span class="line">	//todo</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="select-方式"><a href="#select-方式" class="headerlink" title="select 方式"></a>select 方式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">for &#123;</span><br><span class="line">	select &#123;</span><br><span class="line">    	case val,ok:=&lt;-c:</span><br><span class="line">        	if !ok&#123;break&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="range-方式"><a href="#range-方式" class="headerlink" title="range 方式"></a>range 方式</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//关闭之后会跳出循环</span></span><br><span class="line"><span class="keyword">for</span> v:=<span class="keyword">range</span> c&#123;</span><br><span class="line">	<span class="comment">//todo</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="select-方式"><a href="#select-方式" class="headerlink" title="select 方式"></a>select 方式</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> &#123;</span><br><span class="line">	<span class="keyword">select</span> &#123;</span><br><span class="line">    	<span class="keyword">case</span> val,ok:=&lt;-c:</span><br><span class="line">        	<span class="keyword">if</span> !ok&#123;<span class="keyword">break</span>&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="Close-ch-含义"><a href="#Close-ch-含义" class="headerlink" title="Close(ch)含义"></a>Close(ch)含义</h3><p>给通道写了一个结束标识值，接收到这个值表示通道已经关闭，有这个值就不能再写入了，还可以继续读取，读取到这个值的时候就表示已经读取完了，通道为空了。</p>
 <h3 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h3><ul>
-<li><p>从一个nil channel中接收数据会一直被block。</p>
+<li><p>从一个 nil channel 中接收数据会一直被 block。</p>
 </li>
-<li><p>从一个被close的channel中接收数据不会被阻塞，而是立即返回，接收完已发送的数据后会返回元素类型的零值(zero value)。</p>
+<li><p>从一个被 close 的 channel 中接收数据不会被阻塞，而是立即返回，接收完已发送的数据后会返回元素类型的零值(zero value)。</p>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//如果OK 是false，表明接收的x是产生的零值，这个channel被关闭了或者为空。</span><br><span class="line">//从这个关闭的channel中不但可以读取出已发送的数据，还可以不断的读取零值(使用range或者判断是否关闭可以跳出)</span><br><span class="line">x, ok := &lt;-ch</span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//如果OK 是false，表明接收的x是产生的零值，这个channel被关闭了或者为空。</span></span><br><span class="line"><span class="comment">//从这个关闭的channel中不但可以读取出已发送的数据，还可以不断的读取零值(使用range或者判断是否关闭可以跳出)</span></span><br><span class="line">x, ok := &lt;-ch</span><br></pre></td></tr></table></figure>
+
       
     </div>
     
@@ -503,7 +504,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-count">42</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -514,7 +515,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-count">27</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -525,7 +526,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">58</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -573,7 +574,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#通道"><span class="nav-number">1.</span> <span class="nav-text">通道</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#range-方式"><span class="nav-number">1.0.1.</span> <span class="nav-text">range 方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#select-方式"><span class="nav-number">1.0.2.</span> <span class="nav-text">select 方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Close-ch-含义"><span class="nav-number">1.0.3.</span> <span class="nav-text">Close(ch)含义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注意点"><span class="nav-number">1.0.4.</span> <span class="nav-text">注意点</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#通道"><span class="nav-number">1.</span> <span class="nav-text">通道</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#range-方式"><span class="nav-number">1.1.</span> <span class="nav-text">range 方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#select-方式"><span class="nav-number">1.2.</span> <span class="nav-text">select 方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Close-ch-含义"><span class="nav-number">1.3.</span> <span class="nav-text">Close(ch)含义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注意点"><span class="nav-number">1.4.</span> <span class="nav-text">注意点</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -596,7 +597,7 @@
         <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

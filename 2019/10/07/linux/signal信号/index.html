@@ -94,18 +94,18 @@
 
 
 
-<meta name="description" content="signal信号1.信号的处理方式？  信号（signal）– 进程之间通讯的方式，是一种软件中断。一个进程一旦接收到信号就会打断原来的程序执行流程来处理信号。  1234567891011singnal.signal(signalnum, handler)#import signalimport timedef myHandler(signum, frame):    print(&amp;apos;I">
+<meta name="description" content="signal 信号1.信号的处理方式？  信号（signal）– 进程之间通讯的方式，是一种软件中断。一个进程一旦接收到信号就会打断原来的程序执行流程来处理信号。  1234567891011singnal.signal(signalnum, handler)#import signalimport timedef myHandler(signum, frame):    print(&apos;I rec">
 <meta name="keywords" content="signal">
 <meta property="og:type" content="article">
 <meta property="og:title" content="sig信号">
 <meta property="og:url" content="http://yoursite.com/2019/10/07/linux/signal信号/index.html">
 <meta property="og:site_name" content="greyireland">
-<meta property="og:description" content="signal信号1.信号的处理方式？  信号（signal）– 进程之间通讯的方式，是一种软件中断。一个进程一旦接收到信号就会打断原来的程序执行流程来处理信号。  1234567891011singnal.signal(signalnum, handler)#import signalimport timedef myHandler(signum, frame):    print(&amp;apos;I">
+<meta property="og:description" content="signal 信号1.信号的处理方式？  信号（signal）– 进程之间通讯的方式，是一种软件中断。一个进程一旦接收到信号就会打断原来的程序执行流程来处理信号。  1234567891011singnal.signal(signalnum, handler)#import signalimport timedef myHandler(signum, frame):    print(&apos;I rec">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-10-07T12:36:07.109Z">
+<meta property="og:updated_time" content="2020-05-25T05:45:29.176Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="sig信号">
-<meta name="twitter:description" content="signal信号1.信号的处理方式？  信号（signal）– 进程之间通讯的方式，是一种软件中断。一个进程一旦接收到信号就会打断原来的程序执行流程来处理信号。  1234567891011singnal.signal(signalnum, handler)#import signalimport timedef myHandler(signum, frame):    print(&amp;apos;I">
+<meta name="twitter:description" content="signal 信号1.信号的处理方式？  信号（signal）– 进程之间通讯的方式，是一种软件中断。一个进程一旦接收到信号就会打断原来的程序执行流程来处理信号。  1234567891011singnal.signal(signalnum, handler)#import signalimport timedef myHandler(signum, frame):    print(&apos;I rec">
 
 
 
@@ -372,14 +372,14 @@
       
 
       
-        <h1 id="signal信号"><a href="#signal信号" class="headerlink" title="signal信号"></a>signal信号</h1><p>1.信号的处理方式？</p>
+        <h2 id="signal-信号"><a href="#signal-信号" class="headerlink" title="signal 信号"></a>signal 信号</h2><p>1.信号的处理方式？</p>
 <blockquote>
 <p>信号（signal）– 进程之间通讯的方式，是一种软件中断。一个进程一旦接收到信号就会打断原来的程序执行流程来处理信号。</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">singnal.signal(signalnum, handler)#</span><br><span class="line"></span><br><span class="line">import signal</span><br><span class="line">import time</span><br><span class="line">def myHandler(signum, frame):</span><br><span class="line">    print(&apos;I received: &apos;, signum)</span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line">    signal.signal(signal.SIGALRM, myHandler)//信号注册</span><br><span class="line">    while True:</span><br><span class="line">        signal.alarm(1)//发送信号</span><br><span class="line">        time.sleep(1)</span><br></pre></td></tr></table></figure>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">singnal.signal(signalnum, handler)<span class="comment">#</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> signal</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">myHandler</span><span class="params">(signum, frame)</span>:</span></span><br><span class="line">    print(<span class="string">'I received: '</span>, signum)</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    signal.signal(signal.SIGALRM, myHandler)//信号注册</span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        signal.alarm(<span class="number">1</span>)//发送信号</span><br><span class="line">        time.sleep(<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
 <p>2.进程与线程的区别?</p>
 <blockquote>
-<p> 进程独享进程空间fork全部复制一份，线程共享进程空间，栈上的东西独享</p>
+<p>进程独享进程空间 fork 全部复制一份，线程共享进程空间，栈上的东西独享</p>
 </blockquote>
 
       
@@ -498,7 +498,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-count">42</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -509,7 +509,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-count">27</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -520,7 +520,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">58</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -568,7 +568,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#signal信号"><span class="nav-number">1.</span> <span class="nav-text">signal信号</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#signal-信号"><span class="nav-number">1.</span> <span class="nav-text">signal 信号</span></a></li></ol></div>
             
 
           </div>
@@ -591,7 +591,7 @@
         <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

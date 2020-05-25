@@ -94,18 +94,18 @@
 
 
 
-<meta name="description" content="redis注意点1234//这个max在前面ZREVRANGEBYSCORE key max min WITHSCORES //这个max在后面ZRANGEBYSCORE key min max WITHSCORES">
+<meta name="description" content="redis 关键点核心点  数据类型实现 跳跃表 层级高度 插入、删除过程   hash 表 rehash 过程     持久化 RDB BGSAVE   AOF BGREWRITEAOF     多机 主从模式 psync 指令   sentinel 主从故障转移 订阅同一个通道 心跳保活   redis-cluster 集群 槽 slot 动态分配 MOVE、ASK 指令转移">
 <meta name="keywords" content="redis">
 <meta property="og:type" content="article">
 <meta property="og:title" content="redis注意点">
 <meta property="og:url" content="http://yoursite.com/2019/10/07/mysql/redis注意点/index.html">
 <meta property="og:site_name" content="greyireland">
-<meta property="og:description" content="redis注意点1234//这个max在前面ZREVRANGEBYSCORE key max min WITHSCORES //这个max在后面ZRANGEBYSCORE key min max WITHSCORES">
+<meta property="og:description" content="redis 关键点核心点  数据类型实现 跳跃表 层级高度 插入、删除过程   hash 表 rehash 过程     持久化 RDB BGSAVE   AOF BGREWRITEAOF     多机 主从模式 psync 指令   sentinel 主从故障转移 订阅同一个通道 心跳保活   redis-cluster 集群 槽 slot 动态分配 MOVE、ASK 指令转移">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-10-07T12:44:38.088Z">
+<meta property="og:updated_time" content="2020-05-25T05:52:39.347Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="redis注意点">
-<meta name="twitter:description" content="redis注意点1234//这个max在前面ZREVRANGEBYSCORE key max min WITHSCORES //这个max在后面ZRANGEBYSCORE key min max WITHSCORES">
+<meta name="twitter:description" content="redis 关键点核心点  数据类型实现 跳跃表 层级高度 插入、删除过程   hash 表 rehash 过程     持久化 RDB BGSAVE   AOF BGREWRITEAOF     多机 主从模式 psync 指令   sentinel 主从故障转移 订阅同一个通道 心跳保活   redis-cluster 集群 槽 slot 动态分配 MOVE、ASK 指令转移">
 
 
 
@@ -372,7 +372,49 @@
       
 
       
-        <h1 id="redis注意点"><a href="#redis注意点" class="headerlink" title="redis注意点"></a>redis注意点</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//这个max在前面</span><br><span class="line">ZREVRANGEBYSCORE key max min WITHSCORES </span><br><span class="line">//这个max在后面</span><br><span class="line">ZRANGEBYSCORE key min max WITHSCORES</span><br></pre></td></tr></table></figure>
+        <h2 id="redis-关键点"><a href="#redis-关键点" class="headerlink" title="redis 关键点"></a>redis 关键点</h2><p>核心点</p>
+<ul>
+<li>数据类型实现<ul>
+<li>跳跃表<ul>
+<li>层级高度</li>
+<li>插入、删除过程</li>
+</ul>
+</li>
+<li>hash 表<ul>
+<li>rehash 过程</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>持久化<ul>
+<li>RDB<ul>
+<li>BGSAVE</li>
+</ul>
+</li>
+<li>AOF<ul>
+<li>BGREWRITEAOF</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>多机<ul>
+<li>主从模式<ul>
+<li>psync 指令</li>
+</ul>
+</li>
+<li>sentinel 主从故障转移<ul>
+<li>订阅同一个通道</li>
+<li>心跳保活</li>
+</ul>
+</li>
+<li>redis-cluster 集群<ul>
+<li>槽 slot 动态分配</li>
+<li>MOVE、ASK 指令转移</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 
       
     </div>
@@ -490,7 +532,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-count">42</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -501,7 +543,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-count">27</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -512,7 +554,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">58</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -560,7 +602,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#redis注意点"><span class="nav-number">1.</span> <span class="nav-text">redis注意点</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#redis-关键点"><span class="nav-number">1.</span> <span class="nav-text">redis 关键点</span></a></li></ol></div>
             
 
           </div>
@@ -583,7 +625,7 @@
         <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

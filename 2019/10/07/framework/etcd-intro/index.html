@@ -94,18 +94,18 @@
 
 
 
-<meta name="description" content="etcd笔记 定义：分布式的kv存储系统  常用API123456get keyput key valxxx=lease grant 60put key val —lease=xxxdelete keywatch key lease定义一个过期时长，多个key都可以绑定到这个lease上，lease过期后会删除所有关联的key  keep-alive让lease不过期">
+<meta name="description" content="etcd 笔记 定义：分布式的 kv 存储系统  常用 API123456get keyput key valxxx=lease grant 60put key val —lease=xxxdelete keywatch key 过期时间lease 定义一个过期时长，多个 key 都可以绑定到这个 lease 上，lease 过期后会删除所有关联的 key  keep-alive 让 lease">
 <meta name="keywords" content="etcd">
 <meta property="og:type" content="article">
 <meta property="og:title" content="etcd_intro">
 <meta property="og:url" content="http://yoursite.com/2019/10/07/framework/etcd-intro/index.html">
 <meta property="og:site_name" content="greyireland">
-<meta property="og:description" content="etcd笔记 定义：分布式的kv存储系统  常用API123456get keyput key valxxx=lease grant 60put key val —lease=xxxdelete keywatch key lease定义一个过期时长，多个key都可以绑定到这个lease上，lease过期后会删除所有关联的key  keep-alive让lease不过期">
+<meta property="og:description" content="etcd 笔记 定义：分布式的 kv 存储系统  常用 API123456get keyput key valxxx=lease grant 60put key val —lease=xxxdelete keywatch key 过期时间lease 定义一个过期时长，多个 key 都可以绑定到这个 lease 上，lease 过期后会删除所有关联的 key  keep-alive 让 lease">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-10-07T13:13:09.245Z">
+<meta property="og:updated_time" content="2020-05-25T04:14:39.956Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="etcd_intro">
-<meta name="twitter:description" content="etcd笔记 定义：分布式的kv存储系统  常用API123456get keyput key valxxx=lease grant 60put key val —lease=xxxdelete keywatch key lease定义一个过期时长，多个key都可以绑定到这个lease上，lease过期后会删除所有关联的key  keep-alive让lease不过期">
+<meta name="twitter:description" content="etcd 笔记 定义：分布式的 kv 存储系统  常用 API123456get keyput key valxxx=lease grant 60put key val —lease=xxxdelete keywatch key 过期时间lease 定义一个过期时长，多个 key 都可以绑定到这个 lease 上，lease 过期后会删除所有关联的 key  keep-alive 让 lease">
 
 
 
@@ -372,12 +372,13 @@
       
 
       
-        <h1 id="etcd笔记"><a href="#etcd笔记" class="headerlink" title="etcd笔记"></a>etcd笔记</h1><blockquote>
-<p>定义：分布式的kv存储系统</p>
+        <h2 id="etcd-笔记"><a href="#etcd-笔记" class="headerlink" title="etcd 笔记"></a>etcd 笔记</h2><blockquote>
+<p>定义：分布式的 kv 存储系统</p>
 </blockquote>
-<h1 id="常用API"><a href="#常用API" class="headerlink" title="常用API"></a>常用API</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">get key</span><br><span class="line">put key val</span><br><span class="line">xxx=lease grant 60</span><br><span class="line">put key val —lease=xxx</span><br><span class="line">delete key</span><br><span class="line">watch key</span><br></pre></td></tr></table></figure>
-<h4 id="lease定义一个过期时长，多个key都可以绑定到这个lease上，lease过期后会删除所有关联的key"><a href="#lease定义一个过期时长，多个key都可以绑定到这个lease上，lease过期后会删除所有关联的key" class="headerlink" title="lease定义一个过期时长，多个key都可以绑定到这个lease上，lease过期后会删除所有关联的key"></a>lease定义一个过期时长，多个key都可以绑定到这个lease上，lease过期后会删除所有关联的key</h4><blockquote>
-<p> keep-alive让lease不过期</p>
+<h2 id="常用-API"><a href="#常用-API" class="headerlink" title="常用 API"></a>常用 API</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">get key</span><br><span class="line">put key val</span><br><span class="line">xxx=lease grant 60</span><br><span class="line">put key val —lease=xxx</span><br><span class="line">delete key</span><br><span class="line">watch key</span><br></pre></td></tr></table></figure>
+<h2 id="过期时间"><a href="#过期时间" class="headerlink" title="过期时间"></a>过期时间</h2><p>lease 定义一个过期时长，多个 key 都可以绑定到这个 lease 上，lease 过期后会删除所有关联的 key</p>
+<blockquote>
+<p>keep-alive 让 lease 不过期</p>
 </blockquote>
 
       
@@ -496,7 +497,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-count">42</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -507,7 +508,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-count">27</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -518,7 +519,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">58</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -566,7 +567,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#etcd笔记"><span class="nav-number">1.</span> <span class="nav-text">etcd笔记</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#常用API"><span class="nav-number">2.</span> <span class="nav-text">常用API</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#lease定义一个过期时长，多个key都可以绑定到这个lease上，lease过期后会删除所有关联的key"><span class="nav-number">2.0.0.1.</span> <span class="nav-text">lease定义一个过期时长，多个key都可以绑定到这个lease上，lease过期后会删除所有关联的key</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#etcd-笔记"><span class="nav-number">1.</span> <span class="nav-text">etcd 笔记</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用-API"><span class="nav-number">2.</span> <span class="nav-text">常用 API</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#过期时间"><span class="nav-number">3.</span> <span class="nav-text">过期时间</span></a></li></ol></div>
             
 
           </div>
@@ -589,7 +590,7 @@
         <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

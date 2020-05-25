@@ -94,20 +94,20 @@
 
 
 
-<meta name="description" content="thrift笔记 Thrift实际上是实现了C/S模式，通过代码生成工具将接口定义文件生成服务器端和客户端代码（可以为不同语言），从而实现服务端和客户端跨语言的支持。用户在Thirft描述文件中声明自己的服务，这些服务经过编译后会生成相应语言的代码文件，然后用户实现服务（客户端调用服务，服务器端提服务）便可以了。其中protocol（协议层, 定义数据传输格式，可以为二进制或者XML等）和tran">
+<meta name="description" content="thrift 笔记 Thrift 实际上是实现了 C/S 模式，通过代码生成工具将接口定义文件生成服务器端和客户端代码（可以为不同语言），从而实现服务端和客户端跨语言的支持。用户在 Thirft 描述文件中声明自己的服务，这些服务经过编译后会生成相应语言的代码文件，然后用户实现服务（客户端调用服务，服务器端提服务）便可以了。其中 protocol（协议层, 定义数据传输格式，可以为二进制或者 XM">
 <meta name="keywords" content="thrift">
 <meta property="og:type" content="article">
 <meta property="og:title" content="thrift_intro">
 <meta property="og:url" content="http://yoursite.com/2019/10/07/framework/thrift-intro/index.html">
 <meta property="og:site_name" content="greyireland">
-<meta property="og:description" content="thrift笔记 Thrift实际上是实现了C/S模式，通过代码生成工具将接口定义文件生成服务器端和客户端代码（可以为不同语言），从而实现服务端和客户端跨语言的支持。用户在Thirft描述文件中声明自己的服务，这些服务经过编译后会生成相应语言的代码文件，然后用户实现服务（客户端调用服务，服务器端提服务）便可以了。其中protocol（协议层, 定义数据传输格式，可以为二进制或者XML等）和tran">
+<meta property="og:description" content="thrift 笔记 Thrift 实际上是实现了 C/S 模式，通过代码生成工具将接口定义文件生成服务器端和客户端代码（可以为不同语言），从而实现服务端和客户端跨语言的支持。用户在 Thirft 描述文件中声明自己的服务，这些服务经过编译后会生成相应语言的代码文件，然后用户实现服务（客户端调用服务，服务器端提服务）便可以了。其中 protocol（协议层, 定义数据传输格式，可以为二进制或者 XM">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://raw.githubusercontent.com/greyireland/images/master/img/20191007203916.png">
-<meta property="og:updated_time" content="2019-10-07T12:41:19.178Z">
+<meta property="og:image" content="http://yoursite.com/2019/10/07/images/thrit-network.png">
+<meta property="og:updated_time" content="2020-05-25T04:21:11.177Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="thrift_intro">
-<meta name="twitter:description" content="thrift笔记 Thrift实际上是实现了C/S模式，通过代码生成工具将接口定义文件生成服务器端和客户端代码（可以为不同语言），从而实现服务端和客户端跨语言的支持。用户在Thirft描述文件中声明自己的服务，这些服务经过编译后会生成相应语言的代码文件，然后用户实现服务（客户端调用服务，服务器端提服务）便可以了。其中protocol（协议层, 定义数据传输格式，可以为二进制或者XML等）和tran">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/greyireland/images/master/img/20191007203916.png">
+<meta name="twitter:description" content="thrift 笔记 Thrift 实际上是实现了 C/S 模式，通过代码生成工具将接口定义文件生成服务器端和客户端代码（可以为不同语言），从而实现服务端和客户端跨语言的支持。用户在 Thirft 描述文件中声明自己的服务，这些服务经过编译后会生成相应语言的代码文件，然后用户实现服务（客户端调用服务，服务器端提服务）便可以了。其中 protocol（协议层, 定义数据传输格式，可以为二进制或者 XM">
+<meta name="twitter:image" content="http://yoursite.com/2019/10/07/images/thrit-network.png">
 
 
 
@@ -374,30 +374,26 @@
       
 
       
-        <h1 id="thrift笔记"><a href="#thrift笔记" class="headerlink" title="thrift笔记"></a>thrift笔记</h1><blockquote>
-<p>Thrift实际上是实现了C/S模式，通过代码生成工具将接口定义文件生成服务器端和客户端代码（可以为不同语言），从而实现服务端和客户端跨语言的支持。用户在Thirft描述文件中声明自己的服务，这些服务经过编译后会生成相应语言的代码文件，然后用户实现服务（客户端调用服务，服务器端提服务）便可以了。其中protocol（协议层, 定义数据传输格式，可以为二进制或者XML等）和transport（传输层，定义数据传输方式，可以为TCP/IP传输，内存共享或者文件共享等）被用作运行时库。</p>
+        <h2 id="thrift-笔记"><a href="#thrift-笔记" class="headerlink" title="thrift 笔记"></a>thrift 笔记</h2><blockquote>
+<p>Thrift 实际上是实现了 C/S 模式，通过代码生成工具将接口定义文件生成服务器端和客户端代码（可以为不同语言），从而实现服务端和客户端跨语言的支持。用户在 Thirft 描述文件中声明自己的服务，这些服务经过编译后会生成相应语言的代码文件，然后用户实现服务（客户端调用服务，服务器端提服务）便可以了。其中 protocol（协议层, 定义数据传输格式，可以为二进制或者 XML 等）和 transport（传输层，定义数据传输方式，可以为 TCP/IP 传输，内存共享或者文件共享等）被用作运行时库。</p>
 </blockquote>
-<p>Thrift的网络栈如下所示：</p>
-<p><img src="https://raw.githubusercontent.com/greyireland/images/master/img/20191007203916.png" alt=""></p>
-<p><strong>3.1   Transport</strong></p>
-<p>Transport层提供了一个简单的网络读写抽象层。这使得thrift底层的transport从系统其它部分（如：序列化/反序列化）解耦。以下是一些Transport接口提供的方法：</p>
-<p>除了以上几个接口，Thrift使用ServerTransport接口接受或者创建原始transport对象。正如名字暗示的那样，ServerTransport用在server端，为到来的连接创建Transport对象。</p>
-<p><strong>3.2   Protocol</strong></p>
-<p>Protocol抽象层定义了一种将内存中数据结构映射成可传输格式的机制。换句话说，Protocol定义了datatype怎样使用底层的Transport对自己进行编解码。因此，Protocol的实现要给出编码机制并负责对数据进行序列化。</p>
-<p>Protocol接口的定义如下：</p>
-<p>下面是一些对大部分thrift支持的语言均可用的protocol：</p>
-<p>(1)     binary：简单的二进制编码</p>
-<p>(2)     Compact：具体见THRIFT-11</p>
-<p>(3)     Json</p>
-<p><strong>3.3   Processor</strong></p>
-<p>Processor封装了从输入数据流中读数据和向数据数据流中写数据的操作。读写数据流用Protocol对象表示。Processor的结构体非常简单:</p>
-<p>与服务相关的processor实现由编译器产生。Processor主要工作流程如下：从连接中读取数据（使用输入protocol），将处理授权给handler（由用户实现），最后将结果写到连接上（使用输出protocol）。</p>
-<p><strong>3.4   Server</strong></p>
-<p>Server将以上所有特性集成在一起：</p>
-<p>（1）  创建一个transport对象</p>
-<p>（2）  为transport对象创建输入输出protocol</p>
-<p>（3）  基于输入输出protocol创建processor</p>
-<p>（4）  等待连接请求并将之交给processor处理</p>
+<p>Thrift 的网络栈如下所示：</p>
+<p><img src="../../images/thrit-network.png" alt="网络栈"></p>
+<h3 id="Transport"><a href="#Transport" class="headerlink" title="Transport"></a>Transport</h3><p>Transport 层提供了一个简单的网络读写抽象层。这使得 thrift 底层的 transport 从系统其它部分（如：序列化/反序列化）解耦。以下是一些 Transport 接口提供的方法：</p>
+<p>除了以上几个接口，Thrift 使用 ServerTransport 接口接受或者创建原始 transport 对象。正如名字暗示的那样，ServerTransport 用在 server 端，为到来的连接创建 Transport 对象。</p>
+<h3 id="Protocol"><a href="#Protocol" class="headerlink" title="Protocol"></a>Protocol</h3><p>Protocol 抽象层定义了一种将内存中数据结构映射成可传输格式的机制。换句话说，Protocol 定义了 datatype 怎样使用底层的 Transport 对自己进行编解码。因此，Protocol 的实现要给出编码机制并负责对数据进行序列化。</p>
+<p>Protocol 接口的定义如下：</p>
+<p>下面是一些对大部分 thrift 支持的语言均可用的 protocol：</p>
+<p>(1) binary：简单的二进制编码</p>
+<p>(2) Compact：具体见 THRIFT-11</p>
+<p>(3) Json</p>
+<h3 id="Processor"><a href="#Processor" class="headerlink" title="Processor"></a>Processor</h3><p>Processor 封装了从输入数据流中读数据和向数据数据流中写数据的操作。读写数据流用 Protocol 对象表示。Processor 的结构体非常简单:</p>
+<p>与服务相关的 processor 实现由编译器产生。Processor 主要工作流程如下：从连接中读取数据（使用输入 protocol），将处理授权给 handler（由用户实现），最后将结果写到连接上（使用输出 protocol）。</p>
+<h3 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h3><p>Server 将以上所有特性集成在一起：</p>
+<p>（1） 创建一个 transport 对象</p>
+<p>（2） 为 transport 对象创建输入输出 protocol</p>
+<p>（3） 基于输入输出 protocol 创建 processor</p>
+<p>（4） 等待连接请求并将之交给 processor 处理</p>
 
       
     </div>
@@ -515,7 +511,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-count">42</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -526,7 +522,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">32</span>
+                <span class="site-state-item-count">27</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
@@ -537,7 +533,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">58</span>
+                <span class="site-state-item-count">44</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -585,7 +581,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#thrift笔记"><span class="nav-number">1.</span> <span class="nav-text">thrift笔记</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#thrift-笔记"><span class="nav-number">1.</span> <span class="nav-text">thrift 笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Transport"><span class="nav-number">1.1.</span> <span class="nav-text">Transport</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Protocol"><span class="nav-number">1.2.</span> <span class="nav-text">Protocol</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Processor"><span class="nav-number">1.3.</span> <span class="nav-text">Processor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Server"><span class="nav-number">1.4.</span> <span class="nav-text">Server</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -608,7 +604,7 @@
         <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
