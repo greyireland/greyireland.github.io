@@ -280,317 +280,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/04/javascript/async和await/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/12/04/javascript/async和await/" itemprop="url">async和await</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-04T15:41:49+08:00">
-                2019-12-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/js/" itemprop="url" rel="index">
-                    <span itemprop="name">js</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="async和await示例"><a href="#async和await示例" class="headerlink" title="async和await示例"></a>async和await示例</h2><p>为什么异步执行？  </p>
-<blockquote>
-<p>不影响UI渲染  </p>
-</blockquote>
-<p>为什么await？  </p>
-<blockquote>
-<p>函数执行前后顺序保证</p>
-</blockquote>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">resolveAfter2Seconds</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="params">resolve</span> =&gt;</span> &#123;</span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      resolve(<span class="string">'3.resolved'</span>);</span><br><span class="line">    &#125;, <span class="number">2000</span>);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">asyncCall</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'1.calling'</span>);</span><br><span class="line">  <span class="comment">// 阻塞等待resolveAfter2Seconds函数返回的Promise解析完成</span></span><br><span class="line">  <span class="keyword">var</span> result = <span class="keyword">await</span> resolveAfter2Seconds();</span><br><span class="line">  <span class="built_in">console</span>.log(result);</span><br><span class="line">  <span class="comment">// expected output: 'resolved'</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">asyncCall(); <span class="comment">// 直接调用</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">"2.hello"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 等待所有任务执行完成才结束 exit(0)</span></span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/09/other/php-intro-md/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="greyireland">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="greyireland">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/11/09/other/php-intro-md/" itemprop="url">php_intro.md</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-09T14:03:26+08:00">
-                2019-11-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/php/" itemprop="url" rel="index">
-                    <span itemprop="name">php</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="php-入门"><a href="#php-入门" class="headerlink" title="php 入门"></a>php 入门</h2><p>php 简单入门</p>
-<ul>
-<li>安装 php、php-fpm</li>
-<li>安装 nginx</li>
-<li>安装 mysql</li>
-<li>安装 composer(包管理工具)</li>
-</ul>
-<p>运行 php-fpm:<code>php-fpm --fpm-config /usr/local/etc/php-fpm.conf --prefix /usr/local/var</code></p>
-<p>入门 helloworld.php</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">"Hello World!"</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<p>运行：php helloworld.php</p>
-<h2 id="php-概念"><a href="#php-概念" class="headerlink" title="php 概念"></a>php 概念</h2><p><a href="https://www.runoob.com/php/php-tutorial.html" target="_blank" rel="noopener">简单教程</a></p>
-<h2 id="php-nginx-配置"><a href="#php-nginx-配置" class="headerlink" title="php-nginx 配置"></a>php-nginx 配置</h2><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">events&#123;&#125;</span><br><span class="line"><span class="section">http</span> &#123;</span><br><span class="line">  <span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">8080</span>;</span><br><span class="line">    <span class="attribute">server_name</span> localhost;</span><br><span class="line">    <span class="attribute">root</span>         /Users/xiaodong/PhpstormProjects/;</span><br><span class="line">    <span class="attribute">location</span> <span class="regexp">~ \.php$</span> &#123;</span><br><span class="line">        <span class="comment"># 设置监听端口</span></span><br><span class="line">        <span class="attribute">fastcgi_pass</span>   <span class="number">127.0.0.1:9000</span>;</span><br><span class="line">        <span class="comment"># 设置nginx的默认首页文件(上面已经设置过了，可以删除)</span></span><br><span class="line">        <span class="attribute">fastcgi_index</span>  index.php;</span><br><span class="line">        <span class="comment"># 设置脚本文件请求的路径</span></span><br><span class="line">        <span class="attribute">fastcgi_param</span>  SCRIPT_FILENAME  <span class="variable">$document_root</span><span class="variable">$fastcgi_script_name</span>;</span><br><span class="line">        <span class="comment"># 引入fastcgi的配置文件</span></span><br><span class="line">        <span class="attribute">include</span>        fastcgi_params;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="其他项目"><a href="#其他项目" class="headerlink" title="其他项目"></a>其他项目</h2><p>一些框架</p>
-<ul>
-<li>thinkphp</li>
-<li>yii</li>
-<li>Laravel</li>
-</ul>
-<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><p><a href="https://app.yinxiang.com/shard/s9/nl/16492052/663ce6a0-0aac-4da8-8f60-4f464a790fad?title=mac%20%E5%90%AF%E5%8A%A8php-fpm%20-%20%E9%83%AD%E8%83%9C%E9%BE%99%E7%9A%84%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2%20-%20%E5%8D%9A%E5%AE%A2%E9%A2%91%E9%81%93%20-%20CSDN.NET" target="_blank" rel="noopener">mac 遇到问题</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/16/golang/go错误和日志/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1876,6 +1565,351 @@
 </ul>
 <h4 id="重试函数"><a href="#重试函数" class="headerlink" title="重试函数"></a>重试函数</h4><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#encoding=utf8</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#有参数，必须再包一层（最外层的变量大家都可以访问）</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">retry</span><span class="params">(times=<span class="number">1</span>,exceptions=None)</span>:</span></span><br><span class="line">   exceptions = exceptions <span class="keyword">if</span> exceptions <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span> <span class="keyword">else</span> Exception</span><br><span class="line"></span><br><span class="line">   <span class="comment"># 包一层,传入对应的函数</span></span><br><span class="line">   <span class="function"><span class="keyword">def</span> <span class="title">wrapper</span><span class="params">(func)</span>:</span></span><br><span class="line">      <span class="comment">#替换函数</span></span><br><span class="line">      <span class="function"><span class="keyword">def</span> <span class="title">wrapper</span><span class="params">(*args,**kwargs)</span>:</span></span><br><span class="line">         last_exception =<span class="keyword">None</span></span><br><span class="line">         <span class="keyword">for</span> _ <span class="keyword">in</span> range(times):</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">               <span class="keyword">return</span> func(*args, **kwargs)</span><br><span class="line">            <span class="keyword">except</span> exceptions <span class="keyword">as</span> e:</span><br><span class="line">               last_exception = e</span><br><span class="line">         <span class="keyword">raise</span> last_exception</span><br><span class="line">      <span class="keyword">return</span> wrapper</span><br><span class="line">   <span class="keyword">return</span> wrapper</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">"__main__"</span>:</span><br><span class="line"><span class="meta">   @retry(5)</span></span><br><span class="line">   <span class="function"><span class="keyword">def</span> <span class="title">test</span><span class="params">(uid,name)</span>:</span></span><br><span class="line">      print(<span class="string">"do something"</span>,uid,name)</span><br><span class="line">      <span class="keyword">raise</span> Exception</span><br><span class="line">   test(<span class="string">'123'</span>,<span class="string">'tome'</span>)</span><br></pre></td></tr></table></figure>
 <h4 id="回调函数-callback-调用"><a href="#回调函数-callback-调用" class="headerlink" title="回调函数 callback 调用"></a>回调函数 callback 调用</h4><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Callback</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run_callback</span><span class="params">(self,fn,*args,**kwargs)</span>:</span></span><br><span class="line">        <span class="keyword">print</span> <span class="string">'call function'</span>,fn.__name__</span><br><span class="line">        <span class="keyword">print</span> args,kwargs</span><br><span class="line">        <span class="comment">#fn(args)相当于传入一个元组参数</span></span><br><span class="line">        <span class="comment">#fn(*args)会把元组拆开，给对应的参数赋值</span></span><br><span class="line">        fn(*args)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">hi</span><span class="params">(self,name,age)</span>:</span></span><br><span class="line">        <span class="keyword">print</span> <span class="string">'hello,'</span>,name,age</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">start</span><span class="params">(cls)</span>:</span></span><br><span class="line">        cls().run_callback(cls().hi,<span class="string">'tome'</span>,<span class="number">18</span>)</span><br><span class="line"></span><br><span class="line">Callback.start()</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/07/mysql/redis注意点/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/07/mysql/redis注意点/" itemprop="url">redis注意点</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-07T20:44:03+08:00">
+                2019-10-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis/" itemprop="url" rel="index">
+                    <span itemprop="name">redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="redis-关键点"><a href="#redis-关键点" class="headerlink" title="redis 关键点"></a>redis 关键点</h2><p>核心点</p>
+<ul>
+<li>数据类型实现<ul>
+<li>跳跃表<ul>
+<li>层级高度</li>
+<li>插入、删除过程</li>
+</ul>
+</li>
+<li>hash 表<ul>
+<li>rehash 过程</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>持久化<ul>
+<li>RDB<ul>
+<li>BGSAVE</li>
+</ul>
+</li>
+<li>AOF<ul>
+<li>BGREWRITEAOF</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>多机<ul>
+<li>主从模式<ul>
+<li>psync 指令</li>
+</ul>
+</li>
+<li>sentinel 主从故障转移<ul>
+<li>订阅同一个通道</li>
+<li>心跳保活</li>
+</ul>
+</li>
+<li>redis-cluster 集群<ul>
+<li>槽 slot 动态分配</li>
+<li>MOVE、ASK 指令转移</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/07/framework/thrift-intro/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="greyireland">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="greyireland">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/07/framework/thrift-intro/" itemprop="url">thrift_intro</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-07T20:40:13+08:00">
+                2019-10-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/rpc/" itemprop="url" rel="index">
+                    <span itemprop="name">rpc</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="thrift-笔记"><a href="#thrift-笔记" class="headerlink" title="thrift 笔记"></a>thrift 笔记</h2><blockquote>
+<p>Thrift 实际上是实现了 C/S 模式，通过代码生成工具将接口定义文件生成服务器端和客户端代码（可以为不同语言），从而实现服务端和客户端跨语言的支持。用户在 Thirft 描述文件中声明自己的服务，这些服务经过编译后会生成相应语言的代码文件，然后用户实现服务（客户端调用服务，服务器端提服务）便可以了。其中 protocol（协议层, 定义数据传输格式，可以为二进制或者 XML 等）和 transport（传输层，定义数据传输方式，可以为 TCP/IP 传输，内存共享或者文件共享等）被用作运行时库。</p>
+</blockquote>
+<p>Thrift 的网络栈如下所示：</p>
+<p><img src="../../images/thrit-network.png" alt="网络栈"></p>
+<h3 id="Transport"><a href="#Transport" class="headerlink" title="Transport"></a>Transport</h3><p>Transport 层提供了一个简单的网络读写抽象层。这使得 thrift 底层的 transport 从系统其它部分（如：序列化/反序列化）解耦。以下是一些 Transport 接口提供的方法：</p>
+<p>除了以上几个接口，Thrift 使用 ServerTransport 接口接受或者创建原始 transport 对象。正如名字暗示的那样，ServerTransport 用在 server 端，为到来的连接创建 Transport 对象。</p>
+<h3 id="Protocol"><a href="#Protocol" class="headerlink" title="Protocol"></a>Protocol</h3><p>Protocol 抽象层定义了一种将内存中数据结构映射成可传输格式的机制。换句话说，Protocol 定义了 datatype 怎样使用底层的 Transport 对自己进行编解码。因此，Protocol 的实现要给出编码机制并负责对数据进行序列化。</p>
+<p>Protocol 接口的定义如下：</p>
+<p>下面是一些对大部分 thrift 支持的语言均可用的 protocol：</p>
+<p>(1) binary：简单的二进制编码</p>
+<p>(2) Compact：具体见 THRIFT-11</p>
+<p>(3) Json</p>
+<h3 id="Processor"><a href="#Processor" class="headerlink" title="Processor"></a>Processor</h3><p>Processor 封装了从输入数据流中读数据和向数据数据流中写数据的操作。读写数据流用 Protocol 对象表示。Processor 的结构体非常简单:</p>
+<p>与服务相关的 processor 实现由编译器产生。Processor 主要工作流程如下：从连接中读取数据（使用输入 protocol），将处理授权给 handler（由用户实现），最后将结果写到连接上（使用输出 protocol）。</p>
+<h3 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h3><p>Server 将以上所有特性集成在一起：</p>
+<p>（1） 创建一个 transport 对象</p>
+<p>（2） 为 transport 对象创建输入输出 protocol</p>
+<p>（3） 基于输入输出 protocol 创建 processor</p>
+<p>（4） 等待连接请求并将之交给 processor 处理</p>
 
           
         

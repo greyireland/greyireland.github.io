@@ -280,7 +280,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/21/z-summary/每周计划/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/11/09/other/php-intro-md/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="greyireland">
@@ -299,7 +299,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/07/21/z-summary/每周计划/" itemprop="url">0x 定一个目标</a></h1>
+                <a class="post-title-link" href="/2017/11/09/other/php-intro-md/" itemprop="url">php_intro.md</a></h1>
         
 
         <div class="post-meta">
@@ -311,8 +311,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-21T21:04:44+08:00">
-                2018-07-21
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-09T14:03:26+08:00">
+                2017-11-09
               </time>
             
 
@@ -334,8 +334,8 @@
               
               
                 <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/idea/" itemprop="url" rel="index">
-                    <span itemprop="name">idea</span>
+                  <a href="/categories/php/" itemprop="url" rel="index">
+                    <span itemprop="name">php</span>
                   </a>
                 </span>
 
@@ -373,17 +373,26 @@
       
         
           
-            <h2 id="计划"><a href="#计划" class="headerlink" title="计划"></a>计划</h2><p>ARTS 是由左耳朵耗子陈皓发起的一个每周学习打卡计划。</p>
+            <h2 id="php-入门"><a href="#php-入门" class="headerlink" title="php 入门"></a>php 入门</h2><p>php 简单入门</p>
 <ul>
-<li><p>Algorithm：至少做一个 LeetCode 的算法题。主要为了编程训练和学习。</p>
-</li>
-<li><p>Review ：阅读并点评至少一篇英文技术文章。主要为了学习英文，如果你英文不行，很难成为技术高手。</p>
-</li>
-<li><p>Tip：学习至少一个技术技巧。主要是为了总结和归纳你日常工作中所遇到的知识点。</p>
-</li>
-<li><p>Share：分享一篇有观点和思考的技术文章。主要为了输出你的影响力，能够输出你的价值观。</p>
-</li>
+<li>安装 php、php-fpm</li>
+<li>安装 nginx</li>
+<li>安装 mysql</li>
+<li>安装 composer(包管理工具)</li>
 </ul>
+<p>运行 php-fpm:<code>php-fpm --fpm-config /usr/local/etc/php-fpm.conf --prefix /usr/local/var</code></p>
+<p>入门 helloworld.php</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">echo</span> <span class="string">"Hello World!"</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>运行：php helloworld.php</p>
+<h2 id="php-概念"><a href="#php-概念" class="headerlink" title="php 概念"></a>php 概念</h2><p><a href="https://www.runoob.com/php/php-tutorial.html" target="_blank" rel="noopener">简单教程</a></p>
+<h2 id="php-nginx-配置"><a href="#php-nginx-配置" class="headerlink" title="php-nginx 配置"></a>php-nginx 配置</h2><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">events&#123;&#125;</span><br><span class="line"><span class="section">http</span> &#123;</span><br><span class="line">  <span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">8080</span>;</span><br><span class="line">    <span class="attribute">server_name</span> localhost;</span><br><span class="line">    <span class="attribute">root</span>         /Users/xiaodong/PhpstormProjects/;</span><br><span class="line">    <span class="attribute">location</span> <span class="regexp">~ \.php$</span> &#123;</span><br><span class="line">        <span class="comment"># 设置监听端口</span></span><br><span class="line">        <span class="attribute">fastcgi_pass</span>   <span class="number">127.0.0.1:9000</span>;</span><br><span class="line">        <span class="comment"># 设置nginx的默认首页文件(上面已经设置过了，可以删除)</span></span><br><span class="line">        <span class="attribute">fastcgi_index</span>  index.php;</span><br><span class="line">        <span class="comment"># 设置脚本文件请求的路径</span></span><br><span class="line">        <span class="attribute">fastcgi_param</span>  SCRIPT_FILENAME  <span class="variable">$document_root</span><span class="variable">$fastcgi_script_name</span>;</span><br><span class="line">        <span class="comment"># 引入fastcgi的配置文件</span></span><br><span class="line">        <span class="attribute">include</span>        fastcgi_params;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="其他项目"><a href="#其他项目" class="headerlink" title="其他项目"></a>其他项目</h2><p>一些框架</p>
+<ul>
+<li>thinkphp</li>
+<li>yii</li>
+<li>Laravel</li>
+</ul>
+<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><p><a href="https://app.yinxiang.com/shard/s9/nl/16492052/663ce6a0-0aac-4da8-8f60-4f464a790fad?title=mac%20%E5%90%AF%E5%8A%A8php-fpm%20-%20%E9%83%AD%E8%83%9C%E9%BE%99%E7%9A%84%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2%20-%20%E5%8D%9A%E5%AE%A2%E9%A2%91%E9%81%93%20-%20CSDN.NET" target="_blank" rel="noopener">mac 遇到问题</a></p>
 
           
         
