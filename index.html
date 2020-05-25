@@ -352,27 +352,24 @@
       
         
           
-            <h2 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h2><p>在 Go 语言中声明 error 可以有多种方式：</p>
-<ul>
-<li>errors.New 声明包含简单静态字符串的 error</li>
-<li><p>fmt.Errorf 格式化 error string</p>
-</li>
-<li><p>其他自定义类型使用了 Error() 方法</p>
-</li>
-<li>使用 “pkg/errors”.Wrap</li>
-</ul>
-<p>当要把 error 作为返回值的时候，可以考虑如下的处理方式</p>
-<ul>
-<li>是不是不需要额外信息，如果是，errors.New 就足够了。（4 星）</li>
-<li>client 需要检测和处理返回的 error 吗？如果是，最好使用实现了 Error() 方法的自定义类型，这样可以包含更多的信息。（3 星）</li>
-<li>error 是不是从下游函数传递过来的？如果是，考虑一下 error wrap。（5 星）</li>
-<li>其他情况，fmt.Errorf 一般足够了。（5 星）</li>
-</ul>
-<p>另外：在直接暴露自定义的 error 类型的时候，最好 export 配套的检测自定义 error 类型的函数。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> errNotFound <span class="keyword">struct</span> &#123;</span><br><span class="line">  file <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(e errNotFound)</span> <span class="title">Error</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">  <span class="keyword">return</span> fmt.Sprintf(<span class="string">"file %q not found"</span>, e.file)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">IsNotFoundError</span><span class="params">(err error)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">  _, ok := err.(errNotFound)</span><br><span class="line">  <span class="keyword">return</span> ok</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Open</span><span class="params">(file <span class="keyword">string</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">  <span class="keyword">return</span> errNotFound&#123;file: file&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// package bar</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> err := foo.Open(<span class="string">"foo"</span>); err != <span class="literal">nil</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> foo.IsNotFoundError(err) &#123;</span><br><span class="line">    <span class="comment">// handle</span></span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="built_in">panic</span>(<span class="string">"unknown error"</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="日志处理"><a href="#日志处理" class="headerlink" title="日志处理"></a>日志处理</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">fmt.Errorf(<span class="string">"unsupported signing method: %T"</span>, opts.SignMethod)</span><br><span class="line">log.Warn(<span class="string">"unknown JWT options"</span>, zap.Strings(<span class="string">"keys"</span>, keys))</span><br><span class="line">log.Errorf(<span class="string">"problem loading JWT options: %s"</span>, err)</span><br><span class="line">log.Infof(<span class="string">"deleting token %s for user %s"</span>, tk, username)</span><br><span class="line">log.Errorf(<span class="string">"failed to hash password: %s"</span>, err)</span><br></pre></td></tr></table></figure>
+          错误处理在 Go 语言中声明 error 可以有多种方式：
 
-          
+errors.New 声明包含简单静态字符串的 error
+fmt.Errorf 格式化 error string
+
+其他自定义类型使用了 Error() 方法
+
+使用 “pkg/errors”.Wrap
+
+当要把 error 作为返回值
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/16/golang/go错误和日志/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -512,11 +509,16 @@
       
         
           
-            <h2 id="CAP-分布式理论理解"><a href="#CAP-分布式理论理解" class="headerlink" title="CAP 分布式理论理解"></a>CAP 分布式理论理解</h2><p>CA without P：如果不要求 P（不允许分区），则 C（强一致性）和 A（可用性）是可以保证的。但其实分区不是你想不想的问题，而是始终会存在，因此 CA 的系统更多的是允许分区后各子系统依然保持 CA。</p>
-<p>CP without A：如果不要求 A（可用），相当于每个请求都需要在 Server 之间强一致，而 P（分区）会导致同步时间无限延长，如此 CP 也是可以保证的。很多传统的数据库分布式事务都属于这种模式。</p>
-<p>AP wihtout C：要高可用并允许分区，则需放弃一致性。一旦分区发生，节点之间可能会失去联系，为了高可用，每个节点只能用本地数据提供服务，而这样会导致全局数据的不一致性。现在众多的 NoSQL 都属于此类。</p>
-
-          
+          CAP 分布式理论理解CA without P：如果不要求 P（不允许分区），则 C（强一致性）和 A（可用性）是可以保证的。但其实分区不是你想不想的问题，而是始终会存在，因此 CA 的系统更多的是允许分区后各子系统依然保持 CA。
+CP without A：如果不要求 A（可用），相当于每个请求都
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/07/distributed/cap原理/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -656,16 +658,19 @@
       
         
           
-            <h2 id="etcd-笔记"><a href="#etcd-笔记" class="headerlink" title="etcd 笔记"></a>etcd 笔记</h2><blockquote>
-<p>定义：分布式的 kv 存储系统</p>
-</blockquote>
-<h2 id="常用-API"><a href="#常用-API" class="headerlink" title="常用 API"></a>常用 API</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">get key</span><br><span class="line">put key val</span><br><span class="line">xxx=lease grant 60</span><br><span class="line">put key val —lease=xxx</span><br><span class="line">delete key</span><br><span class="line">watch key</span><br></pre></td></tr></table></figure>
-<h2 id="过期时间"><a href="#过期时间" class="headerlink" title="过期时间"></a>过期时间</h2><p>lease 定义一个过期时长，多个 key 都可以绑定到这个 lease 上，lease 过期后会删除所有关联的 key</p>
-<blockquote>
-<p>keep-alive 让 lease 不过期</p>
-</blockquote>
+          etcd 笔记
+定义：分布式的 kv 存储系统
 
-          
+常用 API123456get keyput key valxxx=lease grant 60put key val —lease=xxxdelete keywatch key
+过期时间lease 定义一个过期时长，多个 key 都可以绑定到这个 
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/07/framework/etcd-intro/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -805,29 +810,16 @@
       
         
           
-            <h2 id="gorm-源码解析"><a href="#gorm-源码解析" class="headerlink" title="gorm 源码解析"></a>gorm 源码解析</h2><p>gorm 使用示例</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"github.com/jinzhu/gorm"</span></span><br><span class="line">	_ <span class="string">"github.com/jinzhu/gorm/dialects/sqlite"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Product <span class="keyword">struct</span> &#123;</span><br><span class="line">	gorm.Model</span><br><span class="line">	Code  <span class="keyword">string</span></span><br><span class="line">	Price <span class="keyword">uint</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	db, err := gorm.Open(<span class="string">"sqlite3"</span>, <span class="string">"test.db"</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(<span class="string">"failed to connect database"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">defer</span> db.Close()</span><br><span class="line">	db.AutoMigrate(&amp;Product&#123;&#125;)</span><br><span class="line">	db.Create(&amp;Product&#123;Code: <span class="string">"L1212"</span>, Price: <span class="number">1000</span>&#125;)</span><br><span class="line">	<span class="keyword">var</span> product Product</span><br><span class="line">	db.First(&amp;product, <span class="number">1</span>)</span><br><span class="line">	db.First(&amp;product, <span class="string">"code = ?"</span>, <span class="string">"L1212"</span>)</span><br><span class="line">	db.Model(&amp;product).Update(<span class="string">"Price"</span>, <span class="number">2000</span>)</span><br><span class="line">	db.Delete(&amp;product)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>gorm 一般的初始化方式</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db, err := gorm.Open(<span class="string">"mysql"</span>, <span class="string">"user:password@/dbname?charset=utf8&amp;parseTime=True&amp;loc=Local"</span>)</span><br></pre></td></tr></table></figure>
-<p>gorm 中 DB 结构体的定义：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// DB的结构体</span></span><br><span class="line"><span class="keyword">type</span> DB <span class="keyword">struct</span> &#123;</span><br><span class="line">    sync.RWMutex                       <span class="comment">// 锁</span></span><br><span class="line">    Value        <span class="keyword">interface</span>&#123;&#125;           <span class="comment">// 一般传入实际操作的表所对应的结构体</span></span><br><span class="line">    Error        error                 <span class="comment">// DB操作失败的error</span></span><br><span class="line">    RowsAffected <span class="keyword">int64</span>                 <span class="comment">// 操作影响的行数</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// single db</span></span><br><span class="line">    db                SQLCommon        <span class="comment">// SQL接口，包括（Exec、Prepare、Query、QueryRow）</span></span><br><span class="line">    blockGlobalUpdate <span class="keyword">bool</span>             <span class="comment">// 为true时，可以在update在没有where条件是报错，避免全局更新</span></span><br><span class="line">    logMode           logModeValue     <span class="comment">// 日志模式，gorm提供了三种</span></span><br><span class="line">    logger            logger           <span class="comment">// 内部日志实例</span></span><br><span class="line">    search            *search          <span class="comment">// 查询相关的条件</span></span><br><span class="line">    values            sync.Map         <span class="comment">// value Map</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// global db</span></span><br><span class="line">    parent        *DB                  <span class="comment">// 父db，为了保存一个空的初始化后的db，也为了保存curd注册的的callback方法</span></span><br><span class="line">    callbacks     *Callback            <span class="comment">// callback方法</span></span><br><span class="line">    dialect       Dialect              <span class="comment">// 不同类型数据库对应的不同实现的相同接口</span></span><br><span class="line">    singularTable <span class="keyword">bool</span>                 <span class="comment">// 表名是否为复数形式，true时为user，false时为users</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>SQLCommon 定义基本的查询接口</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SQLCommon is the minimal database connection functionality gorm requires.  Implemented by *sql.DB.</span></span><br><span class="line"><span class="keyword">type</span> SQLCommon <span class="keyword">interface</span> &#123;</span><br><span class="line">	Exec(query <span class="keyword">string</span>, args ...<span class="keyword">interface</span>&#123;&#125;) (sql.Result, error)</span><br><span class="line">	Prepare(query <span class="keyword">string</span>) (*sql.Stmt, error)</span><br><span class="line">	Query(query <span class="keyword">string</span>, args ...<span class="keyword">interface</span>&#123;&#125;) (*sql.Rows, error)</span><br><span class="line">	QueryRow(query <span class="keyword">string</span>, args ...<span class="keyword">interface</span>&#123;&#125;) *sql.Row</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>gorm 的 Open 方法：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Open</span><span class="params">(dialect <span class="keyword">string</span>, args ...<span class="keyword">interface</span>&#123;&#125;)</span> <span class="params">(db *DB, err error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(args) == <span class="number">0</span> &#123;</span><br><span class="line">        err = errors.New(<span class="string">"invalid database source"</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">var</span> source <span class="keyword">string</span></span><br><span class="line">    <span class="keyword">var</span> dbSQL SQLCommon</span><br><span class="line">    <span class="keyword">var</span> ownDbSQL <span class="keyword">bool</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> value := args[<span class="number">0</span>].(<span class="keyword">type</span>) &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="keyword">string</span>:</span><br><span class="line">        <span class="keyword">var</span> driver = dialect</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(args) == <span class="number">1</span> &#123;</span><br><span class="line">            source = value</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> <span class="built_in">len</span>(args) &gt;= <span class="number">2</span> &#123;</span><br><span class="line">            driver = value</span><br><span class="line">            source = args[<span class="number">1</span>].(<span class="keyword">string</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 调用go基础库的Open方法获得db的connention附给dbSQL，</span></span><br><span class="line">        <span class="comment">// 此时还没有真正连接数据库</span></span><br><span class="line">        dbSQL, err = sql.Open(driver, source)</span><br><span class="line">        ownDbSQL = <span class="literal">true</span></span><br><span class="line">    <span class="keyword">case</span> SQLCommon:</span><br><span class="line">        dbSQL = value</span><br><span class="line">        ownDbSQL = <span class="literal">false</span></span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, fmt.Errorf(<span class="string">"invalid database source: %v is not a valid type"</span>, value)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 初始化DB</span></span><br><span class="line">    db = &amp;DB&#123;</span><br><span class="line">        db:        dbSQL,</span><br><span class="line">        logger:    defaultLogger,</span><br><span class="line">        callbacks: DefaultCallback,</span><br><span class="line">        dialect:   newDialect(dialect, dbSQL),</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 将初始化的DB保存到db.parent中</span></span><br><span class="line">    db.parent = db</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 调用go基础库的Ping方法检测数据库connention是否可以连通</span></span><br><span class="line">    <span class="keyword">if</span> d, ok := dbSQL.(*sql.DB); ok &#123;</span><br><span class="line">        <span class="keyword">if</span> err = d.Ping(); err != <span class="literal">nil</span> &amp;&amp; ownDbSQL &#123;</span><br><span class="line">            d.Close()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>gorm 是通过多个 callbsck 方法来实现 curd 的，具体流程以一个查询为例：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">DBEngine.Table(entry.TableName).</span><br><span class="line">    Select(entry.Select).</span><br><span class="line">    Where(entry.sql, entry.values).</span><br><span class="line">    Order(entry.order).</span><br><span class="line">    Find(entry.result)</span><br></pre></td></tr></table></figure>
-<p>执行步骤：</p>
-<p>1.执行 Table 方法，添加 tablename 条件：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *DB)</span> <span class="title">Table</span><span class="params">(name <span class="keyword">string</span>)</span> *<span class="title">DB</span></span> &#123;</span><br><span class="line">    clone := s.clone()        <span class="comment">// 执行clone方法也就是从新的db中赋值一个空的，避免交叉影响</span></span><br><span class="line">    clone.search.Table(name)  <span class="comment">// 赋值table name</span></span><br><span class="line">    clone.Value = <span class="literal">nil</span>         <span class="comment">// 附空</span></span><br><span class="line">    <span class="keyword">return</span> clone</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>2.执行 Where 方法，添加 where 条件：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 首先也是调用clone方法，然后调用search的Where方法</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *DB)</span> <span class="title">Where</span><span class="params">(query <span class="keyword">interface</span>&#123;&#125;, args ...<span class="keyword">interface</span>&#123;&#125;)</span> *<span class="title">DB</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> s.clone().search.Where(query, args...).db</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// search的Where方法是将传进来的条件进行拼接，存入search.whereConditions</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *search)</span> <span class="title">Where</span><span class="params">(query <span class="keyword">interface</span>&#123;&#125;, values ...<span class="keyword">interface</span>&#123;&#125;)</span> *<span class="title">search</span></span> &#123;</span><br><span class="line">    s.whereConditions = <span class="built_in">append</span>(s.whereConditions, <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">interface</span>&#123;&#125;&#123;<span class="string">"query"</span>: query, <span class="string">"args"</span>: values&#125;)</span><br><span class="line">    <span class="keyword">return</span> s</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>3.执行 Order 方法，添加 order 条件：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 类似Where，reorder为true会强制刷掉gorm默认的order by</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *DB)</span> <span class="title">Order</span><span class="params">(value <span class="keyword">interface</span>&#123;&#125;, reorder ...<span class="keyword">bool</span>)</span> *<span class="title">DB</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> s.clone().search.Order(value, reorder...).db</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *search)</span> <span class="title">Order</span><span class="params">(value <span class="keyword">interface</span>&#123;&#125;, reorder ...<span class="keyword">bool</span>)</span> *<span class="title">search</span></span> &#123;</span><br><span class="line">    <span class="comment">// 如果为true，先清除s.orders</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(reorder) &gt; <span class="number">0</span> &amp;&amp; reorder[<span class="number">0</span>] &#123;</span><br><span class="line">        s.orders = []<span class="keyword">interface</span>&#123;&#125;&#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 将value拼接，存入s.orders</span></span><br><span class="line">    <span class="keyword">if</span> value != <span class="literal">nil</span> &amp;&amp; value != <span class="string">""</span> &#123;</span><br><span class="line">        s.orders = <span class="built_in">append</span>(s.orders, value)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> s</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>4.执行 Find 方法，真正实现查询：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 首先先创建一个scope（可以理解成只针对本次数据库操作有效的一个环境），再调用inlineCondition内部方法，最后执行callcallbacks一系列方法实现真正的查询操作，并将db返回</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *DB)</span> <span class="title">Find</span><span class="params">(out <span class="keyword">interface</span>&#123;&#125;, where ...<span class="keyword">interface</span>&#123;&#125;)</span> *<span class="title">DB</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> s.NewScope(out).inlineCondition(where...).callCallbacks(s.parent.callbacks.queries).db</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// NewScope方法就是初始化一个scope</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *DB)</span> <span class="title">NewScope</span><span class="params">(value <span class="keyword">interface</span>&#123;&#125;)</span> *<span class="title">Scope</span></span> &#123;</span><br><span class="line">    dbClone := s.clone()</span><br><span class="line">    <span class="comment">// 此时赋值value</span></span><br><span class="line">    dbClone.Value = value</span><br><span class="line">    scope := &amp;Scope&#123;db: dbClone, Value: value&#125;</span><br><span class="line">    <span class="keyword">if</span> s.search != <span class="literal">nil</span> &#123;</span><br><span class="line">        scope.Search = s.search.clone()</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        scope.Search = &amp;search&#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> scope</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// inlineCondition方法是执行scope.Search.Where</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(scope *Scope)</span> <span class="title">inlineCondition</span><span class="params">(values ...<span class="keyword">interface</span>&#123;&#125;)</span> *<span class="title">Scope</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(values) &gt; <span class="number">0</span> &#123;</span><br><span class="line">        scope.Search.Where(values[<span class="number">0</span>], values[<span class="number">1</span>:]...)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> scope</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// scope.Search.Where实际上也是执行条件拼接，由于我们在调用的时候没有在Find中传入条件，所以这个方法不会被执行</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *search)</span> <span class="title">Where</span><span class="params">(query <span class="keyword">interface</span>&#123;&#125;, values ...<span class="keyword">interface</span>&#123;&#125;)</span> *<span class="title">search</span></span> &#123;</span><br><span class="line">    s.whereConditions = <span class="built_in">append</span>(s.whereConditions, <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">interface</span>&#123;&#125;&#123;<span class="string">"query"</span>: query, <span class="string">"args"</span>: values&#125;)</span><br><span class="line">    <span class="keyword">return</span> s</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 最重要的就是callcallbacks方法，是真正执行的地方</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(scope *Scope)</span> <span class="title">callCallbacks</span><span class="params">(funcs []*<span class="keyword">func</span>(s *Scope)</span>) *<span class="title">Scope</span></span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span> err := <span class="built_in">recover</span>(); err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> db, ok := scope.db.db.(sqlTx); ok &#123;</span><br><span class="line">                db.Rollback()</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="built_in">panic</span>(err)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="comment">// 循环里面所有的注册的funcs</span></span><br><span class="line">    <span class="keyword">for</span> _, f := <span class="keyword">range</span> funcs &#123;</span><br><span class="line">        (*f)(scope)</span><br><span class="line">        <span class="keyword">if</span> scope.skipLeft &#123;</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> scope</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 这里的funcs实在程序启动时init方法注册的</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">    DefaultCallback.Query().Register(<span class="string">"gorm:query"</span>, queryCallback)</span><br><span class="line">    DefaultCallback.Query().Register(<span class="string">"gorm:preload"</span>, preloadCallback)</span><br><span class="line">    DefaultCallback.Query().Register(<span class="string">"gorm:after_query"</span>, afterQueryCallback)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 比如afterQueryCallback方法还提供了反射调用结构体的AfterFind方法，如果在查询前结构体实现了AfterFind方法就会被调用，这个机制比了灵活</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">afterQueryCallback</span><span class="params">(scope *Scope)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> !scope.HasError() &#123;</span><br><span class="line">        scope.CallMethod(<span class="string">"AfterFind"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-          
+          gorm 源码解析gorm 使用示例
+123456789101112131415161718192021222324252627package mainimport (	"github.com/jinzhu/gorm"	_ "github.com/jinzhu/gorm/dialects/sqlit
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/07/mysql/gorm源码分析/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -967,85 +959,17 @@
       
         
           
-            <h2 id="mysql-原理"><a href="#mysql-原理" class="headerlink" title="mysql 原理"></a>mysql 原理</h2><h3 id="事务-ACID-如何实现"><a href="#事务-ACID-如何实现" class="headerlink" title="事务 ACID 如何实现"></a>事务 ACID 如何实现</h3><p>redo log 重做日志其实保障的是事务的持久性和一致性，而 undo log 撤销日志则保障了事务的原子性，锁保证隔离性。<br>一个事务写操作对另一个事务写操作的影响：锁机制保证隔离性<br>一个事务写操作对另一个事务读操作的影响：MVCC 保证隔离性</p>
-<ul>
-<li>原子性：使用 undo log ，从而达到回滚</li>
-<li>持久性：使用 redo log，从而达到故障后恢复</li>
-<li>隔离性：使用锁以及 MVCC,运用的优化思想有读写分离，读读并行，读写并行</li>
-<li>一致性：通过回滚，以及恢复，和在并发环境下的隔离做到一致性。</li>
-</ul>
-<h3 id="索引如何存储"><a href="#索引如何存储" class="headerlink" title="索引如何存储"></a>索引如何存储</h3><p>B+树，每一个节点为一页，IO 次数约等于树高度</p>
-<h3 id="mysql-笔记"><a href="#mysql-笔记" class="headerlink" title="mysql 笔记"></a>mysql 笔记</h3><ul>
-<li>uid 使用 bigint 长度 20 和 primary key 和 auto_increment</li>
-<li>create_time 使用 timestamp 默认值 CURRENT_TIMESTAMP</li>
-<li>update_time 使用 timestamp 默认值 CURRENT_TIMESTAMP 加 on_update</li>
-<li>一般用 varchar 长度 64，128，512 最大 65535</li>
-<li>超大用 text</li>
-</ul>
-<h3 id="总结点"><a href="#总结点" class="headerlink" title="总结点"></a>总结点</h3><p>mysql</p>
-<ul>
-<li>索引<ul>
-<li>B+树</li>
-<li>查找页+二分查找</li>
-</ul>
-</li>
-<li>锁<ul>
-<li>分类：SX 读写锁</li>
-<li>算法<ul>
-<li>record lock 记录锁</li>
-<li>gap lock 间隙锁</li>
-<li>next-key lock 记录间隙锁</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>事务<ul>
-<li>A 原子性<ul>
-<li>redo、undo</li>
-</ul>
-</li>
-<li>C 一致性<ul>
-<li>redo、undo、记录间隙锁+MVCC</li>
-</ul>
-</li>
-<li>I 隔离性<ul>
-<li>记录间隙锁+MVCC</li>
-</ul>
-</li>
-<li>D 持久性<ul>
-<li>redo、undo</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>隔离级别<ul>
-<li>未提交读</li>
-<li>提交读</li>
-<li>重复读<ul>
-<li>解决重复数据读取不一致</li>
-</ul>
-</li>
-<li>串行化<ul>
-<li>解决幻读（两次读 出现数据增多 insert 进来的数据）</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>性能调优<ul>
-<li>表结构优化</li>
-<li>索引优化</li>
-<li>查询语句优化</li>
-<li>配置文件优化</li>
-<li>机器优化</li>
-</ul>
-</li>
-</ul>
-<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>查询数据库磁盘占用</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> TABLE_SCHEMA, <span class="keyword">concat</span>(<span class="keyword">truncate</span>(<span class="keyword">sum</span>(data_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">' MB'</span>) <span class="keyword">as</span> data_size,</span><br><span class="line"><span class="keyword">concat</span>(<span class="keyword">truncate</span>(<span class="keyword">sum</span>(index_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">as</span> index_size</span><br><span class="line"><span class="keyword">from</span> information_schema.tables</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> TABLE_SCHEMA</span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> data_length <span class="keyword">desc</span>;</span><br></pre></td></tr></table></figure>
-<p>查询某个数据库每个表磁盘占用</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> TABLE_NAME, <span class="keyword">concat</span>(<span class="keyword">truncate</span>(data_length/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">' MB'</span>) <span class="keyword">as</span> data_size,</span><br><span class="line"><span class="keyword">concat</span>(<span class="keyword">truncate</span>(index_length/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">' MB'</span>) <span class="keyword">as</span> index_size</span><br><span class="line"><span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA = <span class="string">'red_packet'</span></span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span> TABLE_NAME</span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> data_length <span class="keyword">desc</span>;</span><br></pre></td></tr></table></figure>
+          mysql 原理事务 ACID 如何实现redo log 重做日志其实保障的是事务的持久性和一致性，而 undo log 撤销日志则保障了事务的原子性，锁保证隔离性。一个事务写操作对另一个事务写操作的影响：锁机制保证隔离性一个事务写操作对另一个事务读操作的影响：MVCC 保证隔离性
 
-          
+原子性：使用 
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/07/mysql/mysql常见问题/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1185,12 +1109,18 @@
       
         
           
-            <h2 id="Nodejs-注意点"><a href="#Nodejs-注意点" class="headerlink" title="Nodejs 注意点"></a>Nodejs 注意点</h2><p>执行函数后面记得加分号结束;</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hello</span>(<span class="params">uid,callback</span>)</span></span><br><span class="line"><span class="function"><span class="title">hello</span>(<span class="params">uid,function(</span>)</span>&#123;&#125;);<span class="comment">//一定要加;</span></span><br></pre></td></tr></table></figure>
-<p>判断条件</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">a = [];</span><br><span class="line">b = <span class="string">""</span>;</span><br><span class="line">c = &#123;&#125;;</span><br><span class="line">d = <span class="number">0</span>;</span><br><span class="line">f = <span class="literal">false</span>;</span><br><span class="line">g = <span class="string">"0"</span>;</span><br><span class="line">h = <span class="literal">undefined</span>;</span><br><span class="line">i = <span class="literal">null</span>;</span><br><span class="line"><span class="comment">//&#123;&#125;对象</span></span><br><span class="line"><span class="keyword">if</span> (a) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"a"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (a.length) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"a.length"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (b) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"b"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (b.length) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"b.length"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//[]也是对象</span></span><br><span class="line"><span class="keyword">if</span> (c) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"c"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (d) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"d"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (d.length) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"d.length"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (f) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"f"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (f.length) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"f.length"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//字符串</span></span><br><span class="line"><span class="keyword">if</span> (g) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"g"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//转为0了</span></span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">parseInt</span>(g)) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"parseInt g"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (h) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"h"</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (i) &#123;</span><br><span class="line">  <span class="built_in">console</span>.info(<span class="string">"i"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//a</span></span><br><span class="line"><span class="comment">//c</span></span><br><span class="line"><span class="comment">//g</span></span><br></pre></td></tr></table></figure>
-
-          
+          Nodejs 注意点执行函数后面记得加分号结束;
+12function hello(uid,callback)hello(uid,function()&#123;&#125;);//一定要加;
+判断条件
+123456789101112131415161718192021222324252627282
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/07/javascript/nodejs问题/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1330,58 +1260,27 @@
       
         
           
-            <h2 id="为什么要使用-protobuf"><a href="#为什么要使用-protobuf" class="headerlink" title="为什么要使用 protobuf"></a>为什么要使用 protobuf</h2><p>跟 JSON 相比 protobuf</p>
-<p>优点</p>
-<ul>
-<li>性能更高，更加规范</li>
-<li>编解码速度快，数据体积小</li>
-<li>使用统一的规范，不用再担心大小写不同导致解析失败等蛋疼的问题了</li>
-</ul>
-<p>缺点</p>
-<ul>
-<li>改动协议字段，需要重新生成文件。</li>
-<li>数据没有可读性</li>
-</ul>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>在 go 中使用 protobuf，有两个可选用的包 goprotobuf（go 官方出品）和 gogoprotobuf。<br>gogoprotobuf 完全兼容 google protobuf，它生成的代码质量和编解码性能均比 goprotobuf 高一些</p>
-<h2 id="安装-protoc"><a href="#安装-protoc" class="headerlink" title="安装 protoc"></a>安装 protoc</h2><p>首先去<a href="https://github.com/google/protobuf/releases" target="_blank" rel="noopener">https://github.com/google/pro…</a> 上下载 protobuf 的编译器 protoc，同时设置环境变量</p>
-<h2 id="安装-protobuf-库文件"><a href="#安装-protobuf-库文件" class="headerlink" title="安装 protobuf 库文件"></a>安装 protobuf 库文件</h2><h2 id="goprotobuf"><a href="#goprotobuf" class="headerlink" title="goprotobuf"></a>goprotobuf</h2><p>安装插件和依赖库</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">go</span> get github.com/golang/protobuf/proto</span><br><span class="line"><span class="keyword">go</span> get github.com/golang/protobuf/protoc-gen-<span class="keyword">go</span></span><br></pre></td></tr></table></figure>
-<p>生成 go 文件</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protoc --go_out=. *.proto</span><br></pre></td></tr></table></figure>
-<h2 id="gogoprotobuf"><a href="#gogoprotobuf" class="headerlink" title="gogoprotobuf"></a>gogoprotobuf</h2><p>安装插件和依赖库</p>
-<p>gogoprotobuf 有两个插件可以使用</p>
-<ul>
-<li>protoc-gen-gogo：和 protoc-gen-go 生成的文件差不多，性能稍微快一点点</li>
-<li>protoc-gen-gofast：生成的文件更复杂，性能也更高(快 5-7 倍)</li>
-</ul>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 依赖库</span></span><br><span class="line"><span class="keyword">go</span> get github.com/gogo/protobuf/proto</span><br><span class="line"><span class="keyword">go</span> get github.com/gogo/protobuf/gogoproto  <span class="comment">//这个不装也没关系</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//gogo</span></span><br><span class="line"><span class="keyword">go</span> get github.com/gogo/protobuf/protoc-gen-gogo</span><br><span class="line"></span><br><span class="line"><span class="comment">//gofast</span></span><br><span class="line"><span class="keyword">go</span> get github.com/gogo/protobuf/protoc-gen-gofast</span><br></pre></td></tr></table></figure>
-<p>生成 go 文件</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//gogo</span></span><br><span class="line">protoc --gogo_out=. *.proto</span><br><span class="line"></span><br><span class="line"><span class="comment">//gofast</span></span><br><span class="line">protoc --gofast_out=. *.proto</span><br></pre></td></tr></table></figure>
-<h2 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h2><p>test.proto</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//指定版本，必须要写（proto3、proto2）</span><br><span class="line">syntax = &quot;proto3&quot;;</span><br><span class="line">package proto;</span><br><span class="line"></span><br><span class="line">message UserInfo&#123;</span><br><span class="line">    string message = 1;   //消息</span><br><span class="line">    int32 length = 2;    //消息大小</span><br><span class="line">    int32 cnt = 3;      //消息计数</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>client_protobuf.go</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"bufio"</span></span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"net"</span></span><br><span class="line">    <span class="string">"os"</span></span><br><span class="line">    stProto <span class="string">"proto"</span></span><br><span class="line">    <span class="string">"time"</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//protobuf编解码库,下面两个库是相互兼容的，可以使用其中任意一个</span></span><br><span class="line">    <span class="string">"github.com/golang/protobuf/proto"</span></span><br><span class="line">    <span class="comment">//"github.com/gogo/protobuf/proto"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    strIP := <span class="string">"localhost:6600"</span></span><br><span class="line">    <span class="keyword">var</span> conn net.Conn</span><br><span class="line">    <span class="keyword">var</span> err error</span><br><span class="line"></span><br><span class="line">    <span class="comment">//连接服务器</span></span><br><span class="line">    <span class="keyword">for</span> conn, err = net.Dial(<span class="string">"tcp"</span>, strIP); err != <span class="literal">nil</span>; conn, err = net.Dial(<span class="string">"tcp"</span>, strIP) &#123;</span><br><span class="line">        fmt.Println(<span class="string">"connect"</span>, strIP, <span class="string">"fail"</span>)</span><br><span class="line">        time.Sleep(time.Second)</span><br><span class="line">        fmt.Println(<span class="string">"reconnect..."</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Println(<span class="string">"connect"</span>, strIP, <span class="string">"success"</span>)</span><br><span class="line">    <span class="keyword">defer</span> conn.Close()</span><br><span class="line"></span><br><span class="line">    <span class="comment">//发送消息</span></span><br><span class="line">    cnt := <span class="number">0</span></span><br><span class="line">    sender := bufio.NewScanner(os.Stdin)</span><br><span class="line">    <span class="keyword">for</span> sender.Scan() &#123;</span><br><span class="line">        cnt++</span><br><span class="line">        stSend := &amp;stProto.UserInfo&#123;</span><br><span class="line">            Message: sender.Text(),</span><br><span class="line">            Length:  *proto.Int(<span class="built_in">len</span>(sender.Text())),</span><br><span class="line">            Cnt:     *proto.Int(cnt),</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//protobuf编码</span></span><br><span class="line">        pData, err := proto.Marshal(stSend)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="built_in">panic</span>(err)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//发送</span></span><br><span class="line">        conn.Write(pData)</span><br><span class="line">        <span class="keyword">if</span> sender.Text() == <span class="string">"stop"</span> &#123;</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>server_protobuf.go</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"net"</span></span><br><span class="line">    <span class="string">"os"</span></span><br><span class="line">    stProto <span class="string">"proto"</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//protobuf编解码库,下面两个库是相互兼容的，可以使用其中任意一个</span></span><br><span class="line">    <span class="string">"github.com/golang/protobuf/proto"</span></span><br><span class="line">    <span class="comment">//"github.com/gogo/protobuf/proto"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">//监听</span></span><br><span class="line">    listener, err := net.Listen(<span class="string">"tcp"</span>, <span class="string">"localhost:6600"</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(err)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        conn, err := listener.Accept()</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="built_in">panic</span>(err)</span><br><span class="line">        &#125;</span><br><span class="line">        fmt.Println(<span class="string">"new connect"</span>, conn.RemoteAddr())</span><br><span class="line">        <span class="keyword">go</span> readMessage(conn)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//接收消息</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">readMessage</span><span class="params">(conn net.Conn)</span></span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> conn.Close()</span><br><span class="line">    buf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">4096</span>, <span class="number">4096</span>)</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        <span class="comment">//读消息</span></span><br><span class="line">        cnt, err := conn.Read(buf)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="built_in">panic</span>(err)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        stReceive := &amp;stProto.UserInfo&#123;&#125;</span><br><span class="line">        pData := buf[:cnt]</span><br><span class="line"></span><br><span class="line">        <span class="comment">//protobuf解码</span></span><br><span class="line">        err = proto.Unmarshal(pData, stReceive)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="built_in">panic</span>(err)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        fmt.Println(<span class="string">"receive"</span>, conn.RemoteAddr(), stReceive)</span><br><span class="line">        <span class="keyword">if</span> stReceive.Message == <span class="string">"stop"</span> &#123;</span><br><span class="line">            os.Exit(<span class="number">1</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="性能测试"><a href="#性能测试" class="headerlink" title="性能测试"></a>性能测试</h2><p>这里只是简单的用 go test 测试了一下</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//goprotobuf</span></span><br><span class="line"><span class="string">"编码"</span>：<span class="number">447</span>ns/op</span><br><span class="line"><span class="string">"解码"</span>：<span class="number">422</span>ns/op</span><br><span class="line"></span><br><span class="line"><span class="comment">//gogoprotobuf-go</span></span><br><span class="line"><span class="string">"编码"</span>：<span class="number">433</span>ns/op</span><br><span class="line"><span class="string">"解码"</span>：<span class="number">427</span>ns/op</span><br><span class="line"></span><br><span class="line"><span class="comment">//gogoprotobuf-fast</span></span><br><span class="line"><span class="string">"编码"</span>：<span class="number">112</span>ns/op</span><br><span class="line"><span class="string">"解码"</span>：<span class="number">112</span>ns/op</span><br></pre></td></tr></table></figure>
-<h2 id="gRPC-go"><a href="#gRPC-go" class="headerlink" title="gRPC-go"></a>gRPC-go</h2><p>安装</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">go</span> get -u github.com/golang/protobuf/&#123;proto,protoc-gen-<span class="keyword">go</span>&#125;</span><br><span class="line"><span class="keyword">go</span> get -u google.golang.org/grpc</span><br><span class="line">protoc --go_out=plugins=grpc:. *.proto</span><br></pre></td></tr></table></figure>
-<p>gRPC 仓库</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 引入包</span></span><br><span class="line">google.golang.org/grpc</span><br><span class="line"></span><br><span class="line"><span class="comment">// github</span></span><br><span class="line">https:<span class="comment">//github.com/grpc/grpc-go</span></span><br></pre></td></tr></table></figure>
-<p>gRPC 文档</p>
-<p><a href="https://godoc.org/google.golang.org/grpc" target="_blank" rel="noopener">gRPC 文档</a></p>
-<p>gRPC 需要使用插件：<code>plugins=grpc</code>，冒号<code>:</code>表示分割，点<code>.</code>表示当前目录</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protoc -I/usr/local/include -I. -I$GOPATH/src -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis --go_out=plugins=grpc:. *.proto</span><br></pre></td></tr></table></figure>
-<p>protoc 工作原理</p>
-<p><a href="https://hitzhangjie.github.io/2017/05/23/Protoc%E5%8F%8A%E6%8F%92%E4%BB%B6%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90(%E7%B2%BE%E5%8D%8E%E7%89%88" target="_blank" rel="noopener">protoc 原理</a>.html&gt;)</p>
-<p>gRPC gateway<br><a href="https://github.com/grpc-ecosystem/grpc-gateway" target="_blank" rel="noopener">gRPC 仓库</a><br>优点</p>
-<ul>
-<li>http rest 调用方式</li>
-<li>swagger 文档生成</li>
-</ul>
+          为什么要使用 protobuf跟 JSON 相比 protobuf
+优点
 
-          
+性能更高，更加规范
+编解码速度快，数据体积小
+使用统一的规范，不用再担心大小写不同导致解析失败等蛋疼的问题了
+
+缺点
+
+改动协议字段，需要重新生成文件。
+数据没有可读性
+
+安装在 go 中使用 protobuf，有两个可选用
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/07/cs/protobuf-intro/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1521,31 +1420,16 @@
       
         
           
-            <h2 id="python-常见问题"><a href="#python-常见问题" class="headerlink" title="python 常见问题"></a>python 常见问题</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p><code>virtualenv -p /usr/bin/python2.7 venv</code></p>
-<h3 id="python-常用函数"><a href="#python-常用函数" class="headerlink" title="python 常用函数"></a>python 常用函数</h3><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># str</span></span><br><span class="line">s1 = str()</span><br><span class="line"><span class="comment"># in python `''` or `""` is the same</span></span><br><span class="line">s2 = <span class="string">"shaunwei"</span> <span class="comment"># 'shaunwei'</span></span><br><span class="line">s2len = len(s2)</span><br><span class="line"><span class="comment"># last 3 chars</span></span><br><span class="line">s2[<span class="number">-3</span>:] <span class="comment"># wei</span></span><br><span class="line">s2[<span class="number">5</span>:<span class="number">8</span>] <span class="comment"># wei</span></span><br><span class="line">s3 = s2[:<span class="number">5</span>] <span class="comment"># shaun</span></span><br><span class="line">s3 += <span class="string">'wei'</span> <span class="comment"># return 'shaunwei'</span></span><br><span class="line"><span class="comment"># list in python is same as ArrayList in java</span></span><br><span class="line">s2list = list(s3)</span><br><span class="line"><span class="comment"># string at index 4</span></span><br><span class="line">s2[<span class="number">4</span>] <span class="comment"># 'n'</span></span><br><span class="line"><span class="comment"># find index at first</span></span><br><span class="line">s2.index(<span class="string">'w'</span>) <span class="comment"># return 5, if not found, throw ValueError</span></span><br><span class="line">s2.find(<span class="string">'w'</span>) <span class="comment"># return 5, if not found, return -1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 链表</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ListNode</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, val)</span>:</span></span><br><span class="line">        self.val = val</span><br><span class="line">        self.next = <span class="keyword">None</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DListNode</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, val)</span>:</span></span><br><span class="line">        self.val = val</span><br><span class="line">        self.prev = self.next = <span class="keyword">None</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">reverse</span><span class="params">(self, head)</span>:</span></span><br><span class="line">        curt = <span class="keyword">None</span></span><br><span class="line">        <span class="keyword">while</span> head:</span><br><span class="line">            curt = head</span><br><span class="line">            head = curt.next</span><br><span class="line">            curt.next = curt.prev</span><br><span class="line">            curt.prev = head</span><br><span class="line">        <span class="keyword">return</span> curt</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TreeNode</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, val)</span>:</span></span><br><span class="line">        self.val = val</span><br><span class="line">        self.left, self.right = <span class="keyword">None</span>, <span class="keyword">None</span></span><br><span class="line"></span><br><span class="line">queue = [] <span class="comment"># same as list()</span></span><br><span class="line">size = len(queue)</span><br><span class="line">queue.append(<span class="number">1</span>)</span><br><span class="line">queue.append(<span class="number">2</span>)</span><br><span class="line">queue.pop(<span class="number">0</span>) <span class="comment"># return 1</span></span><br><span class="line">queue[<span class="number">0</span>] <span class="comment"># return 2 examine the first element</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">s = set()</span><br><span class="line">s1 = &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;</span><br><span class="line">s.add(<span class="string">'shaunwei'</span>)</span><br><span class="line"><span class="string">'shaun'</span> <span class="keyword">in</span> s <span class="comment"># return true</span></span><br><span class="line">s.remove(<span class="string">'shaunwei'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># map 在 python 中是一个keyword</span></span><br><span class="line">hash_map = &#123;&#125; <span class="comment"># or dict()</span></span><br><span class="line">hash_map[<span class="string">'shaun'</span>] = <span class="number">98</span></span><br><span class="line">hash_map[<span class="string">'wei'</span>] = <span class="number">99</span></span><br><span class="line">exist = <span class="string">'wei'</span> <span class="keyword">in</span> hash_map <span class="comment"># check existence</span></span><br><span class="line">point = hash_map[<span class="string">'shaun'</span>] <span class="comment"># get value by key</span></span><br><span class="line">point = hash_map.pop(<span class="string">'shaun'</span>) <span class="comment"># remove by key, return value</span></span><br><span class="line">keys = hash_map.keys() <span class="comment"># return key list</span></span><br><span class="line"><span class="comment"># iterate dictionary(map)</span></span><br><span class="line"><span class="keyword">for</span> key, value <span class="keyword">in</span> hash_map.items():</span><br><span class="line">    <span class="comment"># do something with k, v</span></span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self,name,age)</span>:</span></span><br><span class="line">        self.name=name</span><br><span class="line">        self.age=age</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">print</span> <span class="string">'hello:'</span>+self.name+<span class="string">":"</span>+str(self.age)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Tom</span><span class="params">(Person)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self,name)</span>:</span></span><br><span class="line">        super(Tom,self).__init__(name,<span class="number">18</span>)</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">hello2</span><span class="params">(self)</span>:</span><span class="comment">#只要子类有重复的名字就会覆盖</span></span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line">        <span class="comment">#print 'child say hello'</span></span><br><span class="line">t=Tom(<span class="string">'tom'</span>)</span><br><span class="line">t.hello()</span><br></pre></td></tr></table></figure>
-<h3 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h3><ol>
-<li>Python 有七个序列类型： 字符串、 Unicode 字符串、 列表、 元组、 字节数组、 缓冲区和 xrange 对象。序列类型 — str、unicode、list、 tuple、 bytearray、buffer、xrange</li>
-<li>if and 执行逻辑</li>
-</ol>
-<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">is_a</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">print</span> <span class="string">'a'</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">is_b</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">print</span> <span class="string">'b'</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">'__main__'</span>:</span><br><span class="line">    <span class="comment">#第一个条件如果为False,and后面的就直接不执行了</span></span><br><span class="line">    <span class="keyword">if</span> is_a() <span class="keyword">and</span> is_b():</span><br><span class="line">        <span class="keyword">print</span> <span class="string">'if中有先后顺序的'</span></span><br></pre></td></tr></table></figure>
-<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><h4 id="tornado-框架"><a href="#tornado-框架" class="headerlink" title="tornado 框架"></a>tornado 框架</h4><p>1）异步 async+await 配合，2）效果和 yield 差不多，3）也可以使用 callback</p>
-<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> tornado <span class="keyword">import</span> gen</span><br><span class="line"></span><br><span class="line"><span class="meta">@gen.coroutine</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fetch_coroutine</span><span class="params">(url)</span>:</span></span><br><span class="line">    http_client = AsyncHTTPClient()</span><br><span class="line">    response = <span class="keyword">yield</span> http_client.fetch(url)</span><br><span class="line">    <span class="comment"># In Python versions prior to 3.3, returning a value from</span></span><br><span class="line">    <span class="comment"># a generator is not allowed and you must use</span></span><br><span class="line">    <span class="comment">#   raise gen.Return(response.body)</span></span><br><span class="line">    <span class="comment"># instead.</span></span><br><span class="line">    <span class="keyword">return</span> response.body</span><br></pre></td></tr></table></figure>
-<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">fetch_coroutine</span><span class="params">(url)</span>:</span></span><br><span class="line">    http_client = AsyncHTTPClient()</span><br><span class="line">    response = <span class="keyword">await</span> http_client.fetch(url)</span><br><span class="line">    <span class="keyword">return</span> response.body</span><br></pre></td></tr></table></figure>
-<h4 id="装饰器"><a href="#装饰器" class="headerlink" title="装饰器"></a>装饰器</h4><p>何时执行装饰器：导入模块时</p>
-<p>用处：将函数添加到中央注册处，url-》相应函数</p>
-<ul>
-<li>装饰器将函数替换成新的函数(添加一个记时功能给函数)：</li>
-</ul>
-<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@clock</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">haha</span><span class="params">()</span>:</span></span><br><span class="line">	xxxxx</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">clock</span><span class="params">(func)</span>:</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">clocked</span><span class="params">(*arg)</span>:</span></span><br><span class="line">		func(*arg)</span><br><span class="line">	<span class="keyword">return</span> clocked <span class="comment">#返回新的函数了，替换掉原来的haha()</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>== a.__eq–(b)和比较值 Java 中：equals，is 比较对象标识（地址）Java 中：==</li>
-<li>Copy.deepcopy(obj)会记住循环引用，优雅处理</li>
-<li>@classmethod 最常见的用法是构建备选的构造方法</li>
-</ul>
-<h4 id="重试函数"><a href="#重试函数" class="headerlink" title="重试函数"></a>重试函数</h4><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#encoding=utf8</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#有参数，必须再包一层（最外层的变量大家都可以访问）</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">retry</span><span class="params">(times=<span class="number">1</span>,exceptions=None)</span>:</span></span><br><span class="line">   exceptions = exceptions <span class="keyword">if</span> exceptions <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span> <span class="keyword">else</span> Exception</span><br><span class="line"></span><br><span class="line">   <span class="comment"># 包一层,传入对应的函数</span></span><br><span class="line">   <span class="function"><span class="keyword">def</span> <span class="title">wrapper</span><span class="params">(func)</span>:</span></span><br><span class="line">      <span class="comment">#替换函数</span></span><br><span class="line">      <span class="function"><span class="keyword">def</span> <span class="title">wrapper</span><span class="params">(*args,**kwargs)</span>:</span></span><br><span class="line">         last_exception =<span class="keyword">None</span></span><br><span class="line">         <span class="keyword">for</span> _ <span class="keyword">in</span> range(times):</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">               <span class="keyword">return</span> func(*args, **kwargs)</span><br><span class="line">            <span class="keyword">except</span> exceptions <span class="keyword">as</span> e:</span><br><span class="line">               last_exception = e</span><br><span class="line">         <span class="keyword">raise</span> last_exception</span><br><span class="line">      <span class="keyword">return</span> wrapper</span><br><span class="line">   <span class="keyword">return</span> wrapper</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">"__main__"</span>:</span><br><span class="line"><span class="meta">   @retry(5)</span></span><br><span class="line">   <span class="function"><span class="keyword">def</span> <span class="title">test</span><span class="params">(uid,name)</span>:</span></span><br><span class="line">      print(<span class="string">"do something"</span>,uid,name)</span><br><span class="line">      <span class="keyword">raise</span> Exception</span><br><span class="line">   test(<span class="string">'123'</span>,<span class="string">'tome'</span>)</span><br></pre></td></tr></table></figure>
-<h4 id="回调函数-callback-调用"><a href="#回调函数-callback-调用" class="headerlink" title="回调函数 callback 调用"></a>回调函数 callback 调用</h4><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Callback</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run_callback</span><span class="params">(self,fn,*args,**kwargs)</span>:</span></span><br><span class="line">        <span class="keyword">print</span> <span class="string">'call function'</span>,fn.__name__</span><br><span class="line">        <span class="keyword">print</span> args,kwargs</span><br><span class="line">        <span class="comment">#fn(args)相当于传入一个元组参数</span></span><br><span class="line">        <span class="comment">#fn(*args)会把元组拆开，给对应的参数赋值</span></span><br><span class="line">        fn(*args)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">hi</span><span class="params">(self,name,age)</span>:</span></span><br><span class="line">        <span class="keyword">print</span> <span class="string">'hello,'</span>,name,age</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">start</span><span class="params">(cls)</span>:</span></span><br><span class="line">        cls().run_callback(cls().hi,<span class="string">'tome'</span>,<span class="number">18</span>)</span><br><span class="line"></span><br><span class="line">Callback.start()</span><br></pre></td></tr></table></figure>
-
-          
+          python 常见问题安装virtualenv -p /usr/bin/python2.7 venv
+python 常用函数1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/07/python/python常见问题/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1685,51 +1569,50 @@
       
         
           
-            <h2 id="redis-关键点"><a href="#redis-关键点" class="headerlink" title="redis 关键点"></a>redis 关键点</h2><p>核心点</p>
-<ul>
-<li>数据类型实现<ul>
-<li>跳跃表<ul>
-<li>层级高度</li>
-<li>插入、删除过程</li>
-</ul>
-</li>
-<li>hash 表<ul>
-<li>rehash 过程</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>持久化<ul>
-<li>RDB<ul>
-<li>BGSAVE</li>
-</ul>
-</li>
-<li>AOF<ul>
-<li>BGREWRITEAOF</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>多机<ul>
-<li>主从模式<ul>
-<li>psync 指令</li>
-</ul>
-</li>
-<li>sentinel 主从故障转移<ul>
-<li>订阅同一个通道</li>
-<li>心跳保活</li>
-</ul>
-</li>
-<li>redis-cluster 集群<ul>
-<li>槽 slot 动态分配</li>
-<li>MOVE、ASK 指令转移</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
+          redis 关键点核心点
 
-          
+数据类型实现
+跳跃表
+层级高度
+插入、删除过程
+
+
+hash 表
+rehash 过程
+
+
+
+
+持久化
+RDB
+BGSAVE
+
+
+AOF
+BGREWRITEAOF
+
+
+
+
+多机
+主从模式
+psync 指令
+
+
+sentinel 主从故障转移
+订阅同一个通道
+心跳保活
+
+
+r
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/07/mysql/redis注意点/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1869,28 +1752,16 @@
       
         
           
-            <h2 id="thrift-笔记"><a href="#thrift-笔记" class="headerlink" title="thrift 笔记"></a>thrift 笔记</h2><blockquote>
-<p>Thrift 实际上是实现了 C/S 模式，通过代码生成工具将接口定义文件生成服务器端和客户端代码（可以为不同语言），从而实现服务端和客户端跨语言的支持。用户在 Thirft 描述文件中声明自己的服务，这些服务经过编译后会生成相应语言的代码文件，然后用户实现服务（客户端调用服务，服务器端提服务）便可以了。其中 protocol（协议层, 定义数据传输格式，可以为二进制或者 XML 等）和 transport（传输层，定义数据传输方式，可以为 TCP/IP 传输，内存共享或者文件共享等）被用作运行时库。</p>
-</blockquote>
-<p>Thrift 的网络栈如下所示：</p>
-<p><img src="../../images/thrit-network.png" alt="网络栈"></p>
-<h3 id="Transport"><a href="#Transport" class="headerlink" title="Transport"></a>Transport</h3><p>Transport 层提供了一个简单的网络读写抽象层。这使得 thrift 底层的 transport 从系统其它部分（如：序列化/反序列化）解耦。以下是一些 Transport 接口提供的方法：</p>
-<p>除了以上几个接口，Thrift 使用 ServerTransport 接口接受或者创建原始 transport 对象。正如名字暗示的那样，ServerTransport 用在 server 端，为到来的连接创建 Transport 对象。</p>
-<h3 id="Protocol"><a href="#Protocol" class="headerlink" title="Protocol"></a>Protocol</h3><p>Protocol 抽象层定义了一种将内存中数据结构映射成可传输格式的机制。换句话说，Protocol 定义了 datatype 怎样使用底层的 Transport 对自己进行编解码。因此，Protocol 的实现要给出编码机制并负责对数据进行序列化。</p>
-<p>Protocol 接口的定义如下：</p>
-<p>下面是一些对大部分 thrift 支持的语言均可用的 protocol：</p>
-<p>(1) binary：简单的二进制编码</p>
-<p>(2) Compact：具体见 THRIFT-11</p>
-<p>(3) Json</p>
-<h3 id="Processor"><a href="#Processor" class="headerlink" title="Processor"></a>Processor</h3><p>Processor 封装了从输入数据流中读数据和向数据数据流中写数据的操作。读写数据流用 Protocol 对象表示。Processor 的结构体非常简单:</p>
-<p>与服务相关的 processor 实现由编译器产生。Processor 主要工作流程如下：从连接中读取数据（使用输入 protocol），将处理授权给 handler（由用户实现），最后将结果写到连接上（使用输出 protocol）。</p>
-<h3 id="Server"><a href="#Server" class="headerlink" title="Server"></a>Server</h3><p>Server 将以上所有特性集成在一起：</p>
-<p>（1） 创建一个 transport 对象</p>
-<p>（2） 为 transport 对象创建输入输出 protocol</p>
-<p>（3） 基于输入输出 protocol 创建 processor</p>
-<p>（4） 等待连接请求并将之交给 processor 处理</p>
-
-          
+          thrift 笔记
+Thrift 实际上是实现了 C/S 模式，通过代码生成工具将接口定义文件生成服务器端和客户端代码（可以为不同语言），从而实现服务端和客户端跨语言的支持。用户在 Thirft 描述文件中声明自己的服务，这些服务经过编译后会生成相应语言的代码文件，然后用户实现服务（客户端调用服务，
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/07/framework/thrift-intro/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
